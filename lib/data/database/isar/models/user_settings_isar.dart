@@ -11,6 +11,12 @@ class UserSettingsIsar {
   String currency = 'EGP';
   
   bool notificationsEnabled = true;
+  
+  bool hasCompletedOnboarding = false;
+
+  String? userName;
+  
+  bool isProfileComplete = false;
 
   UserSettingsIsar();
 }

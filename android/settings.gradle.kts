@@ -24,3 +24,17 @@ plugins {
 }
 
 include(":app")
+
+gradle.lifecycle.beforeProject {
+    afterEvaluate {
+        extensions.findByName("android")?.let { android ->
+            try {
+                val getNamespace = android.javaClass.getMethod("getNamespace")
+                if (getNamespace.invoke(android) == null) {
+                    val setNamespace = android.javaClass.getMethod("setNamespace", String::class.java)
+                    setNamespace.invoke(android, group.toString())
+                }
+            } catch (ignored: Exception) {}
+        }
+    }
+}

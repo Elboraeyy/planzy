@@ -7,14 +7,39 @@ import 'package:planzy/features/insights/view/insights_screen.dart';
 import 'package:planzy/features/profile/view/profile_screen.dart';
 import 'package:planzy/features/commitments/view/add_commitment_screen.dart';
 import 'package:planzy/features/goals/view/add_goal_screen.dart';
+import 'package:planzy/features/onboarding/view/splash_screen.dart';
+import 'package:planzy/features/onboarding/view/onboarding_screen.dart';
+import 'package:planzy/features/auth/view/auth_journey_screen.dart';
+import 'package:planzy/features/auth/view/auth_choice_screen.dart';
+import 'package:planzy/features/auth/view/login_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
   static final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/home',
+    initialLocation: '/splash',
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/auth-choice',
+        builder: (context, state) => const AuthChoiceScreen(),
+      ),
+      GoRoute(
+        path: '/auth',
+        builder: (context, state) => const AuthJourneyScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return ScaffoldWithNav(navigationShell: navigationShell);

@@ -37,6 +37,33 @@ class SettingsNotifier extends AsyncNotifier<UserSettingsIsar> {
       return current;
     });
   }
+
+  Future<void> completeOnboarding() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final current = await ref.read(isarServiceProvider).getSettings();
+      current.hasCompletedOnboarding = true;
+      await ref.read(isarServiceProvider).saveSettings(current);
+      return current;
+    });
+  }
+
+  Future<void> completeProfile({
+    required String name,
+    required String currency,
+    required double monthlyIncome,
+  }) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final current = await ref.read(isarServiceProvider).getSettings();
+      current.userName = name;
+      current.currency = currency;
+      current.monthlyIncome = monthlyIncome;
+      current.isProfileComplete = true;
+      await ref.read(isarServiceProvider).saveSettings(current);
+      return current;
+    });
+  }
 }
 
 final settingsProvider = AsyncNotifierProvider<SettingsNotifier, UserSettingsIsar>(() {

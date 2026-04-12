@@ -99,7 +99,7 @@ class ProfileScreen extends ConsumerWidget {
                     trailingWidget: Switch(
                       value: settings.notificationsEnabled,
                       onChanged: (val) => ref.read(settingsProvider.notifier).toggleNotifications(val),
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                       activeTrackColor: AppColors.border.withValues(alpha: 0.2),
                     ),
                   ),

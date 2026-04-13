@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
+import 'package:planzy/core/widgets/neo_date_picker.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/features/commitments/data/models/commitment.dart';
 import 'package:planzy/features/commitments/presentation/providers/commitments_provider.dart';
@@ -121,7 +122,7 @@ class _AddCommitmentScreenState extends ConsumerState<AddCommitmentScreen> {
                 prefixIcon: const Icon(LucideIcons.calendar),
               ),
               onTap: () async {
-                final date = await showDatePicker(
+                final date = await NeoDatePicker.show(
                   context: context,
                   initialDate: _startDate,
                   firstDate: DateTime.now().subtract(const Duration(days: 365)),

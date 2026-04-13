@@ -64,6 +64,55 @@ class SettingsNotifier extends AsyncNotifier<UserSettingsIsar> {
       return current;
     });
   }
+
+  Future<void> updateProfileImage(String path) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final current = await ref.read(isarServiceProvider).getSettings();
+      current.profileImagePath = path;
+      await ref.read(isarServiceProvider).saveSettings(current);
+      return current;
+    });
+  }
+
+  Future<void> updateName(String name) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final current = await ref.read(isarServiceProvider).getSettings();
+      current.userName = name;
+      await ref.read(isarServiceProvider).saveSettings(current);
+      return current;
+    });
+  }
+
+  Future<void> updateBio(String bio) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final current = await ref.read(isarServiceProvider).getSettings();
+      current.userBio = bio;
+      await ref.read(isarServiceProvider).saveSettings(current);
+      return current;
+    });
+  }
+
+  Future<void> updateEmail(String email) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final current = await ref.read(isarServiceProvider).getSettings();
+      current.userEmail = email;
+      await ref.read(isarServiceProvider).saveSettings(current);
+      return current;
+    });
+  }
+
+  Future<void> clearAllData() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final fresh = UserSettingsIsar();
+      await ref.read(isarServiceProvider).saveSettings(fresh);
+      return fresh;
+    });
+  }
 }
 
 final settingsProvider = AsyncNotifierProvider<SettingsNotifier, UserSettingsIsar>(() {

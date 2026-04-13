@@ -16,6 +16,10 @@ import 'package:planzy/features/auth/view/login_screen_new.dart';
 import 'package:planzy/features/auth/view/signup_screen.dart';
 import 'package:planzy/features/transactions/presentation/view/add_transaction_screen.dart';
 import 'package:planzy/features/transactions/presentation/view/transaction_history_screen.dart';
+import 'package:planzy/features/accounts/presentation/view/accounts_screen.dart';
+import 'package:planzy/features/accounts/presentation/view/add_account_screen.dart';
+import 'package:planzy/features/accounts/presentation/view/transfer_screen.dart';
+import 'package:planzy/features/accounts/data/models/financial_account.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -146,6 +150,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/transaction-history',
         builder: (context, state) => const TransactionHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/accounts',
+        builder: (context, state) => const AccountsScreen(),
+      ),
+      GoRoute(
+        path: '/add-account',
+        builder: (context, state) {
+          final existing = state.extra as FinancialAccount?;
+          return AddAccountScreen(existingAccount: existing);
+        },
+      ),
+      GoRoute(
+        path: '/transfer',
+        builder: (context, state) => const TransferScreen(),
       ),
     ],
   );

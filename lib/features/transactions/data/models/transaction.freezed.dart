@@ -24,7 +24,11 @@ mixin _$Transaction {
   String get userId => throw _privateConstructorUsedError;
   TransactionType get type => throw _privateConstructorUsedError;
   double get amount => throw _privateConstructorUsedError;
-  DateTime get date => throw _privateConstructorUsedError; // Expense fields
+  DateTime get date => throw _privateConstructorUsedError; // Account linking
+  String? get accountId => throw _privateConstructorUsedError;
+  String? get transferToAccountId => throw _privateConstructorUsedError;
+  double? get transferFee =>
+      throw _privateConstructorUsedError; // Expense fields
   ExpenseCategory? get expenseCategory => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   String? get receiptUrl => throw _privateConstructorUsedError;
@@ -51,6 +55,9 @@ abstract class $TransactionCopyWith<$Res> {
       TransactionType type,
       double amount,
       DateTime date,
+      String? accountId,
+      String? transferToAccountId,
+      double? transferFee,
       ExpenseCategory? expenseCategory,
       String? notes,
       String? receiptUrl,
@@ -78,6 +85,9 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? type = null,
     Object? amount = null,
     Object? date = null,
+    Object? accountId = freezed,
+    Object? transferToAccountId = freezed,
+    Object? transferFee = freezed,
     Object? expenseCategory = freezed,
     Object? notes = freezed,
     Object? receiptUrl = freezed,
@@ -107,6 +117,18 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      accountId: freezed == accountId
+          ? _value.accountId
+          : accountId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      transferToAccountId: freezed == transferToAccountId
+          ? _value.transferToAccountId
+          : transferToAccountId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      transferFee: freezed == transferFee
+          ? _value.transferFee
+          : transferFee // ignore: cast_nullable_to_non_nullable
+              as double?,
       expenseCategory: freezed == expenseCategory
           ? _value.expenseCategory
           : expenseCategory // ignore: cast_nullable_to_non_nullable
@@ -153,6 +175,9 @@ abstract class _$$TransactionImplCopyWith<$Res>
       TransactionType type,
       double amount,
       DateTime date,
+      String? accountId,
+      String? transferToAccountId,
+      double? transferFee,
       ExpenseCategory? expenseCategory,
       String? notes,
       String? receiptUrl,
@@ -178,6 +203,9 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? type = null,
     Object? amount = null,
     Object? date = null,
+    Object? accountId = freezed,
+    Object? transferToAccountId = freezed,
+    Object? transferFee = freezed,
     Object? expenseCategory = freezed,
     Object? notes = freezed,
     Object? receiptUrl = freezed,
@@ -207,6 +235,18 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      accountId: freezed == accountId
+          ? _value.accountId
+          : accountId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      transferToAccountId: freezed == transferToAccountId
+          ? _value.transferToAccountId
+          : transferToAccountId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      transferFee: freezed == transferFee
+          ? _value.transferFee
+          : transferFee // ignore: cast_nullable_to_non_nullable
+              as double?,
       expenseCategory: freezed == expenseCategory
           ? _value.expenseCategory
           : expenseCategory // ignore: cast_nullable_to_non_nullable
@@ -248,6 +288,9 @@ class _$TransactionImpl implements _Transaction {
       required this.type,
       required this.amount,
       required this.date,
+      this.accountId,
+      this.transferToAccountId,
+      this.transferFee,
       this.expenseCategory,
       this.notes,
       this.receiptUrl,
@@ -269,6 +312,13 @@ class _$TransactionImpl implements _Transaction {
   final double amount;
   @override
   final DateTime date;
+// Account linking
+  @override
+  final String? accountId;
+  @override
+  final String? transferToAccountId;
+  @override
+  final double? transferFee;
 // Expense fields
   @override
   final ExpenseCategory? expenseCategory;
@@ -288,7 +338,7 @@ class _$TransactionImpl implements _Transaction {
 
   @override
   String toString() {
-    return 'Transaction(id: $id, userId: $userId, type: $type, amount: $amount, date: $date, expenseCategory: $expenseCategory, notes: $notes, receiptUrl: $receiptUrl, receiptLocalPath: $receiptLocalPath, isRecurring: $isRecurring, incomeSource: $incomeSource, createdAt: $createdAt)';
+    return 'Transaction(id: $id, userId: $userId, type: $type, amount: $amount, date: $date, accountId: $accountId, transferToAccountId: $transferToAccountId, transferFee: $transferFee, expenseCategory: $expenseCategory, notes: $notes, receiptUrl: $receiptUrl, receiptLocalPath: $receiptLocalPath, isRecurring: $isRecurring, incomeSource: $incomeSource, createdAt: $createdAt)';
   }
 
   @override
@@ -301,6 +351,12 @@ class _$TransactionImpl implements _Transaction {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.date, date) || other.date == date) &&
+            (identical(other.accountId, accountId) ||
+                other.accountId == accountId) &&
+            (identical(other.transferToAccountId, transferToAccountId) ||
+                other.transferToAccountId == transferToAccountId) &&
+            (identical(other.transferFee, transferFee) ||
+                other.transferFee == transferFee) &&
             (identical(other.expenseCategory, expenseCategory) ||
                 other.expenseCategory == expenseCategory) &&
             (identical(other.notes, notes) || other.notes == notes) &&
@@ -325,6 +381,9 @@ class _$TransactionImpl implements _Transaction {
       type,
       amount,
       date,
+      accountId,
+      transferToAccountId,
+      transferFee,
       expenseCategory,
       notes,
       receiptUrl,
@@ -354,6 +413,9 @@ abstract class _Transaction implements Transaction {
       required final TransactionType type,
       required final double amount,
       required final DateTime date,
+      final String? accountId,
+      final String? transferToAccountId,
+      final double? transferFee,
       final ExpenseCategory? expenseCategory,
       final String? notes,
       final String? receiptUrl,
@@ -375,6 +437,12 @@ abstract class _Transaction implements Transaction {
   double get amount;
   @override
   DateTime get date;
+  @override // Account linking
+  String? get accountId;
+  @override
+  String? get transferToAccountId;
+  @override
+  double? get transferFee;
   @override // Expense fields
   ExpenseCategory? get expenseCategory;
   @override

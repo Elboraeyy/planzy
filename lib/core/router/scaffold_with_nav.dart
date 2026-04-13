@@ -264,8 +264,8 @@ class _CentralAddButtonState extends State<_CentralAddButton> {
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: 100.ms,
-        transform: Matrix4.translationValues(0, _isPressed ? 4 : -10, 0),
-        padding: const EdgeInsets.all(12),
+        transform: Matrix4.translationValues(0, _isPressed ? 0 : -24, 0),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.primary,
           shape: BoxShape.circle,
@@ -278,7 +278,7 @@ class _CentralAddButtonState extends State<_CentralAddButton> {
               ),
           ],
         ),
-        child: const Icon(LucideIcons.plus, color: AppColors.white, size: 30),
+        child: const Icon(LucideIcons.plus, color: AppColors.white, size: 32),
       ),
     );
   }

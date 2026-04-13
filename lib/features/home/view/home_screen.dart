@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_card.dart';
@@ -13,6 +12,7 @@ import 'package:planzy/features/transactions/data/models/transaction.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/core/widgets/neo_dialog.dart';
+import 'package:planzy/core/widgets/neo_date_picker.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,11 +25,9 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           children: const [
             _HomeHeaderWidget(),
-            Gap(40),
-            _HomeSummaryCard(),
-            Gap(40),
-            _TransactionsSummaryCard(),
-            Gap(40),
+            Gap(32),
+            _FinancialDashboard(),
+            Gap(32),
             _CommitmentsListWidget(),
             Gap(24),
             _GoalsProgressWidget(),
@@ -40,6 +38,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+// ──────────────────────────────────────────────────────────────
+// Header
+// ──────────────────────────────────────────────────────────────
 
 class _HomeHeaderWidget extends ConsumerWidget {
   const _HomeHeaderWidget();
@@ -95,203 +97,636 @@ class _HomeHeaderWidget extends ConsumerWidget {
   }
 }
 
-class _TransactionsSummaryCard extends ConsumerWidget {
-  const _TransactionsSummaryCard();
+// ──────────────────────────────────────────────────────────────
+// Financial Dashboard — Swipeable month card + day scroller + feed
+// ──────────────────────────────────────────────────────────────
+
+class _FinancialDashboard extends ConsumerStatefulWidget {
+  const _FinancialDashboard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final transactionsAsync = ref.watch(transactionsProvider);
-    final settingsAsync = ref.watch(settingsProvider);
-    final monthlyStats = ref.watch(monthlyStatsProvider);
-    final todayTransactions = ref.watch(todayTransactionsProvider);
-
-    return settingsAsync.when(
-      data: (settings) {
-        final currency = settings.currency;
-
-        return transactionsAsync.when(
-          data: (_) {
-            return GestureDetector(
-              onTap: () => context.push('/transaction-history'),
-              child: NeoCard(
-                backgroundColor: AppColors.cardYellow,
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'THIS MONTH',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: monthlyStats['balance']! >= 0
-                                ? AppColors.secondary
-                                : AppColors.primary,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: AppColors.border, width: 2),
-                          ),
-                          child: Text(
-                            monthlyStats['balance']! >= 0 ? 'SAVING' : 'OVERSPENT',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Gap(16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _TransactionStat(
-                            label: 'SPENT',
-                            amount: monthlyStats['expenses']!,
-                            currency: currency,
-                            icon: '💸',
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        const Gap(16),
-                        Expanded(
-                          child: _TransactionStat(
-                            label: 'EARNED',
-                            amount: monthlyStats['income']!,
-                            currency: currency,
-                            icon: '💰',
-                            color: AppColors.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (todayTransactions.isNotEmpty) ...[
-                      const Gap(16),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.border, width: 2),
-                        ),
-                        child: Row(
-                          children: [
-                            const Text('📅', style: TextStyle(fontSize: 20)),
-                            const Gap(8),
-                            Expanded(
-                              child: Text(
-                                'Today: ${todayTransactions.length} transaction${todayTransactions.length > 1 ? 's' : ''}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '${todayTransactions.where((t) => t.type == TransactionType.expense).fold<double>(0, (sum, t) => sum + t.amount).toStringAsFixed(0)} $currency',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    const Gap(12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'VIEW ALL →',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                            color: AppColors.textDark.withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack).fadeIn(),
-            );
-          },
-          loading: () => const NeoCard(
-            child: Center(child: CircularProgressIndicator()),
-          ),
-          error: (_, __) => const SizedBox(),
-        );
-      },
-      loading: () => const SizedBox(),
-      error: (_, __) => const SizedBox(),
-    );
-  }
+  ConsumerState<_FinancialDashboard> createState() => _FinancialDashboardState();
 }
 
-class _TransactionStat extends StatelessWidget {
-  final String label;
-  final double amount;
-  final String currency;
-  final String icon;
-  final Color color;
+class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
+  late PageController _pageController;
+  late ScrollController _dayScrollController;
+  late DateTime _selectedMonth;
+  late DateTime _selectedDay;
+  bool _hasInitScrolled = false;
 
-  const _TransactionStat({
-    required this.label,
-    required this.amount,
-    required this.currency,
-    required this.icon,
-    required this.color,
-  });
+  // We allow swiping from 3 years ago to current month
+  static const int _totalMonths = 36;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedMonth = DateTime(now.year, now.month);
+    _selectedDay = DateTime(now.year, now.month, now.day);
+    _pageController = PageController(initialPage: _totalMonths - 1);
+    _dayScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _dayScrollController.dispose();
+    super.dispose();
+  }
+
+  DateTime _monthFromPageIndex(int index) {
+    final now = DateTime.now();
+    final currentMonthIndex = _totalMonths - 1;
+    final diff = currentMonthIndex - index;
+    return DateTime(now.year, now.month - diff);
+  }
+
+  List<DateTime> _daysInMonth(DateTime month) {
+    final daysCount = DateUtils.getDaysInMonth(month.year, month.month);
+    return List.generate(daysCount, (i) => DateTime(month.year, month.month, i + 1));
+  }
+
+  void _scrollToDay(DateTime day, List<DateTime> days) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_dayScrollController.hasClients) return;
+      final index = days.indexWhere((d) => d.day == day.day);
+      if (index < 0) return;
+      final target = (index * 68.0) - (MediaQuery.of(context).size.width / 2 - 58);
+      _dayScrollController.animateTo(
+        target.clamp(0.0, _dayScrollController.position.maxScrollExtent),
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutBack,
+      );
+    });
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await NeoDatePicker.show(
+      context: context,
+      initialDate: _selectedDay,
+      firstDate: DateTime(now.year - 3, now.month),
+      lastDate: now,
+    );
+
+    if (picked != null) {
+      final diff = (now.year - picked.year) * 12 + now.month - picked.month;
+      final targetIndex = (_totalMonths - 1) - diff;
+      
+      if (targetIndex >= 0 && targetIndex < _totalMonths) {
+        setState(() {
+          _selectedDay = picked;
+          _selectedMonth = DateTime(picked.year, picked.month);
+        });
+        _pageController.animateToPage(
+          targetIndex,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+        _scrollToDay(_selectedDay, _daysInMonth(_selectedMonth));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final transactionsAsync = ref.watch(transactionsProvider);
+    final settingsAsync = ref.watch(settingsProvider);
+    final commitmentsAsync = ref.watch(commitmentsProvider);
+
+    final currency = settingsAsync.when(
+      data: (s) => s.currency,
+      loading: () => '',
+      error: (_, _) => '',
+    );
+
+    final allTransactions = transactionsAsync.valueOrNull ?? [];
+
+    // Month stats
+    final monthTransactions = allTransactions.where((t) =>
+      t.date.year == _selectedMonth.year && t.date.month == _selectedMonth.month
+    ).toList();
+
+    double monthIncome = 0;
+    double monthExpense = 0;
+    for (final t in monthTransactions) {
+      if (t.type == TransactionType.income) {
+        monthIncome += t.amount;
+      } else {
+        monthExpense += t.amount;
+      }
+    }
+    final balance = monthIncome - monthExpense;
+
+    // Day transactions
+    final dayTransactions = allTransactions.where((t) =>
+      t.date.year == _selectedDay.year &&
+      t.date.month == _selectedDay.month &&
+      t.date.day == _selectedDay.day
+    ).toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
+
+    final days = _daysInMonth(_selectedMonth);
+    final now = DateTime.now();
+    final isCurrentMonth = _selectedMonth.year == now.year && _selectedMonth.month == now.month;
+
+    // Auto-scroll to current day on first build
+    if (!_hasInitScrolled) {
+      _hasInitScrolled = true;
+      _scrollToDay(_selectedDay, days);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ═══════════════════════════════════════════════
+        // THE RED CARD — Swipeable month summary
+        // ═══════════════════════════════════════════════
+        SizedBox(
+          height: 310,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _totalMonths,
+            onPageChanged: (index) {
+              final newMonth = _monthFromPageIndex(index);
+              setState(() {
+                _selectedMonth = newMonth;
+                // Preserve the currently selected day number, clamped to the new month's length
+                final maxDaysInNewMonth = DateUtils.getDaysInMonth(newMonth.year, newMonth.month);
+                final targetDay = _selectedDay.day.clamp(1, maxDaysInNewMonth);
+                
+                final now = DateTime.now();
+                if (newMonth.year == now.year && newMonth.month == now.month && targetDay > now.day) {
+                  _selectedDay = DateTime(now.year, now.month, now.day);
+                } else {
+                  _selectedDay = DateTime(newMonth.year, newMonth.month, targetDay);
+                }
+              });
+              _scrollToDay(_selectedDay, _daysInMonth(_monthFromPageIndex(index)));
+            },
+            itemBuilder: (context, index) {
+              return _buildMonthCard(
+                month: _monthFromPageIndex(index),
+                balance: balance,
+                income: monthIncome,
+                expense: monthExpense,
+                currency: currency,
+                commitments: commitmentsAsync.valueOrNull ?? [],
+                index: index,
+              );
+            },
+          ),
+        ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack).fadeIn(),
+
+        const Gap(20),
+
+        // ═══════════════════════════════════════════════
+        // DAY SCROLLER
+        // ═══════════════════════════════════════════════
+        SizedBox(
+          height: 72,
+          child: ListView.builder(
+            controller: _dayScrollController,
+            scrollDirection: Axis.horizontal,
+            itemCount: days.length,
+            itemBuilder: (context, index) {
+              final day = days[index];
+              final isSelected = day.day == _selectedDay.day;
+              final isToday = isCurrentMonth && day.day == now.day;
+              final dayName = DateFormat('E').format(day).toUpperCase().substring(0, 2);
+              
+              // Check if this day has transactions
+              final hasTx = allTransactions.any((t) =>
+                t.date.year == day.year &&
+                t.date.month == day.month &&
+                t.date.day == day.day
+              );
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() => _selectedDay = day);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutBack,
+                    width: 58,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.primary
+                          : isToday
+                              ? AppColors.secondary.withValues(alpha: 0.3)
+                              : AppColors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
+                        width: isSelected ? 3 : 2,
+                      ),
+                      boxShadow: isSelected
+                          ? const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))]
+                          : null,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          dayName,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const Gap(4),
+                        Text(
+                          '${day.day}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            color: isSelected ? AppColors.white : AppColors.textDark,
+                          ),
+                        ),
+                        if (hasTx && !isSelected) ...[
+                          const Gap(2),
+                          Container(
+                            width: 6, height: 6,
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ).animate().fadeIn(delay: 200.ms),
+
+        const Gap(24),
+
+        // ═══════════════════════════════════════════════
+        // DAY TRANSACTIONS FEED
+        // ═══════════════════════════════════════════════
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              DateFormat('EEEE, d MMM').format(_selectedDay).toUpperCase(),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
+            ),
+            if (dayTransactions.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.border, width: 2),
+                ),
+                child: Text(
+                  '${dayTransactions.length} item${dayTransactions.length > 1 ? 's' : ''}',
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+                ),
+              ),
+          ],
+        ).animate().fadeIn(delay: 300.ms),
+        const Gap(16),
+
+        if (dayTransactions.isEmpty)
+          NeoCard(
+            backgroundColor: AppColors.white,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const Text('📭', style: TextStyle(fontSize: 32)),
+                    const Gap(8),
+                    Text(
+                      'NO ACTIVITY ON ${DateFormat('MMMM d').format(_selectedDay).toUpperCase()}',
+                      style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: dayTransactions.length,
+            itemBuilder: (context, index) {
+              final t = dayTransactions[index];
+              final isExpense = t.type == TransactionType.expense;
+              final emoji = isExpense
+                  ? (t.expenseCategory?.icon ?? '💸')
+                  : (t.incomeSource?.icon ?? '💰');
+              final categoryName = isExpense
+                  ? (t.expenseCategory?.displayName ?? 'Expense')
+                  : (t.incomeSource?.displayName ?? 'Income');
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: NeoCard(
+                  backgroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(
+                          color: isExpense
+                              ? AppColors.primary.withValues(alpha: 0.08)
+                              : AppColors.secondary.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.border.withValues(alpha: 0.1), width: 2),
+                        ),
+                        child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
+                      ),
+                      const Gap(14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              categoryName.toUpperCase(),
+                              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: -0.3),
+                            ),
+                            const Gap(2),
+                            Text(
+                              DateFormat('HH:mm').format(t.date),
+                              style: const TextStyle(color: AppColors.textLight, fontSize: 11, fontWeight: FontWeight.w600),
+                            ),
+                            if (t.notes != null && t.notes!.isNotEmpty) ...[
+                              const Gap(2),
+                              Text(
+                                t.notes!,
+                                style: const TextStyle(color: AppColors.textLight, fontSize: 11),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${isExpense ? '-' : '+'}${NumberFormat.compact().format(t.amount)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              color: isExpense ? AppColors.primary : const Color(0xFF2E7D32),
+                            ),
+                          ),
+                          Text(currency, style: const TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ).animate()
+                  .slideX(begin: 0.1, delay: (50 * index).ms, curve: Curves.easeOutBack)
+                  .fadeIn();
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _buildMonthCard({
+    required DateTime month,
+    required double balance,
+    required double income,
+    required double expense,
+    required String currency,
+    required List<dynamic> commitments,
+    required int index,
+  }) {
+    final now = DateTime.now();
+    final isCurrentMonth = month.year == now.year && month.month == now.month;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border, width: 2),
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border, width: 3),
+        boxShadow: const [
+          BoxShadow(color: AppColors.border, offset: Offset(6, 6)),
+        ],
       ),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Top row: Month + Day + Year
+          GestureDetector(
+            onTap: _pickDate,
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.border, width: 2),
+                    ),
+                    child: Text(
+                      DateFormat('MMMM').format(month).toUpperCase(),
+                      style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
+                    ),
+                  ),
+                  const Gap(8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.border, width: 2),
+                    ),
+                    child: Text(
+                      '${month.year}',
+                      style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+              if (isCurrentMonth)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardYellow,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.border, width: 2),
+
+                    ),
+                    child: Text(
+                      DateFormat('E, d').format(now).toUpperCase(),
+                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          
+          const Gap(16),
+
+          // Balance
+          const Text(
+            'BALANCE',
+            style: TextStyle(color: Colors.white60, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2),
+          ),
+          const Gap(4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    NumberFormat.decimalPattern().format(balance),
+                    style: const TextStyle(color: AppColors.white, fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: -2),
+                  ),
+                ),
+              ),
+              const Gap(8),
+              Text(
+                currency,
+                style: const TextStyle(color: AppColors.cardYellow, fontSize: 22, fontWeight: FontWeight.w900),
+              ),
+            ],
+          ),
+
+          const Gap(16),
+
+          // Income & Expense row
           Row(
             children: [
-              Text(icon, style: const TextStyle(fontSize: 16)),
-              const Gap(6),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                  color: AppColors.textLight,
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.border, width: 2),
+                    boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 8, height: 8,
+                            decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
+                          ),
+                          const Gap(6),
+                          const Text('INCOME', style: TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                        ],
+                      ),
+                      const Gap(6),
+                      FittedBox(
+                        child: Text(
+                          '+${NumberFormat.compact().format(income)} $currency',
+                          style: const TextStyle(color: Color(0xFF2E7D32), fontSize: 17, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Gap(10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.border, width: 2),
+                    boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 8, height: 8,
+                            decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                          ),
+                          const Gap(6),
+                          const Text('EXPENSE', style: TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                        ],
+                      ),
+                      const Gap(6),
+                      FittedBox(
+                        child: Text(
+                          '-${NumberFormat.compact().format(expense)} $currency',
+                          style: const TextStyle(color: AppColors.primary, fontSize: 17, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
-          const Gap(6),
-          FittedBox(
-            child: Text(
-              '${NumberFormat.compact().format(amount)} $currency',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                color: color,
+          
+          // Swipe hint & Buttons
+          const Gap(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (index > 0)
+                GestureDetector(
+                  onTap: () {
+                    _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
+                    child: const Icon(LucideIcons.chevronLeft, size: 16, color: AppColors.white),
+                  ),
+                )
+              else
+                const SizedBox(width: 24),
+                
+              Text(
+                'SWIPE FOR MONTHS',
+                style: TextStyle(color: AppColors.white.withValues(alpha: 0.5), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5),
               ),
-            ),
+
+              if (index < _FinancialDashboardState._totalMonths - 1)
+                GestureDetector(
+                  onTap: () {
+                    _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
+                    child: const Icon(LucideIcons.chevronRight, size: 16, color: AppColors.white),
+                  ),
+                )
+              else
+                const SizedBox(width: 24),
+            ],
           ),
         ],
       ),
@@ -299,125 +734,9 @@ class _TransactionStat extends StatelessWidget {
   }
 }
 
-class _HomeSummaryCard extends ConsumerWidget {
-  const _HomeSummaryCard();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final commitmentsAsync = ref.watch(commitmentsProvider);
-    final settingsAsync = ref.watch(settingsProvider);
-
-    return commitmentsAsync.when(
-      data: (commitments) {
-        final totalMonthly = commitments.fold<double>(0, (sum, item) => sum + item.amount);
-        
-        return settingsAsync.when(
-          data: (settings) {
-            final currency = settings.currency;
-            final income = settings.monthlyIncome ?? 0;
-            final remaining = income - totalMonthly;
-            
-            return NeoCard(
-              backgroundColor: AppColors.primary,
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'TOTAL COMMITMENTS',
-                        style: TextStyle(color: AppColors.textDark, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: -0.5),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.border, width: 2),
-                        ),
-                        child: Text(
-                          DateFormat('MMM').format(DateTime.now()).toUpperCase(),
-                          style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900),
-                        ),
-                      )
-                    ],
-                  ),
-                  const Gap(12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        NumberFormat.decimalPattern().format(totalMonthly),
-                        style: const TextStyle(color: AppColors.white, fontSize: 44, fontWeight: FontWeight.w900, letterSpacing: -2),
-                      ),
-                      const Gap(8),
-                      Text(
-                        currency,
-                        style: const TextStyle(color: AppColors.textDark, fontSize: 24, fontWeight: FontWeight.w900),
-                      ),
-                    ],
-                  ),
-                  const Gap(24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border, width: 2),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('REMAINING', style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
-                              const Gap(4),
-                              FittedBox(
-                                child: Text('${NumberFormat.compact().format(remaining)} $currency', style: const TextStyle(color: AppColors.secondary, fontSize: 18, fontWeight: FontWeight.w900)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Gap(12),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.textDark.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('INCOME', style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
-                              const Gap(4),
-                              FittedBox(
-                                child: Text('${NumberFormat.compact().format(income)} $currency', style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack).fadeIn();
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => const SizedBox(),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => Text('Error: $err'),
-    );
-  }
-}
+// ──────────────────────────────────────────────────────────────
+// Commitments (Payments) List
+// ──────────────────────────────────────────────────────────────
 
 class _CommitmentsListWidget extends ConsumerWidget {
   const _CommitmentsListWidget();
@@ -523,6 +842,10 @@ class _CommitmentsListWidget extends ConsumerWidget {
     );
   }
 }
+
+// ──────────────────────────────────────────────────────────────
+// Goals Progress
+// ──────────────────────────────────────────────────────────────
 
 class _GoalsProgressWidget extends ConsumerWidget {
   const _GoalsProgressWidget();

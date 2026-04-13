@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'transaction.freezed.dart';
 part 'transaction.g.dart';
 
-enum TransactionType { expense, income }
+enum TransactionType { expense, income, transfer }
 
 enum ExpenseCategory {
   food,
@@ -123,6 +123,11 @@ class Transaction with _$Transaction {
     required TransactionType type,
     required double amount,
     required DateTime date,
+
+    // Account linking
+    String? accountId,
+    String? transferToAccountId,
+    double? transferFee,
 
     // Expense fields
     ExpenseCategory? expenseCategory,

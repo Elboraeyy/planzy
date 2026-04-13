@@ -18,5 +18,11 @@ class UserSettingsIsar {
   
   bool isProfileComplete = false;
 
+  String? profileImagePath;
+
+  String? userEmail;
+
+  String? userBio;
+
   UserSettingsIsar();
 }

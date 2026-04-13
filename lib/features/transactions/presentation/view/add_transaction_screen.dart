@@ -1,16 +1,17 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:planzy/core/widgets/neo_date_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/core/services/storage_service.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
+import 'package:planzy/core/widgets/planzy_notification.dart';
 import 'package:planzy/features/transactions/data/models/transaction.dart';
 import 'package:planzy/features/transactions/presentation/providers/transactions_provider.dart';
 import 'package:planzy/features/transactions/presentation/widgets/category_selector.dart';
@@ -18,6 +19,8 @@ import 'package:planzy/features/transactions/presentation/widgets/receipt_picker
 import 'package:planzy/features/transactions/presentation/widgets/transaction_type_toggle.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:planzy/features/accounts/data/models/financial_account.dart';
+import 'package:planzy/features/accounts/presentation/providers/accounts_provider.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
@@ -42,6 +45,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String? _receiptLocalPath;
 
   bool _isLoading = false;
+  String? _selectedAccountId;
 
   @override
   void dispose() {
@@ -55,21 +59,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
     // Validate category based on type
     if (_selectedType == TransactionType.expense && _selectedExpenseCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a category'),
-          backgroundColor: AppColors.primary,
-        ),
+      PlanzyNotification.show(
+        context,
+        message: 'Please select a category',
+        type: NotificationType.warning,
       );
       return;
     }
 
     if (_selectedType == TransactionType.income && _selectedIncomeSource == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a source'),
-          backgroundColor: AppColors.primary,
-        ),
+      PlanzyNotification.show(
+        context,
+        message: 'Please select a source',
+        type: NotificationType.warning,
       );
       return;
     }
@@ -97,6 +99,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         type: _selectedType,
         amount: double.parse(_amountController.text),
         date: _selectedDate,
+        accountId: _selectedAccountId,
         expenseCategory: _selectedType == TransactionType.expense
             ? _selectedExpenseCategory
             : null,
@@ -112,26 +115,30 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
       await ref.read(transactionsProvider.notifier).add(transaction);
 
+      // Auto-adjust account balance
+      if (_selectedAccountId != null) {
+        final delta = _selectedType == TransactionType.income
+            ? double.parse(_amountController.text)
+            : -double.parse(_amountController.text);
+        await ref.read(accountsProvider.notifier).adjustBalance(_selectedAccountId!, delta);
+      }
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _selectedType == TransactionType.expense
-                  ? 'Expense added successfully!'
-                  : 'Income added successfully!',
-            ),
-            backgroundColor: AppColors.secondary,
-          ),
+        PlanzyNotification.show(
+          context,
+          message: _selectedType == TransactionType.expense
+              ? 'Expense added successfully!'
+              : 'Income added successfully!',
+          type: NotificationType.success,
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.primary,
-          ),
+        PlanzyNotification.show(
+          context,
+          message: 'Error: $e',
+          type: NotificationType.error,
         );
       }
     } finally {
@@ -140,7 +147,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   }
 
   Future<void> _selectDate() async {
-    final date = await showDatePicker(
+    final date = await NeoDatePicker.show(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
@@ -320,6 +327,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
             const Gap(32),
 
+            // Account Selector
+            _buildAccountSelector(),
+
+            const Gap(32),
+
             // Category Selector
             CategorySelector(
               type: _selectedType,
@@ -463,6 +475,97 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAccountSelector() {
+    final accountsAsync = ref.watch(accountsProvider);
+
+    return accountsAsync.when(
+      data: (accounts) {
+        if (accounts.isEmpty) return const SizedBox.shrink();
+
+        // Auto-select default on first load
+        if (_selectedAccountId == null) {
+          final defaultAcc = accounts.where((a) => a.isDefault).firstOrNull ?? accounts.first;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _selectedAccountId = defaultAcc.id);
+          });
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _selectedType == TransactionType.income ? 'RECEIVE INTO' : 'PAY FROM',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
+            ),
+            const Gap(12),
+            SizedBox(
+              height: 60,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: accounts.length,
+                separatorBuilder: (_, __) => const Gap(10),
+                itemBuilder: (context, index) {
+                  final account = accounts[index];
+                  final isSelected = account.id == _selectedAccountId;
+
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedAccountId = account.id),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.primary : AppColors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.border, width: 2),
+                        boxShadow: isSelected
+                            ? const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            account.iconEmoji ?? account.type.icon,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          const Gap(8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                account.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 13,
+                                  color: isSelected ? AppColors.white : AppColors.textDark,
+                                ),
+                              ),
+                              Text(
+                                account.type.displayName,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSelected ? Colors.white60 : AppColors.textLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ).animate().fadeIn(duration: 200.ms, delay: 250.ms).slideX(begin: 0.1),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }

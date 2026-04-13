@@ -15,11 +15,10 @@ class TransactionsNotifier extends AsyncNotifier<List<Transaction>> {
     final repo = ref.read(transactionRepositoryProvider);
     if (repo == null) return;
 
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      await repo.add(transaction);
-      return repo.getAll();
-    });
+    await repo.add(transaction);
+    // Refresh the list by re-running build()
+    ref.invalidateSelf();
+    await future;
   }
 
   /// Delete a transaction
@@ -27,11 +26,9 @@ class TransactionsNotifier extends AsyncNotifier<List<Transaction>> {
     final repo = ref.read(transactionRepositoryProvider);
     if (repo == null) return;
 
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      await repo.remove(id);
-      return repo.getAll();
-    });
+    await repo.remove(id);
+    ref.invalidateSelf();
+    await future;
   }
 }
 

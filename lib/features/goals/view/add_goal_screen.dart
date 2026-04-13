@@ -8,6 +8,7 @@ import 'package:planzy/core/widgets/neo_button.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/features/goals/data/models/goal.dart';
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
+import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class AddGoalScreen extends ConsumerStatefulWidget {
@@ -49,6 +50,13 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsAsync = ref.watch(settingsProvider);
+    final currency = settingsAsync.when(
+      data: (s) => s.currency,
+      loading: () => '',
+      error: (_, __) => '',
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Goal'),
@@ -78,10 +86,10 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
             TextFormField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '0.00',
-                prefixIcon: Icon(LucideIcons.banknote),
-                suffixText: 'EGP',
+                prefixIcon: const Icon(LucideIcons.banknote),
+                suffixText: currency,
               ),
               validator: (val) => val == null || double.tryParse(val) == null ? 'Invalid amount' : null,
             ),

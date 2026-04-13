@@ -5,12 +5,14 @@ class NeoButton extends StatefulWidget {
   final VoidCallback onPressed;
   final String text;
   final Color backgroundColor;
+  final Color textColor;
 
   const NeoButton({
     super.key,
     required this.onPressed,
     required this.text,
     this.backgroundColor = AppColors.primary,
+    this.textColor = AppColors.textDark,
   });
 
   @override
@@ -62,8 +64,8 @@ class _NeoButtonState extends State<NeoButton> {
         child: Center(
           child: Text(
             widget.text.toUpperCase(),
-            style: const TextStyle(
-              color: AppColors.textDark, // With Neo-brutalism, button text is often bold black
+            style: TextStyle(
+              color: widget.textColor, // With Neo-brutalism, button text is often bold black
               fontSize: 18,
               fontWeight: FontWeight.w900,
               letterSpacing: 2.0,

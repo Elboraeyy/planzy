@@ -67,7 +67,7 @@ class ScaffoldWithNav extends StatelessWidget {
               ),
               const Gap(32),
               const Text(
-                'WHAT\'S NEW?',
+                "WHAT'S NEW?",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1),
               ),
               const Gap(24),
@@ -110,6 +110,24 @@ class ScaffoldWithNav extends StatelessWidget {
                   ),
                 ],
               ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack),
+              const Gap(16),
+              // New Transaction button
+              NeoCard(
+                backgroundColor: AppColors.cardBlue,
+                onTap: () {
+                  context.pop();
+                  context.push('/add-transaction');
+                },
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(LucideIcons.wallet, size: 28, color: AppColors.textDark),
+                    Gap(12),
+                    Text('EXPENSE / INCOME', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                  ],
+                ),
+              ).animate().slideY(begin: 0.3, delay: 100.ms, curve: Curves.easeOutBack),
               const Gap(24),
             ],
           ),

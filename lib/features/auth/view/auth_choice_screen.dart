@@ -21,42 +21,67 @@ class AuthChoiceScreen extends StatelessWidget {
               // Big Branding
               const Text(
                 'YOUR FINANCIAL',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2, color: AppColors.textLight),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  color: AppColors.textLight,
+                ),
               ).animate().fadeIn().slideY(begin: 0.3),
               const Text(
                 'FUTURE STARTS',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.w900, height: 1.0),
+                style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w900,
+                  height: 1.0,
+                ),
               ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.3),
               const Text(
-                'HERE 🚀',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.w900, height: 1.0, color: AppColors.primary),
+                'HERE',
+                style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w900,
+                  height: 1.0,
+                  color: AppColors.primary,
+                ),
               ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.3),
-              
+
               const Gap(80),
-              
-              // Choice 1: The Fancy Journey (Signup)
+
+              // Choice 1: Sign Up
               Column(
                 children: [
-                   const Text(
+                  const Text(
                     'NEW TO PLANZY?',
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1, color: AppColors.textLight),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      color: AppColors.textLight,
+                    ),
                   ),
                   const Gap(16),
                   NeoButton(
-                    onPressed: () => context.push('/auth'), // AuthJourneyScreen
+                    onPressed: () => context.push('/signup'),
                     text: 'START NEW JOURNEY',
+                    backgroundColor: AppColors.secondary,
                   ),
                 ],
               ).animate().scale(delay: 600.ms, curve: Curves.elasticOut),
-              
+
               const Gap(40),
-              
+
               // Choice 2: Login
               Column(
                 children: [
-                   const Text(
+                  const Text(
                     'ALREADY A MEMBER?',
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1, color: AppColors.textLight),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      color: AppColors.textLight,
+                    ),
                   ),
                   const Gap(16),
                   NeoButton(
@@ -65,13 +90,18 @@ class AuthChoiceScreen extends StatelessWidget {
                   ),
                 ],
               ).animate().scale(delay: 800.ms, curve: Curves.elasticOut),
-              
+
               const Gap(60),
-              
+
               const Text(
                 'BY JOINING, YOU AGREE TO MASTER YOUR MONEY.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.textLight, letterSpacing: 1),
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textLight,
+                  letterSpacing: 1,
+                ),
               ).animate().fadeIn(delay: 1200.ms),
             ],
           ),

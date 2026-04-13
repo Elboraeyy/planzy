@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "167208167982",
+    "project_id": "planzy-5f572",
+    "storage_bucket": "planzy-5f572.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167208167982:android:c844147201858b8b09cdbf",
+        "android_client_info": {
+          "package_name": "com.planzy.planzy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvXXrBkdV23mYwH9nU38LeGYM2rc2BoZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

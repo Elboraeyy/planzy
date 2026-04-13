@@ -8,6 +8,7 @@ import 'package:planzy/core/widgets/neo_button.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/features/commitments/data/models/commitment.dart';
 import 'package:planzy/features/commitments/presentation/providers/commitments_provider.dart';
+import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class AddCommitmentScreen extends ConsumerStatefulWidget {
@@ -49,6 +50,13 @@ class _AddCommitmentScreenState extends ConsumerState<AddCommitmentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsAsync = ref.watch(settingsProvider);
+    final currency = settingsAsync.when(
+      data: (s) => s.currency,
+      loading: () => '',
+      error: (_, __) => '',
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Commitment'),
@@ -78,10 +86,10 @@ class _AddCommitmentScreenState extends ConsumerState<AddCommitmentScreen> {
             TextFormField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '0.00',
-                prefixIcon: Icon(LucideIcons.banknote),
-                suffixText: 'EGP',
+                prefixIcon: const Icon(LucideIcons.banknote),
+                suffixText: currency,
               ),
               validator: (val) => val == null || double.tryParse(val) == null ? 'Invalid amount' : null,
             ),

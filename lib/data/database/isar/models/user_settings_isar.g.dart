@@ -22,15 +22,30 @@ const UserSettingsIsarSchema = CollectionSchema(
       name: r'currency',
       type: IsarType.string,
     ),
-    r'monthlyIncome': PropertySchema(
+    r'hasCompletedOnboarding': PropertySchema(
       id: 1,
+      name: r'hasCompletedOnboarding',
+      type: IsarType.bool,
+    ),
+    r'isProfileComplete': PropertySchema(
+      id: 2,
+      name: r'isProfileComplete',
+      type: IsarType.bool,
+    ),
+    r'monthlyIncome': PropertySchema(
+      id: 3,
       name: r'monthlyIncome',
       type: IsarType.double,
     ),
     r'notificationsEnabled': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'notificationsEnabled',
       type: IsarType.bool,
+    ),
+    r'userName': PropertySchema(
+      id: 5,
+      name: r'userName',
+      type: IsarType.string,
     )
   },
   estimateSize: _userSettingsIsarEstimateSize,
@@ -54,6 +69,12 @@ int _userSettingsIsarEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.currency.length * 3;
+  {
+    final value = object.userName;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -64,8 +85,11 @@ void _userSettingsIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.currency);
-  writer.writeDouble(offsets[1], object.monthlyIncome);
-  writer.writeBool(offsets[2], object.notificationsEnabled);
+  writer.writeBool(offsets[1], object.hasCompletedOnboarding);
+  writer.writeBool(offsets[2], object.isProfileComplete);
+  writer.writeDouble(offsets[3], object.monthlyIncome);
+  writer.writeBool(offsets[4], object.notificationsEnabled);
+  writer.writeString(offsets[5], object.userName);
 }
 
 UserSettingsIsar _userSettingsIsarDeserialize(
@@ -76,9 +100,12 @@ UserSettingsIsar _userSettingsIsarDeserialize(
 ) {
   final object = UserSettingsIsar();
   object.currency = reader.readString(offsets[0]);
+  object.hasCompletedOnboarding = reader.readBool(offsets[1]);
   object.id = id;
-  object.monthlyIncome = reader.readDoubleOrNull(offsets[1]);
-  object.notificationsEnabled = reader.readBool(offsets[2]);
+  object.isProfileComplete = reader.readBool(offsets[2]);
+  object.monthlyIncome = reader.readDoubleOrNull(offsets[3]);
+  object.notificationsEnabled = reader.readBool(offsets[4]);
+  object.userName = reader.readStringOrNull(offsets[5]);
   return object;
 }
 
@@ -92,9 +119,15 @@ P _userSettingsIsarDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 2:
       return (reader.readBool(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -331,6 +364,16 @@ extension UserSettingsIsarQueryFilter
   }
 
   QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      hasCompletedOnboardingEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hasCompletedOnboarding',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
       idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -382,6 +425,16 @@ extension UserSettingsIsarQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      isProfileCompleteEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isProfileComplete',
+        value: value,
       ));
     });
   }
@@ -479,6 +532,160 @@ extension UserSettingsIsarQueryFilter
       ));
     });
   }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'userName',
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'userName',
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'userName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'userName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'userName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'userName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterFilterCondition>
+      userNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'userName',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension UserSettingsIsarQueryObject
@@ -500,6 +707,34 @@ extension UserSettingsIsarQuerySortBy
       sortByCurrencyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'currency', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      sortByHasCompletedOnboarding() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      sortByHasCompletedOnboardingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      sortByIsProfileComplete() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isProfileComplete', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      sortByIsProfileCompleteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isProfileComplete', Sort.desc);
     });
   }
 
@@ -530,6 +765,20 @@ extension UserSettingsIsarQuerySortBy
       return query.addSortBy(r'notificationsEnabled', Sort.desc);
     });
   }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      sortByUserName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      sortByUserNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userName', Sort.desc);
+    });
+  }
 }
 
 extension UserSettingsIsarQuerySortThenBy
@@ -548,6 +797,20 @@ extension UserSettingsIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      thenByHasCompletedOnboarding() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      thenByHasCompletedOnboardingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -558,6 +821,20 @@ extension UserSettingsIsarQuerySortThenBy
       thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      thenByIsProfileComplete() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isProfileComplete', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      thenByIsProfileCompleteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isProfileComplete', Sort.desc);
     });
   }
 
@@ -588,6 +865,20 @@ extension UserSettingsIsarQuerySortThenBy
       return query.addSortBy(r'notificationsEnabled', Sort.desc);
     });
   }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      thenByUserName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QAfterSortBy>
+      thenByUserNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userName', Sort.desc);
+    });
+  }
 }
 
 extension UserSettingsIsarQueryWhereDistinct
@@ -596,6 +887,20 @@ extension UserSettingsIsarQueryWhereDistinct
       distinctByCurrency({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'currency', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QDistinct>
+      distinctByHasCompletedOnboarding() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hasCompletedOnboarding');
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QDistinct>
+      distinctByIsProfileComplete() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isProfileComplete');
     });
   }
 
@@ -610,6 +915,13 @@ extension UserSettingsIsarQueryWhereDistinct
       distinctByNotificationsEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'notificationsEnabled');
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, UserSettingsIsar, QDistinct>
+      distinctByUserName({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userName', caseSensitive: caseSensitive);
     });
   }
 }
@@ -628,6 +940,20 @@ extension UserSettingsIsarQueryProperty
     });
   }
 
+  QueryBuilder<UserSettingsIsar, bool, QQueryOperations>
+      hasCompletedOnboardingProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hasCompletedOnboarding');
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, bool, QQueryOperations>
+      isProfileCompleteProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isProfileComplete');
+    });
+  }
+
   QueryBuilder<UserSettingsIsar, double?, QQueryOperations>
       monthlyIncomeProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -639,6 +965,12 @@ extension UserSettingsIsarQueryProperty
       notificationsEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'notificationsEnabled');
+    });
+  }
+
+  QueryBuilder<UserSettingsIsar, String?, QQueryOperations> userNameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userName');
     });
   }
 }

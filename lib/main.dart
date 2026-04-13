@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,14 +7,20 @@ import 'package:planzy/core/theme/app_theme.dart';
 
 import 'package:planzy/data/database/isar/isar_service.dart';
 import 'package:planzy/core/providers/isar_provider.dart';
+import 'package:planzy/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   // Initialize Isar
   final isarService = IsarService();
   await isarService.db;
-  
+
   runApp(
     ProviderScope(
       overrides: [
@@ -24,11 +31,13 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return ScreenUtilInit(
       designSize: const Size(390, 844),
       minTextAdapt: true,
@@ -37,7 +46,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           title: 'Planzy',
           theme: AppTheme.lightTheme,
-          routerConfig: AppRouter.router,
+          routerConfig: router,
           debugShowCheckedModeBanner: false,
         );
       },

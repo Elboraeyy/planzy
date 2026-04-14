@@ -100,11 +100,21 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final user = ref.read(currentUserProvider);
-      if (user == null) return;
+      if (user == null) {
+        if (mounted) {
+          PlanzyNotification.show(
+            context,
+            message: 'User not authenticated',
+            type: NotificationType.error,
+          );
+        }
+        return;
+      }
 
       final account = FinancialAccount(
         id: widget.existingAccount?.id ?? const Uuid().v4(),
@@ -141,11 +151,18 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
         context.pop();
       }
     } catch (e) {
+      debugPrint('Error saving account: $e');
       if (mounted) {
-        PlanzyNotification.show(context, message: 'Error: $e', type: NotificationType.error);
+        PlanzyNotification.show(
+          context,
+          message: 'Error: ${e.toString()}',
+          type: NotificationType.error,
+        );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

@@ -5,33 +5,42 @@ import 'package:planzy/features/goals/data/repository/goal_repository.dart';
 class GoalsNotifier extends AsyncNotifier<List<Goal>> {
   @override
   Future<List<Goal>> build() async {
-    return ref.read(goalRepositoryProvider).getAll();
+    final repo = ref.read(goalRepositoryProvider);
+    if (repo == null) return [];
+    return repo.getAll();
   }
 
   Future<void> addGoal(Goal goal) async {
+    final repo = ref.read(goalRepositoryProvider);
+    if (repo == null) throw Exception('Repository not available');
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(goalRepositoryProvider).add(goal);
-      return ref.read(goalRepositoryProvider).getAll();
+      await repo.add(goal);
+      return repo.getAll();
     });
   }
 
   Future<void> removeGoal(String id) async {
+    final repo = ref.read(goalRepositoryProvider);
+    if (repo == null) throw Exception('Repository not available');
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(goalRepositoryProvider).remove(id);
-      return ref.read(goalRepositoryProvider).getAll();
+      await repo.remove(id);
+      return repo.getAll();
     });
   }
 
   Future<void> updateGoalProgress(String id, double addedAmount) async {
+    final repo = ref.read(goalRepositoryProvider);
+    if (repo == null) throw Exception('Repository not available');
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final repo = ref.read(goalRepositoryProvider);
       final all = await repo.getAll();
       final goal = all.firstWhere((e) => e.id == id);
-      final updatedGoal = goal.copyWith(savedAmount: goal.savedAmount + addedAmount);
-      await repo.add(updatedGoal); // .add handles put (update)
+      await repo.updateSavedAmount(id, goal.savedAmount + addedAmount);
       return repo.getAll();
     });
   }

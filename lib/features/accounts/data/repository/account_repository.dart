@@ -14,30 +14,70 @@ class AccountRepository {
 
   /// Add or update an account
   Future<void> add(FinancialAccount account) async {
-    await _accountsRef.doc(account.id).set(account.toJson());
+    await _accountsRef
+        .doc(account.id)
+        .set(account.toJson())
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Operation timed out. Please check your internet connection.',
+          ),
+        );
   }
 
   /// Get all accounts
   Future<List<FinancialAccount>> getAll() async {
-    final snapshot = await _accountsRef.orderBy('createdAt', descending: false).get();
+    final snapshot = await _accountsRef
+        .orderBy('createdAt', descending: false)
+        .get()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to load accounts. Please check your internet connection.',
+          ),
+        );
     return snapshot.docs.map((doc) => FinancialAccount.fromJson(doc.data())).toList();
   }
 
   /// Get a single account by ID
   Future<FinancialAccount?> getById(String id) async {
-    final doc = await _accountsRef.doc(id).get();
+    final doc = await _accountsRef
+        .doc(id)
+        .get()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to load account. Please check your internet connection.',
+          ),
+        );
     if (!doc.exists) return null;
     return FinancialAccount.fromJson(doc.data()!);
   }
 
   /// Update account balance
   Future<void> updateBalance(String accountId, double newBalance) async {
-    await _accountsRef.doc(accountId).update({'balance': newBalance});
+    await _accountsRef
+        .doc(accountId)
+        .update({'balance': newBalance})
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to update balance. Please check your internet connection.',
+          ),
+        );
   }
 
   /// Delete an account
   Future<void> remove(String id) async {
-    await _accountsRef.doc(id).delete();
+    await _accountsRef
+        .doc(id)
+        .delete()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to delete account. Please check your internet connection.',
+          ),
+        );
   }
 
   /// Transfer funds between two accounts
@@ -52,8 +92,18 @@ class AccountRepository {
     final fromDoc = _accountsRef.doc(fromAccountId);
     final toDoc = _accountsRef.doc(toAccountId);
 
-    final fromSnap = await fromDoc.get();
-    final toSnap = await toDoc.get();
+    final fromSnap = await fromDoc.get().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw Exception(
+        'Operation timed out. Please check your internet connection.',
+      ),
+    );
+    final toSnap = await toDoc.get().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw Exception(
+        'Operation timed out. Please check your internet connection.',
+      ),
+    );
 
     if (!fromSnap.exists || !toSnap.exists) {
       throw Exception('One or both accounts not found');
@@ -69,7 +119,12 @@ class AccountRepository {
     batch.update(fromDoc, {'balance': fromBalance - amount - fee});
     batch.update(toDoc, {'balance': toBalance + amount});
 
-    await batch.commit();
+    await batch.commit().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw Exception(
+        'Transfer failed. Please check your internet connection.',
+      ),
+    );
   }
 
   /// Set an account as default (unset all others first)
@@ -84,7 +139,12 @@ class AccountRepository {
       );
     }
 
-    await batch.commit();
+    await batch.commit().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw Exception(
+        'Failed to set default account. Please check your internet connection.',
+      ),
+    );
   }
 }
 

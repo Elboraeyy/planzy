@@ -35,7 +35,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     final currency = ref.watch(settingsProvider).when(
           data: (s) => s.currency,
           loading: () => '',
-          error: (_, __) => '',
+          error: (error, stack) => '',
         );
     final totalBal = ref.watch(totalBalanceProvider);
 
@@ -267,7 +267,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         child: ListView.separated(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           itemCount: accounts.length,
-                          separatorBuilder: (_, __) => const Gap(8),
+                          separatorBuilder: (context, index) => const Gap(8),
                           itemBuilder: (context, index) {
                             final account = accounts[index];
                             return _AccountListTile(

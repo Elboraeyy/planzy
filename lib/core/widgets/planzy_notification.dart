@@ -9,7 +9,7 @@ class PlanzyNotification {
     BuildContext context, {
     required String message,
     NotificationType type = NotificationType.success,
-    Duration duration = const Duration(seconds: 2),
+    Duration duration = const Duration(seconds: 3),
   }) {
     // Remove any existing overlay
     _currentOverlay?.remove();
@@ -152,7 +152,8 @@ class _NotificationWidgetState extends State<_NotificationWidget>
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final safeTopPadding = statusBarHeight + 12;
+    // Lower the notification position more (was 48, now 72)
+    final safeTopPadding = statusBarHeight + 72;
 
     return Positioned(
       top: safeTopPadding,

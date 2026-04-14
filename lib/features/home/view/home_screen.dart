@@ -50,7 +50,8 @@ class _HomeHeaderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsProvider);
     final userName = settingsAsync.when(
-      data: (settings) => (settings.userName?.isNotEmpty == true) ? settings.userName! : 'Planner',
+      data: (settings) =>
+          settings.userName.isNotEmpty ? settings.userName : 'Planner',
       loading: () => 'Planner',
       error: (_, _) => 'Planner',
     );

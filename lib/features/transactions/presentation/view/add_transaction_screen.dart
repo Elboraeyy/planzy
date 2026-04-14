@@ -164,7 +164,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     final currency = settingsAsync.when(
       data: (s) => s.currency,
       loading: () => '',
-      error: (_, __) => '',
+      error: (error, stack) => '',
     );
 
     return Scaffold(
@@ -506,7 +506,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: accounts.length,
-                separatorBuilder: (_, __) => const Gap(10),
+                    separatorBuilder: (context, index) => const Gap(10),
                 itemBuilder: (context, index) {
                   final account = accounts[index];
                   final isSelected = account.id == _selectedAccountId;
@@ -565,7 +565,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (error, stack) => const SizedBox.shrink(),
     );
   }
 }

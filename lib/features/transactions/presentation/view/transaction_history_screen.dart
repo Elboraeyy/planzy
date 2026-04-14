@@ -28,7 +28,7 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
     final currency = settingsAsync.when(
       data: (s) => s.currency,
       loading: () => '',
-      error: (_, __) => '',
+      error: (error, stack) => '',
     );
 
     final transactionsAsync = ref.watch(transactionsProvider);
@@ -254,7 +254,7 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                               ),
                               // Daily total
                               Text(
-                                '${_calculateDailyTotal(dayTransactions, currency)}',
+                                _calculateDailyTotal(dayTransactions, currency),
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,

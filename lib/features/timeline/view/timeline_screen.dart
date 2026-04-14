@@ -17,7 +17,11 @@ class TimelineScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final commitmentsAsync = ref.watch(commitmentsProvider);
     final settingsAsync = ref.watch(settingsProvider);
-    final currency = settingsAsync.when(data: (s) => s.currency, loading: () => '', error: (_, __) => '');
+    final currency = settingsAsync.when(
+      data: (s) => s.currency,
+      loading: () => '',
+      error: (error, stack) => '',
+    );
 
     return Scaffold(
       appBar: AppBar(

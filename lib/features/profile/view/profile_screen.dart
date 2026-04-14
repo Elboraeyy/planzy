@@ -28,9 +28,11 @@ class ProfileScreen extends ConsumerWidget {
       body: SafeArea(
         child: settingsAsync.when(
           data: (settings) {
-            final userName = (settings.userName?.isNotEmpty == true) ? settings.userName! : 'Planner';
-            final userEmail = currentUser?.email ?? settings.userEmail ?? '';
-            final userBio = settings.userBio ?? '';
+            final userName = settings.userName.isNotEmpty
+                ? settings.userName
+                : 'Planner';
+            final userEmail = currentUser?.email ?? settings.userEmail;
+            final userBio = settings.userBio;
             final currency = settings.currency;
             final profileImagePath = settings.profileImagePath;
 
@@ -82,89 +84,181 @@ class ProfileScreen extends ConsumerWidget {
                 const Gap(32),
 
                 // Profile Card — big hero section
-                NeoCard(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.all(28),
-                  child: Column(
+                SizedBox(
+                  width: double.infinity,
+                  child: Stack(
+                    clipBehavior: Clip.none,
                     children: [
-                      // Avatar
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.border, width: 4),
-                          boxShadow: const [
-                            BoxShadow(color: AppColors.border, offset: Offset(4, 4)),
-                          ],
-                          image: (profileImagePath != null && File(profileImagePath).existsSync())
-                              ? DecorationImage(
-                                  image: FileImage(File(profileImagePath)),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: (profileImagePath == null || !File(profileImagePath).existsSync())
-                            ? Center(
-                                child: Text(
-                                  userName.isNotEmpty ? userName[0].toUpperCase() : 'P',
-                                  style: const TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.textDark,
+                      NeoCard(
+                            backgroundColor: AppColors.primary,
+                            padding: const EdgeInsets.all(28),
+                            child: Column(
+                              children: [
+                                // Avatar
+                                Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.border,
+                                      width: 4,
+                                    ),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: AppColors.border,
+                                        offset: Offset(4, 4),
+                                      ),
+                                    ],
+                                    image:
+                                        (profileImagePath != null &&
+                                            File(profileImagePath).existsSync())
+                                        ? DecorationImage(
+                                            image: FileImage(
+                                              File(profileImagePath),
+                                            ),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
                                   ),
-                                ),
-                              )
-                            : null,
-                      ).animate().scale(curve: Curves.easeOutBack),
-                      const Gap(20),
+                                  child:
+                                      (profileImagePath == null ||
+                                          !File(profileImagePath).existsSync())
+                                      ? Center(
+                                          child: Text(
+                                            userName.isNotEmpty
+                                                ? userName[0].toUpperCase()
+                                                : 'P',
+                                            style: const TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.w900,
+                                              color: AppColors.textDark,
+                                            ),
+                                          ),
+                                        )
+                                      : null,
+                                ).animate().scale(curve: Curves.easeOutBack),
+                                const Gap(20),
 
-                      // Name
-                      Text(
-                        userName.toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.white,
-                          letterSpacing: -0.5,
-                        ),
-                      ).animate().fadeIn(delay: 100.ms),
-                      
-                      if (userBio.isNotEmpty) ...[
-                        const Gap(8),
-                        Text(
-                          userBio,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.white.withValues(alpha: 0.7),
-                          ),
-                          textAlign: TextAlign.center,
-                        ).animate().fadeIn(delay: 150.ms),
-                      ],
+                                // Name
+                                Text(
+                                  userName.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.white,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ).animate().fadeIn(delay: 100.ms),
 
-                      if (userEmail.isNotEmpty) ...[
-                        const Gap(8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            userEmail,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.white.withValues(alpha: 0.8),
+                                if (userBio.isNotEmpty) ...[
+                                  const Gap(8),
+                                  Text(
+                                    userBio,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ).animate().fadeIn(delay: 150.ms),
+                                ],
+
+                                if (userEmail.isNotEmpty) ...[
+                                  const Gap(8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white.withValues(
+                                        alpha: 0.15,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      userEmail,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                      ),
+                                    ),
+                                  ).animate().fadeIn(delay: 200.ms),
+                                ],
+                              ],
                             ),
-                          ),
-                        ).animate().fadeIn(delay: 200.ms),
-                      ],
+                          )
+                          .animate()
+                          .slideY(begin: 0.15, curve: Curves.easeOutBack)
+                          .fadeIn(),
+
+                      // Edit button - top left corner
+                      Positioned(
+                        top: 12,
+                        left: 12,
+                        child:
+                            GestureDetector(
+                                  onTap: () => context.push('/edit-profile'),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.secondary,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: AppColors.border,
+                                        width: 3,
+                                      ),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: AppColors.border,
+                                          offset: Offset(3, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      LucideIcons.pencil,
+                                      color: AppColors.textDark,
+                                      size: 18,
+                                    ),
+                                  ),
+                                )
+                                .animate()
+                                .slideX(
+                                  begin: -1,
+                                  curve: Curves.easeOutBack,
+                                  delay: const Duration(milliseconds: 150),
+                                )
+                                .fadeIn(),
+                      ),
                     ],
                   ),
-                ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack).fadeIn(),
+                ),
+
+                const Gap(32),
+
+                // MY VAULT - Quick Action
+                _QuickActionTile(
+                      icon: LucideIcons.wallet,
+                      title: 'MY VAULT',
+                      subtitle: 'Manage all your accounts & cards',
+                      color: AppColors.cardYellow,
+                      onTap: () => context.push('/accounts'),
+                      delay: 300,
+                    )
+                    .animate()
+                    .slideY(
+                      begin: 0.15,
+                      curve: Curves.easeOutBack,
+                      delay: const Duration(milliseconds: 300),
+                    )
+                    .fadeIn(),
 
                 const Gap(32),
 
@@ -227,31 +321,235 @@ class ProfileScreen extends ConsumerWidget {
                 const Gap(16),
 
                 _QuickActionTile(
-                  icon: LucideIcons.pencil,
-                  title: 'EDIT PROFILE',
-                  subtitle: 'Change name, photo & bio',
-                  color: AppColors.secondary,
-                  onTap: () => context.push('/edit-profile'),
-                  delay: 500,
-                ),
-                const Gap(12),
-                _QuickActionTile(
-                  icon: LucideIcons.wallet,
-                  title: 'MY VAULT',
-                  subtitle: 'Manage all your accounts & cards',
-                  color: AppColors.cardYellow,
-                  onTap: () => context.push('/accounts'),
-                  delay: 550,
-                ),
-                const Gap(12),
-                _QuickActionTile(
                   icon: LucideIcons.receipt,
                   title: 'TRANSACTION HISTORY',
                   subtitle: 'View all your transactions',
                   color: AppColors.cardBlue,
                   onTap: () => context.push('/transaction-history'),
-                  delay: 600,
+                  delay: 500,
                 ),
+
+                const Gap(32),
+
+                // ABOUT section
+                const Text(
+                  'ABOUT',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+                ).animate().fadeIn(delay: 700.ms),
+                const Gap(16),
+
+                NeoCard(
+                      backgroundColor: AppColors.white,
+                      padding: EdgeInsets.zero,
+                      isInteractive: true,
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                LucideIcons.sparkles,
+                                color: AppColors.textDark,
+                                size: 20,
+                              ),
+                            ),
+                            const Gap(16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'PLANZY',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                  const Gap(2),
+                                  const Text(
+                                    'VERSION 1.0.0',
+                                    style: TextStyle(
+                                      color: AppColors.textLight,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    .animate()
+                    .slideX(
+                      begin: 0.15,
+                      curve: Curves.easeOutBack,
+                      delay: const Duration(milliseconds: 750),
+                    )
+                    .fadeIn(),
+
+                const Gap(12),
+
+                NeoCard(
+                      backgroundColor: AppColors.white,
+                      padding: EdgeInsets.zero,
+                      isInteractive: true,
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.cardYellow,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                LucideIcons.helpCircle,
+                                color: AppColors.textDark,
+                                size: 20,
+                              ),
+                            ),
+                            const Gap(16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'HELP & SUPPORT',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                  const Gap(2),
+                                  const Text(
+                                    'Get help or contact us',
+                                    style: TextStyle(
+                                      color: AppColors.textLight,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              LucideIcons.chevronRight,
+                              color: AppColors.textLight,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    .animate()
+                    .slideX(
+                      begin: 0.15,
+                      curve: Curves.easeOutBack,
+                      delay: const Duration(milliseconds: 800),
+                    )
+                    .fadeIn(),
+
+                const Gap(12),
+
+                NeoCard(
+                      backgroundColor: AppColors.white,
+                      padding: EdgeInsets.zero,
+                      isInteractive: true,
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.cardBlue,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                LucideIcons.shield,
+                                color: AppColors.textDark,
+                                size: 20,
+                              ),
+                            ),
+                            const Gap(16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'PRIVACY POLICY',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                  const Gap(2),
+                                  const Text(
+                                    'Read our privacy policy',
+                                    style: TextStyle(
+                                      color: AppColors.textLight,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              LucideIcons.chevronRight,
+                              color: AppColors.textLight,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    .animate()
+                    .slideX(
+                      begin: 0.15,
+                      curve: Curves.easeOutBack,
+                      delay: const Duration(milliseconds: 850),
+                    )
+                    .fadeIn(),
 
                 const Gap(100),
               ],

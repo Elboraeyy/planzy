@@ -55,7 +55,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
     final currency = settingsAsync.when(
       data: (s) => s.currency,
       loading: () => '',
-      error: (_, __) => '',
+      error: (error, stack) => '',
     );
 
     return Scaffold(

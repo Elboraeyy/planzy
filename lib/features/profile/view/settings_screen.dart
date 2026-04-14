@@ -56,20 +56,18 @@ class SettingsScreen extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 child: Column(
                   children: [
-                    _SettingsTile(
-                      icon: LucideIcons.userCog,
-                      title: 'EDIT PROFILE',
-                      subtitle: 'Name, photo, bio',
-                      iconColor: AppColors.secondary,
-                      onTap: () => context.push('/edit-profile'),
-                    ),
-                    _divider(),
-                    _SettingsTile(
+                        _SettingsTile(
                       icon: LucideIcons.banknote,
                       title: 'MONTHLY INCOME',
-                      subtitle: '${NumberFormat.decimalPattern().format(settings.monthlyIncome ?? 0)} ${settings.currency}',
+                          subtitle:
+                              '${NumberFormat.decimalPattern().format(settings.monthlyIncome)} ${settings.currency}',
                       iconColor: AppColors.cardYellow,
-                      onTap: () => _editIncomeDialog(context, ref, settings.monthlyIncome ?? 0, settings.currency),
+                          onTap: () => _editIncomeDialog(
+                            context,
+                            ref,
+                            settings.monthlyIncome,
+                            settings.currency,
+                          ),
                     ),
                     _divider(),
                     _SettingsTile(
@@ -124,43 +122,6 @@ class SettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack, delay: 200.ms).fadeIn(),
-
-              const Gap(32),
-
-              // ABOUT section
-              const Text('ABOUT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2)),
-              const Gap(16),
-              NeoCard(
-                backgroundColor: AppColors.white,
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    _SettingsTile(
-                      icon: LucideIcons.sparkles,
-                      title: 'PLANZY',
-                      subtitle: 'VERSION 1.0.0',
-                      iconColor: AppColors.primary,
-                      onTap: () {},
-                    ),
-                    _divider(),
-                    _SettingsTile(
-                      icon: LucideIcons.helpCircle,
-                      title: 'HELP & SUPPORT',
-                      subtitle: 'Get help or contact us',
-                      iconColor: AppColors.cardYellow,
-                      onTap: () {},
-                    ),
-                    _divider(),
-                    _SettingsTile(
-                      icon: LucideIcons.shield,
-                      title: 'PRIVACY POLICY',
-                      subtitle: 'Read our privacy policy',
-                      iconColor: AppColors.cardBlue,
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack, delay: 300.ms).fadeIn(),
 
               const Gap(40),
 

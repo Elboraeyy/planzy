@@ -1,51 +1,75 @@
-import 'package:planzy/data/database/isar/isar_service.dart';
-import 'package:planzy/data/database/isar/models/goal_isar.dart' as isar;
-import 'package:planzy/features/goals/data/models/goal.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planzy/core/providers/isar_provider.dart';
+import 'package:planzy/core/providers/auth_provider.dart';
+import 'package:planzy/features/goals/data/models/goal.dart';
 
 class GoalRepository {
-  final IsarService _isarService;
+  final FirebaseFirestore _firestore;
+  final String _userId;
 
-  GoalRepository(this._isarService);
+  GoalRepository(this._firestore, this._userId);
 
+  CollectionReference<Map<String, dynamic>> get _goalsRef =>
+      _firestore.collection('users').doc(_userId).collection('goals');
+
+  /// Get all goals
   Future<List<Goal>> getAll() async {
-    final list = await _isarService.getAllGoals();
-    return list.map((e) => _mapToDomain(e)).toList();
+    final snapshot = await _goalsRef
+        .orderBy('targetDate', descending: false)
+        .get()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to load goals. Please check your internet connection.',
+          ),
+        );
+    return snapshot.docs.map((doc) => Goal.fromJson(doc.data())).toList();
   }
 
+  /// Add a goal
   Future<void> add(Goal goal) async {
-    final isarGoal = _mapToIsar(goal);
-    await _isarService.saveGoal(isarGoal);
+    await _goalsRef
+        .doc(goal.id)
+        .set(goal.toJson())
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to add goal. Please check your internet connection.',
+          ),
+        );
   }
 
+  /// Remove a goal
   Future<void> remove(String id) async {
-    await _isarService.deleteGoal(id);
+    await _goalsRef
+        .doc(id)
+        .delete()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to delete goal. Please check your internet connection.',
+          ),
+        );
   }
 
-  Goal _mapToDomain(isar.GoalIsar e) {
-    return Goal(
-      id: e.uniqueId,
-      title: e.title,
-      targetAmount: e.targetAmount,
-      savedAmount: e.savedAmount,
-      targetDate: e.targetDate,
-      priority: GoalPriority.values[e.priority.index],
-    );
-  }
-
-  isar.GoalIsar _mapToIsar(Goal e) {
-    return isar.GoalIsar()
-      ..uniqueId = e.id
-      ..title = e.title
-      ..targetAmount = e.targetAmount
-      ..savedAmount = e.savedAmount
-      ..targetDate = e.targetDate
-      ..priority = isar.GoalPriority.values[e.priority.index];
+  /// Update saved amount
+  Future<void> updateSavedAmount(String id, double amount) async {
+    await _goalsRef
+        .doc(id)
+        .update({'savedAmount': amount})
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to update goal. Please check your internet connection.',
+          ),
+        );
   }
 }
 
-final goalRepositoryProvider = Provider((ref) {
-  final isarService = ref.watch(isarServiceProvider);
-  return GoalRepository(isarService);
+/// Provider for GoalRepository
+final goalRepositoryProvider = Provider<GoalRepository?>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return null;
+
+  return GoalRepository(FirebaseFirestore.instance, user.uid);
 });

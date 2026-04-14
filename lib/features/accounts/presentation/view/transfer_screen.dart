@@ -79,7 +79,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     final currency = ref.watch(settingsProvider).when(
           data: (s) => s.currency,
           loading: () => '',
-          error: (_, __) => '',
+          error: (error, stack) => '',
         );
 
     return Scaffold(
@@ -308,7 +308,7 @@ class _AccountSelector extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: filteredAccounts.length,
-        separatorBuilder: (_, __) => const Gap(10),
+        separatorBuilder: (context, index) => const Gap(10),
         itemBuilder: (context, index) {
           final account = filteredAccounts[index];
           final isSelected = account.id == selectedId;

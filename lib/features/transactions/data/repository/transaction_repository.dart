@@ -14,12 +14,28 @@ class TransactionRepository {
 
   /// Add or update a transaction
   Future<void> add(Transaction transaction) async {
-    await _transactionsRef.doc(transaction.id).set(transaction.toJson());
+    await _transactionsRef
+        .doc(transaction.id)
+        .set(transaction.toJson())
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to save transaction. Please check your internet connection.',
+          ),
+        );
   }
 
   /// Get all transactions
   Future<List<Transaction>> getAll() async {
-    final snapshot = await _transactionsRef.orderBy('date', descending: true).get();
+    final snapshot = await _transactionsRef
+        .orderBy('date', descending: true)
+        .get()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to load transactions. Please check your internet connection.',
+          ),
+        );
     return snapshot.docs.map((doc) => Transaction.fromJson(doc.data())).toList();
   }
 
@@ -38,7 +54,13 @@ class TransactionRepository {
         .where('date', isGreaterThanOrEqualTo: start.toIso8601String())
         .where('date', isLessThanOrEqualTo: end.toIso8601String())
         .orderBy('date', descending: true)
-        .get();
+        .get()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to load transactions. Please check your internet connection.',
+          ),
+        );
     return snapshot.docs.map((doc) => Transaction.fromJson(doc.data())).toList();
   }
 
@@ -54,7 +76,15 @@ class TransactionRepository {
 
   /// Delete a transaction
   Future<void> remove(String id) async {
-    await _transactionsRef.doc(id).delete();
+    await _transactionsRef
+        .doc(id)
+        .delete()
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Failed to delete transaction. Please check your internet connection.',
+          ),
+        );
   }
 
   /// Get monthly summary

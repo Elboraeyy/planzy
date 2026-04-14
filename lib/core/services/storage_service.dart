@@ -71,12 +71,22 @@ class StorageService {
       final fileName = '${const Uuid().v4()}.jpg';
       final ref = _storage.ref('users/$userId/receipts/$fileName');
 
-      // Upload
+      // Upload with timeout
       final uploadTask = ref.putFile(compressedFile);
-      final snapshot = await uploadTask;
+      final snapshot = await uploadTask.timeout(
+        const Duration(seconds: 15),
+        onTimeout: () => throw Exception(
+          'Upload timed out. Please check your internet connection.',
+        ),
+      );
 
-      // Get download URL
-      return await snapshot.ref.getDownloadURL();
+      // Get download URL with timeout
+      return await snapshot.ref.getDownloadURL().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => throw Exception(
+          'Failed to get download URL. Please check your internet connection.',
+        ),
+      );
     } catch (e) {
       return null;
     }

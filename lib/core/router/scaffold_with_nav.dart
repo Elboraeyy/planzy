@@ -174,8 +174,8 @@ class _NeoNavBar extends StatelessWidget {
             onTap: () => onTap(0),
           ),
           _NavBarItem(
-            icon: LucideIcons.calendarDays,
-            label: 'TIME',
+            icon: LucideIcons.wrench,
+            label: 'TOOLS',
             isSelected: currentIndex == 1,
             onTap: () => onTap(1),
           ),

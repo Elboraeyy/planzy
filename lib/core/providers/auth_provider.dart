@@ -119,6 +119,6 @@ final authCheckCompleteProvider = Provider<bool>((ref) {
   return ref.watch(authStateChangesProvider).when(
         data: (_) => true,
         loading: () => false,
-        error: (_, __) => true,
+        error: (error, stack) => true,
       );
 });

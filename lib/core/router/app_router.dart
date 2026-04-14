@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
 import 'package:planzy/core/router/scaffold_with_nav.dart';
 import 'package:planzy/features/home/view/home_screen.dart';
+import 'package:planzy/features/tools/view/tools_screen.dart';
 import 'package:planzy/features/timeline/view/timeline_screen.dart';
+import 'package:planzy/features/subscriptions/view/subscriptions_screen.dart';
 import 'package:planzy/features/insights/view/insights_screen.dart';
 import 'package:planzy/features/profile/view/profile_screen.dart';
 import 'package:planzy/features/commitments/view/add_commitment_screen.dart';
@@ -20,6 +22,8 @@ import 'package:planzy/features/accounts/presentation/view/accounts_screen.dart'
 import 'package:planzy/features/accounts/presentation/view/add_account_screen.dart';
 import 'package:planzy/features/accounts/presentation/view/transfer_screen.dart';
 import 'package:planzy/features/accounts/data/models/financial_account.dart';
+import 'package:planzy/features/profile/view/settings_screen.dart';
+import 'package:planzy/features/profile/view/edit_profile_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -34,13 +38,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuthenticated = authState.when(
         data: (user) => user != null,
         loading: () => false,
-        error: (_, __) => false,
+        error: (error, stack) => false,
       );
 
       final isAuthCheckComplete = authState.when(
         data: (_) => true,
         loading: () => false,
-        error: (_, __) => true,
+        error: (error, stack) => true,
       );
 
       final isOnAuthRoute = state.matchedLocation == '/login' ||
@@ -103,8 +107,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/timeline',
-                builder: (context, state) => const TimelineScreen(),
+                path: '/tools',
+                builder: (context, state) => const ToolsScreen(),
               ),
             ],
           ),
@@ -163,8 +167,24 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/subscriptions',
+        builder: (context, state) => const SubscriptionsScreen(),
+      ),
+      GoRoute(
+        path: '/timeline',
+        builder: (context, state) => const TimelineScreen(),
+      ),
+      GoRoute(
         path: '/transfer',
         builder: (context, state) => const TransferScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/edit-profile',
+        builder: (context, state) => const EditProfileScreen(),
       ),
     ],
   );

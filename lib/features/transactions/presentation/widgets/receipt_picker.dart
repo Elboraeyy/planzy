@@ -173,7 +173,7 @@ class ReceiptPicker extends ConsumerWidget {
                     ? Image.network(
                         remoteUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
+                    errorBuilder: (context, error, stackTrace) => const Icon(
                           Icons.broken_image,
                           size: 50,
                           color: AppColors.textLight,

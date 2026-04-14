@@ -48,7 +48,11 @@ class _SummaryCardsGrid extends ConsumerWidget {
     final commitmentsAsync = ref.watch(commitmentsProvider);
     final goalsAsync = ref.watch(goalsProvider);
     final settingsAsync = ref.watch(settingsProvider);
-    final currency = settingsAsync.when(data: (s) => s.currency, loading: () => '', error: (_, __) => '');
+    final currency = settingsAsync.when(
+      data: (s) => s.currency,
+      loading: () => '',
+      error: (error, stack) => '',
+    );
 
     return Row(
       children: [
@@ -175,10 +179,10 @@ class _BreakdownChart extends ConsumerWidget {
             );
           },
           loading: () => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator())),
-          error: (_, __) => const SizedBox(height: 200),
+          error: (error, stack) => const SizedBox(height: 200),
         ),
         loading: () => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator())),
-        error: (_, __) => const SizedBox(height: 200),
+        error: (error, stack) => const SizedBox(height: 200),
       ),
     ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack, delay: 200.ms);
   }
@@ -247,7 +251,11 @@ class _CashFlowBarChart extends ConsumerWidget {
               show: true,
               drawVerticalLine: false,
               horizontalInterval: 20,
-              getDrawingHorizontalLine: (val) => FlLine(color: AppColors.white.withOpacity(0.2), strokeWidth: 1, dashArray: [4, 4]),
+                  getDrawingHorizontalLine: (val) => FlLine(
+                    color: AppColors.white.withValues(alpha: 0.2),
+                    strokeWidth: 1,
+                    dashArray: [4, 4],
+                  ),
             ),
             barGroups: [
               _makeGroupData(0, 45),

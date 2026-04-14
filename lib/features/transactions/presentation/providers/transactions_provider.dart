@@ -13,22 +13,22 @@ class TransactionsNotifier extends AsyncNotifier<List<Transaction>> {
   /// Add a new transaction
   Future<void> add(Transaction transaction) async {
     final repo = ref.read(transactionRepositoryProvider);
-    if (repo == null) return;
+    if (repo == null) throw Exception('Repository not available');
 
     await repo.add(transaction);
     // Refresh the list by re-running build()
     ref.invalidateSelf();
-    await future;
+    // Removed await future to prevent hanging
   }
 
   /// Delete a transaction
   Future<void> remove(String id) async {
     final repo = ref.read(transactionRepositoryProvider);
-    if (repo == null) return;
+    if (repo == null) throw Exception('Repository not available');
 
     await repo.remove(id);
     ref.invalidateSelf();
-    await future;
+    // Removed await future to prevent hanging
   }
 }
 

@@ -42,9 +42,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       final settings = ref.read(settingsProvider).value;
       final currentUser = ref.read(currentUserProvider);
       if (settings != null) {
-        _nameController.text = settings.userName ?? '';
-        _bioController.text = settings.userBio ?? '';
-        _emailController.text = currentUser?.email ?? settings.userEmail ?? '';
+        _nameController.text = settings.userName;
+        _bioController.text = settings.userBio;
+        _emailController.text = currentUser?.email ?? settings.userEmail;
         _profileImagePath = settings.profileImagePath;
         setState(() {});
       }

@@ -4,9 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:planzy/core/router/app_router.dart';
 import 'package:planzy/core/theme/app_theme.dart';
-
-import 'package:planzy/data/database/isar/isar_service.dart';
-import 'package:planzy/core/providers/isar_provider.dart';
 import 'package:planzy/firebase_options.dart';
 
 void main() async {
@@ -17,16 +14,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize Isar
-  final isarService = IsarService();
-  await isarService.db;
-
   runApp(
-    ProviderScope(
-      overrides: [
-        isarServiceProvider.overrideWithValue(isarService),
-      ],
-      child: const MyApp(),
+    const ProviderScope(child: MyApp(),
     ),
   );
 }

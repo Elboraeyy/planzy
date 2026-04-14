@@ -5,22 +5,30 @@ import 'package:planzy/features/commitments/data/repository/commitment_repositor
 class CommitmentsNotifier extends AsyncNotifier<List<Commitment>> {
   @override
   Future<List<Commitment>> build() async {
-    return ref.read(commitmentRepositoryProvider).getAll();
+    final repo = ref.read(commitmentRepositoryProvider);
+    if (repo == null) return [];
+    return repo.getAll();
   }
 
   Future<void> addCommitment(Commitment commitment) async {
+    final repo = ref.read(commitmentRepositoryProvider);
+    if (repo == null) throw Exception('Repository not available');
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(commitmentRepositoryProvider).add(commitment);
-      return ref.read(commitmentRepositoryProvider).getAll();
+      await repo.add(commitment);
+      return repo.getAll();
     });
   }
 
   Future<void> removeCommitment(String id) async {
+    final repo = ref.read(commitmentRepositoryProvider);
+    if (repo == null) throw Exception('Repository not available');
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(commitmentRepositoryProvider).remove(id);
-      return ref.read(commitmentRepositoryProvider).getAll();
+      await repo.remove(id);
+      return repo.getAll();
     });
   }
 }

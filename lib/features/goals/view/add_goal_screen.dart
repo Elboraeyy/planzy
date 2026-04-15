@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -60,48 +61,55 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Goal'),
+        title: Text('ADD GOAL', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
         leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
           onPressed: () => context.pop(),
         ),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           children: [
-            const Text('Goal Title', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const Gap(8),
+            Text('Goal Title', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: 1)),
+            Gap(12.h),
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
+              decoration: InputDecoration(
                 hintText: 'e.g., New iPhone 15, Vacation',
-                prefixIcon: Icon(LucideIcons.target),
+                prefixIcon: Icon(LucideIcons.target, size: 20.r),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               ),
               validator: (val) => val == null || val.isEmpty ? 'Required' : null,
             ),
-            const Gap(24),
-            const Text('Target Amount', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const Gap(8),
+            Gap(24.h),
+            Text('Target Amount', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: 1)),
+            Gap(12.h),
             TextFormField(
               controller: _amountController,
               keyboardType: TextInputType.number,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
               decoration: InputDecoration(
                 hintText: '0.00',
-                prefixIcon: const Icon(LucideIcons.banknote),
+                prefixIcon: Icon(LucideIcons.banknote, size: 20.r),
                 suffixText: currency,
+                suffixStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               ),
               validator: (val) => val == null || double.tryParse(val) == null ? 'Invalid amount' : null,
             ),
-            const Gap(24),
-            const Text('Target Date', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const Gap(8),
+            Gap(24.h),
+            Text('Target Date', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: 1)),
+            Gap(12.h),
             TextFormField(
               readOnly: true,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
               decoration: InputDecoration(
                 hintText: '${_targetDate.day}/${_targetDate.month}/${_targetDate.year}',
-                prefixIcon: const Icon(LucideIcons.calendar),
+                prefixIcon: Icon(LucideIcons.calendar, size: 20.r),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               ),
               onTap: () async {
                 final date = await NeoDatePicker.show(
@@ -113,14 +121,16 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                 if (date != null) setState(() => _targetDate = date);
               },
             ),
-             const Gap(24),
-            const Text('Priority', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const Gap(8),
+             Gap(24.h),
+            Text('Priority', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: 1)),
+            Gap(12.h),
             DropdownButtonFormField<GoalPriority>(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(LucideIcons.flame),
+              decoration: InputDecoration(
+                prefixIcon: Icon(LucideIcons.flame, size: 20.r),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               ),
-              initialValue: GoalPriority.medium,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700, color: AppColors.textDark),
+              initialValue: _selectedPriority,
               items: GoalPriority.values.map((GoalPriority priority) {
                 return DropdownMenuItem<GoalPriority>(
                   value: priority,
@@ -131,9 +141,9 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                 if (val != null) setState(() => _selectedPriority = val);
               },
             ),
-            const Gap(40),
+            Gap(40.h),
             NeoButton(
-              text: 'Save Goal',
+              text: 'SAVE GOAL',
               onPressed: _save,
             ).animate().slideY(begin: 1, curve: Curves.easeOutBack),
           ].animate(interval: 50.ms).slideX(begin: 0.1).fadeIn(),

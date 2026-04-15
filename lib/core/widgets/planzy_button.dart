@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 
 class PlanzyButton extends StatelessWidget {
@@ -19,18 +20,18 @@ class PlanzyButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: isSecondary ? AppColors.white : AppColors.primary,
         foregroundColor: isSecondary ? AppColors.textDark : AppColors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 20.h),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
         ),
         elevation: 0,
-        side: isSecondary ? BorderSide(color: AppColors.textDark.withValues(alpha: 0.1)) : null,
+        side: isSecondary ? BorderSide(color: AppColors.textDark.withValues(alpha: 0.1), width: 1.r) : null,
       ),
       onPressed: onPressed,
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 18,
+        style: TextStyle(
+          fontSize: 18.sp,
           fontWeight: FontWeight.bold,
         ),
       ),

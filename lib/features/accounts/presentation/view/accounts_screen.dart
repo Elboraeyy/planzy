@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -46,43 +47,43 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           children: [
             // ═══════ Top Bar ═══════
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 0),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10.r),
                       decoration: BoxDecoration(
                         color: AppColors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border, width: 2),
-                        boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))],
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: AppColors.border, width: 2.r),
+                        boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))],
                       ),
-                      child: const Icon(LucideIcons.arrowLeft, size: 20),
+                      child: Icon(LucideIcons.arrowLeft, size: 20.r),
                     ),
                   ),
-                  const Gap(16),
-                  const Expanded(
+                  Gap(16.w),
+                  Expanded(
                     child: Text(
                       'MY VAULT',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                      style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, letterSpacing: -0.5),
                     ),
                   ),
                   // Privacy toggle
                   GestureDetector(
                     onTap: () => ref.read(privacyModeProvider.notifier).state = !isPrivate,
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10.r),
                       decoration: BoxDecoration(
                         color: isPrivate ? AppColors.primary : AppColors.cardYellow,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border, width: 2),
-                        boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))],
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: AppColors.border, width: 2.r),
+                        boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))],
                       ),
                       child: Icon(
                         isPrivate ? LucideIcons.eyeOff : LucideIcons.eye,
-                        size: 20,
+                        size: 20.r,
                         color: isPrivate ? AppColors.white : AppColors.textDark,
                       ),
                     ),
@@ -91,27 +92,27 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
               ),
             ).animate().slideY(begin: -0.3, curve: Curves.easeOutBack).fadeIn(),
 
-            const Gap(24),
+            Gap(24.h),
 
             // ═══════ Total Balance ═══════
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: NeoCard(
                 backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24.r),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'TOTAL NET WORTH',
                       style: TextStyle(
                         color: Colors.white60,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 2,
                       ),
                     ),
-                    const Gap(8),
+                    Gap(8.h),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.baseline,
                       textBaseline: TextBaseline.alphabetic,
@@ -122,9 +123,9 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               isPrivate ? '• • • • •' : NumberFormat.decimalPattern().format(totalBal),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.white,
-                                fontSize: 38,
+                                fontSize: 38.sp,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: -2,
                               ),
@@ -132,10 +133,10 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                           ),
                         ),
                         if (!isPrivate) ...[
-                          const Gap(8),
+                          Gap(8.w),
                           Text(
                             currency,
-                            style: const TextStyle(color: AppColors.cardYellow, fontSize: 20, fontWeight: FontWeight.w900),
+                            style: TextStyle(color: AppColors.cardYellow, fontSize: 20.sp, fontWeight: FontWeight.w900),
                           ),
                         ],
                       ],
@@ -145,7 +146,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
               ),
             ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack).fadeIn(),
 
-            const Gap(24),
+            Gap(24.h),
 
             // ═══════ Account Cards Carousel ═══════
             accountsAsync.when(
@@ -157,26 +158,26 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(24),
+                            padding: EdgeInsets.all(24.r),
                             decoration: BoxDecoration(
                               color: AppColors.cardYellow,
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.border, width: 3),
-                              boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(4, 4))],
+                              border: Border.all(color: AppColors.border, width: 3.r),
+                              boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))],
                             ),
-                            child: const Icon(LucideIcons.wallet, size: 40, color: AppColors.textDark),
+                            child: Icon(LucideIcons.wallet, size: 40.r, color: AppColors.textDark),
                           ),
-                          const Gap(24),
-                          const Text(
+                          Gap(24.h),
+                          Text(
                             'NO ACCOUNTS YET',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1),
+                            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
                           ),
-                          const Gap(8),
-                          const Text(
+                          Gap(8.h),
+                          Text(
                             'Add your first wallet, bank, or card',
-                            style: TextStyle(color: AppColors.textLight, fontSize: 14, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.textLight, fontSize: 14.sp, fontWeight: FontWeight.w600),
                           ),
-                          const Gap(32),
+                          Gap(32.h),
                           NeoButton(
                             text: 'ADD ACCOUNT',
                             onPressed: () => context.push('/add-account'),
@@ -193,18 +194,18 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                     children: [
                       // Cards header row
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Row(
                           children: [
-                            const Text(
+                            Text(
                               'ACCOUNTS',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
+                              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
                             ),
                             const Spacer(),
                             Text(
                               '${accounts.length}',
-                              style: const TextStyle(
-                                fontSize: 14,
+                              style: TextStyle(
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w900,
                                 color: AppColors.textLight,
                               ),
@@ -212,11 +213,11 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                           ],
                         ),
                       ),
-                      const Gap(16),
+                      Gap(16.h),
 
                       // Carousel
                       SizedBox(
-                        height: 200,
+                        height: 200.h,
                         child: PageView.builder(
                           controller: _cardController,
                           itemCount: accounts.length,
@@ -232,11 +233,11 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         ),
                       ).animate().slideX(begin: 0.15, curve: Curves.easeOutBack).fadeIn(delay: 100.ms),
 
-                      const Gap(24),
+                      Gap(24.h),
 
                       // Action buttons row
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Row(
                           children: [
                             Expanded(
@@ -247,7 +248,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                                 onTap: () => context.push('/add-account'),
                               ),
                             ),
-                            const Gap(12),
+                            Gap(12.w),
                             Expanded(
                               child: _ActionButton(
                                 icon: LucideIcons.arrowLeftRight,
@@ -260,14 +261,14 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         ),
                       ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack, delay: 200.ms).fadeIn(),
 
-                      const Gap(24),
+                      Gap(24.h),
 
                       // Quick list of all accounts
                       Expanded(
                         child: ListView.separated(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
                           itemCount: accounts.length,
-                          separatorBuilder: (context, index) => const Gap(8),
+                          separatorBuilder: (context, index) => Gap(8.h),
                           itemBuilder: (context, index) {
                             final account = accounts[index];
                             return _AccountListTile(
@@ -336,13 +337,13 @@ class _AccountCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        padding: const EdgeInsets.all(24),
+        margin: EdgeInsets.symmetric(horizontal: 6.w),
+        padding: EdgeInsets.all(24.r),
         decoration: BoxDecoration(
           color: _cardColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.border, width: 3),
-          boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(5, 5))],
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColors.border, width: 3.r),
+          boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(5.w, 5.h))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,28 +352,28 @@ class _AccountCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
                     account.type.displayName.toUpperCase(),
-                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
+                    style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
                   ),
                 ),
                 const Spacer(),
                 if (account.isDefault)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
                       color: AppColors.cardYellow,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: AppColors.border, width: 2),
+                      borderRadius: BorderRadius.circular(6.r),
+                      border: Border.all(color: AppColors.border, width: 2.r),
                     ),
-                    child: const Text(
+                    child: Text(
                       'DEFAULT',
-                      style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
+                      style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
                     ),
                   ),
               ],
@@ -381,14 +382,14 @@ class _AccountCard extends StatelessWidget {
             // Account name
             Text(
               account.name.toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
               ),
             ),
-            const Gap(4),
+            Gap(4.h),
             // Balance
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -396,22 +397,22 @@ class _AccountCard extends StatelessWidget {
               children: [
                 Text(
                   isPrivate ? '• • • •' : NumberFormat.decimalPattern().format(account.balance),
-                  style: const TextStyle(color: Colors.white70, fontSize: 28, fontWeight: FontWeight.w900),
+                  style: TextStyle(color: Colors.white70, fontSize: 28.sp, fontWeight: FontWeight.w900),
                 ),
-                const Gap(6),
+                Gap(6.w),
                 if (!isPrivate)
                   Text(
                     currency,
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 16, fontWeight: FontWeight.w900),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 16.sp, fontWeight: FontWeight.w900),
                   ),
               ],
             ),
             // Last 4 digits if card
             if (account.lastFourDigits != null) ...[
-              const Gap(4),
+              Gap(4.h),
               Text(
                 '•••• •••• •••• ${account.lastFourDigits}',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 13, fontWeight: FontWeight.w700, letterSpacing: 2),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 13.sp, fontWeight: FontWeight.w700, letterSpacing: 2),
               ),
             ],
           ],
@@ -443,13 +444,13 @@ class _ActionButton extends StatelessWidget {
       backgroundColor: color,
       isInteractive: true,
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: 16.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: AppColors.textDark),
-          const Gap(8),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1)),
+          Icon(icon, size: 20.r, color: AppColors.textDark),
+          Gap(8.w),
+          Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: 1)),
         ],
       ),
     );
@@ -478,40 +479,40 @@ class _AccountListTile extends StatelessWidget {
       backgroundColor: AppColors.white,
       isInteractive: true,
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.border, width: 2),
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(color: AppColors.border, width: 2.r),
             ),
             child: Text(
               account.iconEmoji ?? account.type.icon,
-              style: const TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20.sp),
             ),
           ),
-          const Gap(14),
+          Gap(14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   account.name,
-                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp),
                 ),
                 Text(
                   account.type.displayName,
-                  style: const TextStyle(color: AppColors.textLight, fontSize: 11, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: AppColors.textLight, fontSize: 11.sp, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
           ),
           Text(
             isPrivate ? '• • •' : '${NumberFormat.compact().format(account.balance)} $currency',
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
           ),
         ],
       ),

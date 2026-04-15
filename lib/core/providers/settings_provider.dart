@@ -5,7 +5,7 @@ import 'package:planzy/features/settings/data/repository/settings_repository.dar
 class SettingsNotifier extends AsyncNotifier<UserSettings> {
   @override
   Future<UserSettings> build() async {
-    final repo = ref.read(settingsRepositoryProvider);
+    final repo = ref.watch(settingsRepositoryProvider);
     if (repo == null) {
       return UserSettings(id: 'temp', userId: '');
     }

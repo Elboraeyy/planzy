@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -21,62 +22,62 @@ class ToolsScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
           children: [
             // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'TOOLBOX',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 28.sp,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -1,
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
                     color: AppColors.secondary,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border, width: 3),
-                    boxShadow: const [
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.border, width: 3.r),
+                    boxShadow: [
                       BoxShadow(
                         color: AppColors.border,
-                        offset: Offset(4, 4),
+                        offset: Offset(4.w, 4.h),
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     LucideIcons.wrench,
                     color: AppColors.textDark,
-                    size: 22,
+                    size: 22.r,
                   ),
                 ).animate().slideX(begin: 1, curve: Curves.easeOutBack),
               ],
             ),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Quick Stats Banner
             NeoCard(
               backgroundColor: AppColors.primary,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.r),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: EdgeInsets.all(14.r),
                     decoration: BoxDecoration(
                       color: AppColors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
-                    child: const Text(
+                    child: Text(
                       '🔄',
-                      style: TextStyle(fontSize: 28),
+                      style: TextStyle(fontSize: 28.sp),
                     ),
                   ),
-                  const Gap(16),
+                  Gap(16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,17 +85,17 @@ class ToolsScreen extends ConsumerWidget {
                         Text(
                           '${activeSubs.length} ACTIVE SUBS',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w900,
                             color: AppColors.white.withValues(alpha: 0.7),
                             letterSpacing: 1,
                           ),
                         ),
-                        const Gap(4),
+                        Gap(4.h),
                         Text(
                           '${NumberFormat.compact().format(monthlyCost)} / mo',
-                          style: const TextStyle(
-                            fontSize: 24,
+                          style: TextStyle(
+                            fontSize: 24.sp,
                             fontWeight: FontWeight.w900,
                             color: AppColors.white,
                             letterSpacing: -1,
@@ -106,7 +107,7 @@ class ToolsScreen extends ConsumerWidget {
                   Icon(
                     LucideIcons.arrowRight,
                     color: AppColors.white.withValues(alpha: 0.5),
-                    size: 22,
+                    size: 22.r,
                   ),
                 ],
               ),
@@ -115,20 +116,20 @@ class ToolsScreen extends ConsumerWidget {
                 .slideY(begin: 0.15, curve: Curves.easeOutBack)
                 .fadeIn(),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Section label
-            const Text(
+            Text(
               'YOUR TOOLS',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 2,
                 color: AppColors.textLight,
               ),
             ).animate().fadeIn(delay: 200.ms),
 
-            const Gap(16),
+            Gap(16.h),
 
             // Tools Grid
             Row(
@@ -145,7 +146,7 @@ class ToolsScreen extends ConsumerWidget {
                     delay: 300,
                   ),
                 ),
-                const Gap(16),
+                Gap(16.w),
                 // Timeline Tool — preserved from old tab
                 Expanded(
                   child: _ToolCard(
@@ -160,7 +161,7 @@ class ToolsScreen extends ConsumerWidget {
               ],
             ),
 
-            const Gap(16),
+            Gap(16.h),
 
             // Second row — coming soon tools
             Row(
@@ -176,7 +177,7 @@ class ToolsScreen extends ConsumerWidget {
                     delay: 500,
                   ),
                 ),
-                const Gap(16),
+                Gap(16.w),
                 Expanded(
                   child: _ToolCard(
                     emoji: '🧾',
@@ -191,12 +192,12 @@ class ToolsScreen extends ConsumerWidget {
               ],
             ),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Upcoming Renewals Section
             _UpcomingRenewalsSection(),
 
-            const Gap(100),
+            Gap(100.h),
           ],
         ),
       ),
@@ -214,16 +215,16 @@ class _UpcomingRenewalsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'UPCOMING RENEWALS',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 14.sp,
             fontWeight: FontWeight.w900,
             letterSpacing: 2,
             color: AppColors.textLight,
           ),
         ).animate().fadeIn(delay: 700.ms),
-        const Gap(16),
+        Gap(16.h),
         ...upcoming.asMap().entries.map((entry) {
           final index = entry.key;
           final sub = entry.value;
@@ -231,49 +232,49 @@ class _UpcomingRenewalsSection extends ConsumerWidget {
               sub.nextRenewalDate.difference(DateTime.now()).inDays;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: 12.h),
             child: NeoCard(
               backgroundColor: AppColors.white,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               isInteractive: true,
               onTap: () => context.push('/subscriptions'),
               child: Row(
                 children: [
                   Container(
-                    width: 44,
-                    height: 44,
+                    width: 44.r,
+                    height: 44.r,
                     decoration: BoxDecoration(
                       color: AppColors.cardYellow.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       border:
-                          Border.all(color: AppColors.border, width: 2),
+                          Border.all(color: AppColors.border, width: 2.r),
                     ),
                     child: Center(
                       child: Text(
                         sub.category.emoji,
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 20.sp),
                       ),
                     ),
                   ),
-                  const Gap(12),
+                  Gap(12.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           sub.name.toUpperCase(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w900,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             letterSpacing: -0.5,
                           ),
                         ),
-                        const Gap(2),
+                        Gap(2.h),
                         Text(
                           DateFormat('dd MMM').format(sub.nextRenewalDate),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textLight,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -281,22 +282,22 @@ class _UpcomingRenewalsSection extends ConsumerWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
                       color: daysLeft <= 2
                           ? AppColors.primary
                           : AppColors.cardYellow,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       border:
-                          Border.all(color: AppColors.border, width: 2),
+                          Border.all(color: AppColors.border, width: 2.r),
                     ),
                     child: Text(
                       daysLeft <= 0 ? 'TODAY' : '${daysLeft}d',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         fontWeight: FontWeight.w900,
                         color: daysLeft <= 2
                             ? AppColors.white
@@ -346,7 +347,7 @@ class _ToolCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return NeoCard(
       backgroundColor: color,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       isInteractive: !isComingSoon,
       onTap: isComingSoon ? null : onTap,
       child: Column(
@@ -356,32 +357,32 @@ class _ToolCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10.r),
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border, width: 2),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.border, width: 2.r),
                 ),
                 child: Text(
                   emoji,
-                  style: const TextStyle(fontSize: 22),
+                  style: TextStyle(fontSize: 22.sp),
                 ),
               ),
               if (badgeCount != null && badgeCount! > 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 4.h,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.border, width: 2),
+                    borderRadius: BorderRadius.circular(10.r),
+                    border: Border.all(color: AppColors.border, width: 2.r),
                   ),
                   child: Text(
                     '$badgeCount',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: TextStyle(
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w900,
                       color: AppColors.white,
                     ),
@@ -389,18 +390,18 @@ class _ToolCard extends StatelessWidget {
                 ),
               if (isComingSoon)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 3,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 6.w,
+                    vertical: 3.h,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.textDark,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(6.r),
                   ),
-                  child: const Text(
+                  child: Text(
                     'SOON',
                     style: TextStyle(
-                      fontSize: 8,
+                      fontSize: 8.sp,
                       fontWeight: FontWeight.w900,
                       color: AppColors.white,
                       letterSpacing: 1,
@@ -409,11 +410,11 @@ class _ToolCard extends StatelessWidget {
                 ),
             ],
           ),
-          const Gap(16),
+          Gap(16.h),
           Text(
             title,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w900,
               letterSpacing: -0.5,
               color: isComingSoon
@@ -421,11 +422,11 @@ class _ToolCard extends StatelessWidget {
                   : AppColors.textDark,
             ),
           ),
-          const Gap(4),
+          Gap(4.h),
           Text(
             subtitle,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 11.sp,
               fontWeight: FontWeight.w700,
               color: isComingSoon
                   ? AppColors.textLight.withValues(alpha: 0.5)

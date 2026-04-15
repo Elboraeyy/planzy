@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 
 class NeoCard extends StatefulWidget {
   final Widget child;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
   final Color backgroundColor;
   final bool isInteractive;
   final VoidCallback? onTap;
@@ -11,7 +12,7 @@ class NeoCard extends StatefulWidget {
   const NeoCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(24),
+    this.padding,
     this.backgroundColor = AppColors.white,
     this.isInteractive = false,
     this.onTap,
@@ -46,7 +47,7 @@ class _NeoCardState extends State<NeoCard> {
   @override
   Widget build(BuildContext context) {
     // Standard unpressed shadow offset
-    const double shadowOffset = 6.0;
+    final double shadowOffset = 6.0.r;
 
     final card = GestureDetector(
       onTapDown: _handleTapDown,
@@ -56,14 +57,14 @@ class _NeoCardState extends State<NeoCard> {
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeOutBack,
         transform: Matrix4.translationValues(
-          _isPressed ? shadowOffset - 2 : 0, 
-          _isPressed ? shadowOffset - 2 : 0, 
+          _isPressed ? shadowOffset - 2.r : 0, 
+          _isPressed ? shadowOffset - 2.r : 0, 
           0
         ),
         decoration: BoxDecoration(
           color: widget.backgroundColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border, width: 3),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: AppColors.border, width: 3.r),
           boxShadow: [
             BoxShadow(
               color: AppColors.border,
@@ -75,7 +76,7 @@ class _NeoCardState extends State<NeoCard> {
           ],
         ),
         child: Padding(
-          padding: widget.padding,
+          padding: widget.padding ?? EdgeInsets.all(24.r),
           child: widget.child,
         ),
       ),

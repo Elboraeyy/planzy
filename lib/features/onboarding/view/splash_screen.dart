@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/core/theme/app_colors.dart';
@@ -52,20 +54,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           children: [
             // The "P" logo container
             Container(
-              width: 120,
-              height: 120,
+              width: 120.r,
+              height: 120.r,
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: AppColors.border, width: 4),
-                boxShadow: const [
+                borderRadius: BorderRadius.circular(30.r),
+                border: Border.all(color: AppColors.border, width: 4.r),
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.border,
-                    offset: Offset(8, 8),
+                    offset: Offset(8.w, 8.h),
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.r),
               child: Image.asset('assets/images/icon.png', fit: BoxFit.contain),
             )
             .animate()
@@ -78,13 +80,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             .then()
             .shimmer(duration: 1200.ms),
 
-            const SizedBox(height: 48),
+            Gap(48.h),
 
-            const Text(
+            Text(
               'PLANZY',
               style: TextStyle(
                 color: AppColors.white,
-                fontSize: 40,
+                fontSize: 40.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
               ),

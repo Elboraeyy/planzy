@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
@@ -27,9 +28,9 @@ class ScaffoldWithNav extends StatelessWidget {
         children: [
           navigationShell,
           Positioned(
-            left: 20,
-            right: 20,
-            bottom: 30,
+            left: 20.w,
+            right: 20.w,
+            bottom: 30.h,
             child: _NeoNavBar(
               currentIndex: navigationShell.currentIndex,
               onTap: _goBranch,
@@ -48,29 +49,29 @@ class ScaffoldWithNav extends StatelessWidget {
       elevation: 0,
       builder: (context) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.background,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-            border: Border(top: BorderSide(color: AppColors.border, width: 4)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+            border: Border(top: BorderSide(color: AppColors.border, width: 4.r)),
           ),
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 40,
-                height: 6,
+                width: 40.w,
+                height: 6.h,
                 decoration: BoxDecoration(
                   color: AppColors.border,
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(3.r),
                 ),
               ),
-              const Gap(32),
-              const Text(
+              Gap(32.h),
+              Text(
                 "WHAT'S NEW?",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1),
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
               ),
-              const Gap(24),
+              Gap(24.h),
               Row(
                 children: [
                   Expanded(
@@ -80,17 +81,17 @@ class ScaffoldWithNav extends StatelessWidget {
                         context.pop();
                         context.push('/add-commitment');
                       },
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: const Column(
+                      padding: EdgeInsets.symmetric(vertical: 24.h),
+                      child: Column(
                         children: [
-                          Icon(LucideIcons.repeat, size: 32, color: AppColors.textDark),
-                          Gap(12),
-                          Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                          Icon(LucideIcons.repeat, size: 32.r, color: AppColors.textDark),
+                          Gap(12.h),
+                          Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
                         ],
                       ),
                     ),
                   ),
-                  const Gap(16),
+                  Gap(16.w),
                   Expanded(
                     child: NeoCard(
                       backgroundColor: AppColors.secondary,
@@ -98,19 +99,19 @@ class ScaffoldWithNav extends StatelessWidget {
                         context.pop();
                         context.push('/add-goal');
                       },
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: const Column(
+                      padding: EdgeInsets.symmetric(vertical: 24.h),
+                      child: Column(
                         children: [
-                          Icon(LucideIcons.target, size: 32, color: AppColors.textDark),
-                          Gap(12),
-                          Text('GOAL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                          Icon(LucideIcons.target, size: 32.r, color: AppColors.textDark),
+                          Gap(12.h),
+                          Text('GOAL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
                         ],
                       ),
                     ),
                   ),
                 ],
               ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack),
-              const Gap(16),
+              Gap(16.h),
               // New Transaction button
               NeoCard(
                 backgroundColor: AppColors.cardBlue,
@@ -118,17 +119,17 @@ class ScaffoldWithNav extends StatelessWidget {
                   context.pop();
                   context.push('/add-transaction');
                 },
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: EdgeInsets.symmetric(vertical: 20.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(LucideIcons.wallet, size: 28, color: AppColors.textDark),
-                    Gap(12),
-                    Text('EXPENSE / INCOME', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                  children: [
+                    Icon(LucideIcons.wallet, size: 28.r, color: AppColors.textDark),
+                    Gap(12.w),
+                    Text('EXPENSE / INCOME', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
                   ],
                 ),
               ).animate().slideY(begin: 0.3, delay: 100.ms, curve: Curves.easeOutBack),
-              const Gap(24),
+              Gap(24.h),
             ],
           ),
         );
@@ -151,19 +152,19 @@ class _NeoNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 80.h,
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.border, width: 3),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(24.r),
+        border: Border.all(color: AppColors.border, width: 3.r),
+        boxShadow: [
           BoxShadow(
             color: AppColors.border,
-            offset: Offset(0, 6),
+            offset: Offset(0, 6.h),
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -223,14 +224,14 @@ class _NavBarItem extends StatelessWidget {
           Icon(
             icon,
             color: isSelected ? AppColors.primary : AppColors.textLight,
-            size: isSelected ? 28 : 24,
+            size: isSelected ? 28.r : 24.r,
           ).animate(target: isSelected ? 1 : 0).scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), curve: Curves.easeOutBack),
-          const Gap(4),
+          Gap(4.h),
           if (isSelected)
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 10,
+              style: TextStyle(
+                fontSize: 10.sp,
                 fontWeight: FontWeight.w900,
                 color: AppColors.primary,
                 letterSpacing: -0.5,
@@ -264,21 +265,21 @@ class _CentralAddButtonState extends State<_CentralAddButton> {
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: 100.ms,
-        transform: Matrix4.translationValues(0, _isPressed ? 0 : -24, 0),
-        padding: const EdgeInsets.all(16),
+        transform: Matrix4.translationValues(0, _isPressed ? 0 : -24.h, 0),
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: AppColors.primary,
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.border, width: 3),
+          border: Border.all(color: AppColors.border, width: 3.r),
           boxShadow: [
             if (!_isPressed)
-              const BoxShadow(
+              BoxShadow(
                 color: AppColors.border,
-                offset: Offset(0, 6),
+                offset: Offset(0, 6.h),
               ),
           ],
         ),
-        child: const Icon(LucideIcons.plus, color: AppColors.white, size: 32),
+        child: Icon(LucideIcons.plus, color: AppColors.white, size: 32.r),
       ),
     );
   }

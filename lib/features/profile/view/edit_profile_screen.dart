@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -93,15 +94,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Material(
             color: Colors.transparent,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: NeoCard(
                 backgroundColor: AppColors.background,
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24.r),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('CHOOSE PHOTO', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-                    const Gap(24),
+                    Text('CHOOSE PHOTO', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900)),
+                    Gap(24.h),
                     Row(
                       children: [
                         Expanded(
@@ -112,7 +113,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             onTap: () => Navigator.pop(ctx, ImageSource.camera),
                           ),
                         ),
-                        const Gap(16),
+                        Gap(16.w),
                         Expanded(
                           child: _ImageSourceOption(
                             icon: LucideIcons.image,
@@ -123,7 +124,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                       ],
                     ),
-                    const Gap(16),
+                    Gap(16.h),
                     if (_profileImagePath != null)
                       GestureDetector(
                         onTap: () {
@@ -135,14 +136,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         },
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 14.h),
                           decoration: BoxDecoration(
                             color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.red, width: 2),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: Colors.red, width: 2.r),
                           ),
-                          child: const Center(
-                            child: Text('REMOVE PHOTO', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 14)),
+                          child: Center(
+                            child: Text('REMOVE PHOTO', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 14.sp)),
                           ),
                         ),
                       ),
@@ -198,13 +199,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const CircularProgressIndicator(color: AppColors.primary),
-                    const Gap(24),
-                    const Text('SAVING CHANGES...', style: TextStyle(fontWeight: FontWeight.w900)),
+                    Gap(24.h),
+                    Text('SAVING CHANGES...', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
                   ],
                 ),
               )
             : ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
                 children: [
                   // Header
                   Row(
@@ -215,26 +216,26 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           GestureDetector(
                             onTap: () => context.pop(),
                             child: Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12.r),
                               decoration: BoxDecoration(
                                 color: AppColors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.border, width: 3),
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(color: AppColors.border, width: 3.r),
                               ),
-                              child: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20),
+                              child: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20.r),
                             ),
                           ),
-                          const Gap(16),
-                          const Text(
+                          Gap(16.w),
+                          Text(
                             'EDIT PROFILE',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -1),
+                            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
                           ),
                         ],
                       ),
                     ],
                   ).animate().fadeIn(),
 
-                  const Gap(40),
+                  Gap(40.h),
 
                   // Avatar Section
                   Center(
@@ -244,14 +245,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         alignment: Alignment.bottomRight,
                         children: [
                           Container(
-                            width: 130,
-                            height: 130,
+                            width: 130.r,
+                            height: 130.r,
                             decoration: BoxDecoration(
                               color: AppColors.secondary,
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.border, width: 4),
-                              boxShadow: const [
-                                BoxShadow(color: AppColors.border, offset: Offset(5, 5)),
+                              border: Border.all(color: AppColors.border, width: 4.r),
+                              boxShadow: [
+                                BoxShadow(color: AppColors.border, offset: Offset(5.w, 5.h)),
                               ],
                               image: hasImage
                                   ? DecorationImage(
@@ -264,94 +265,94 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 ? Center(
                                     child: Text(
                                       displayName[0].toUpperCase(),
-                                      style: const TextStyle(fontSize: 52, fontWeight: FontWeight.w900, color: AppColors.textDark),
+                                      style: TextStyle(fontSize: 52.sp, fontWeight: FontWeight.w900, color: AppColors.textDark),
                                     ),
                                   )
                                 : null,
                           ),
                           Container(
-                            padding: const EdgeInsets.all(10),
+                            padding: EdgeInsets.all(10.r),
                             decoration: BoxDecoration(
                               color: AppColors.cardYellow,
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.border, width: 3),
-                              boxShadow: const [
-                                BoxShadow(color: AppColors.border, offset: Offset(2, 2)),
+                              border: Border.all(color: AppColors.border, width: 3.r),
+                              boxShadow: [
+                                BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
                               ],
                             ),
-                            child: const Icon(LucideIcons.camera, size: 18, color: AppColors.textDark),
+                            child: Icon(LucideIcons.camera, size: 18.r, color: AppColors.textDark),
                           ),
                         ],
                       ).animate().scale(curve: Curves.easeOutBack),
                     ),
                   ),
-                  const Gap(8),
+                  Gap(8.h),
                   Center(
-                    child: const Text(
+                    child: Text(
                       'TAP TO CHANGE PHOTO',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
+                      style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
                     ).animate().fadeIn(delay: 200.ms),
                   ),
 
-                  const Gap(40),
+                  Gap(40.h),
 
                   // Form Fields
                   _buildFieldLabel('YOUR NAME', LucideIcons.user, 300),
-                  const Gap(12),
+                  Gap(12.h),
                   TextField(
                     controller: _nameController,
                     onChanged: (_) => _markChanged(),
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-                    decoration: const InputDecoration(
+                    style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900),
+                    decoration: InputDecoration(
                       hintText: 'What should we call you?',
-                      contentPadding: EdgeInsets.all(20),
+                      contentPadding: EdgeInsets.all(20.r),
                     ),
                   ).animate().slideX(begin: 0.1, delay: 300.ms, curve: Curves.easeOutBack).fadeIn(),
 
-                  const Gap(28),
+                  Gap(28.h),
 
                   _buildFieldLabel('BIO', LucideIcons.alignLeft, 400),
-                  const Gap(12),
+                  Gap(12.h),
                   TextField(
                     controller: _bioController,
                     onChanged: (_) => _markChanged(),
                     maxLines: 3,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    decoration: const InputDecoration(
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                    decoration: InputDecoration(
                       hintText: 'Write something about yourself...',
-                      contentPadding: EdgeInsets.all(20),
+                      contentPadding: EdgeInsets.all(20.r),
                     ),
                   ).animate().slideX(begin: 0.1, delay: 400.ms, curve: Curves.easeOutBack).fadeIn(),
 
-                  const Gap(28),
+                  Gap(28.h),
 
                   _buildFieldLabel('EMAIL', LucideIcons.mail, 500),
-                  const Gap(12),
+                  Gap(12.h),
                   TextField(
                     controller: _emailController,
                     enabled: false, // Email comes from Firebase, read-only
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textLight),
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: AppColors.textLight),
                     decoration: InputDecoration(
                       hintText: 'Your email',
-                      contentPadding: const EdgeInsets.all(20),
+                      contentPadding: EdgeInsets.all(20.r),
                       suffixIcon: Container(
-                        margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        child: const Icon(LucideIcons.lock, size: 16, color: AppColors.textLight),
+                        margin: EdgeInsets.only(right: 12.w),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        child: Icon(LucideIcons.lock, size: 16.r, color: AppColors.textLight),
                       ),
                     ),
                   ).animate().slideX(begin: 0.1, delay: 500.ms, curve: Curves.easeOutBack).fadeIn(),
 
-                  const Gap(12),
+                  Gap(12.h),
                   Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: const Text(
+                    padding: EdgeInsets.only(left: 4.w),
+                    child: Text(
                       'Email is managed by Firebase and cannot be changed here.',
-                      style: TextStyle(fontSize: 11, color: AppColors.textLight, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 11.sp, color: AppColors.textLight, fontWeight: FontWeight.w600),
                     ).animate().fadeIn(delay: 550.ms),
                   ),
 
-                  const Gap(48),
+                  Gap(48.h),
 
                   // Save Button
                   NeoButton(
@@ -361,7 +362,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     onPressed: _save,
                   ).animate().slideY(begin: 0.3, delay: 600.ms, curve: Curves.easeOutBack).fadeIn(),
 
-                  const Gap(100),
+                  Gap(100.h),
                 ],
               ),
       ),
@@ -371,11 +372,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget _buildFieldLabel(String label, IconData icon, int delayMs) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.textLight),
-        const Gap(8),
+        Icon(icon, size: 16.r, color: AppColors.textLight),
+        Gap(8.w),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2),
+          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2),
         ),
       ],
     ).animate().fadeIn(delay: Duration(milliseconds: delayMs));
@@ -401,12 +402,12 @@ class _ImageSourceOption extends StatelessWidget {
       backgroundColor: color,
       isInteractive: true,
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: 24),
+      padding: EdgeInsets.symmetric(vertical: 24.h),
       child: Column(
         children: [
-          Icon(icon, size: 28, color: AppColors.textDark),
-          const Gap(8),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
+          Icon(icon, size: 28.r, color: AppColors.textDark),
+          Gap(8.h),
+          Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp)),
         ],
       ),
     );

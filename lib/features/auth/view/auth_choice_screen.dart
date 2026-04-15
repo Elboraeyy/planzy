@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:planzy/core/theme/app_colors.dart';
@@ -14,53 +15,53 @@ class AuthChoiceScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(32.0),
+          padding: EdgeInsets.all(32.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Big Branding
-              const Text(
+              Text(
                 'YOUR FINANCIAL',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                   color: AppColors.textLight,
                 ),
               ).animate().fadeIn().slideY(begin: 0.3),
-              const Text(
+              Text(
                 'FUTURE STARTS',
                 style: TextStyle(
-                  fontSize: 48,
+                  fontSize: 48.sp,
                   fontWeight: FontWeight.w900,
                   height: 1.0,
                 ),
               ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.3),
-              const Text(
+              Text(
                 'HERE',
                 style: TextStyle(
-                  fontSize: 48,
+                  fontSize: 48.sp,
                   fontWeight: FontWeight.w900,
                   height: 1.0,
                   color: AppColors.primary,
                 ),
               ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.3),
 
-              const Gap(80),
+              Gap(80.h),
 
               // Choice 1: Sign Up
               Column(
                 children: [
-                  const Text(
+                  Text(
                     'NEW TO PLANZY?',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       letterSpacing: 1,
                       color: AppColors.textLight,
                     ),
                   ),
-                  const Gap(16),
+                  Gap(16.h),
                   NeoButton(
                     onPressed: () => context.push('/signup'),
                     text: 'START NEW JOURNEY',
@@ -69,21 +70,21 @@ class AuthChoiceScreen extends StatelessWidget {
                 ],
               ).animate().scale(delay: 600.ms, curve: Curves.elasticOut),
 
-              const Gap(40),
+              Gap(40.h),
 
               // Choice 2: Login
               Column(
                 children: [
-                  const Text(
+                  Text(
                     'ALREADY A MEMBER?',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       letterSpacing: 1,
                       color: AppColors.textLight,
                     ),
                   ),
-                  const Gap(16),
+                  Gap(16.h),
                   NeoButton(
                     onPressed: () => context.push('/login'),
                     text: 'WELCOME ME BACK',
@@ -91,13 +92,13 @@ class AuthChoiceScreen extends StatelessWidget {
                 ],
               ).animate().scale(delay: 800.ms, curve: Curves.elasticOut),
 
-              const Gap(60),
+              Gap(60.h),
 
-              const Text(
+              Text(
                 'BY JOINING, YOU AGREE TO MASTER YOUR MONEY.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 10.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textLight,
                   letterSpacing: 1,

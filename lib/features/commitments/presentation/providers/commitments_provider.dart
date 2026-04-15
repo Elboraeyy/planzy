@@ -5,7 +5,7 @@ import 'package:planzy/features/commitments/data/repository/commitment_repositor
 class CommitmentsNotifier extends AsyncNotifier<List<Commitment>> {
   @override
   Future<List<Commitment>> build() async {
-    final repo = ref.read(commitmentRepositoryProvider);
+    final repo = ref.watch(commitmentRepositoryProvider);
     if (repo == null) return [];
     return repo.getAll();
   }

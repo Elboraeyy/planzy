@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -172,45 +173,45 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Account' : 'Add Account'),
+        title: Text(isEditing ? 'EDIT ACCOUNT' : 'ADD ACCOUNT', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
         leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
           onPressed: () => context.pop(),
         ),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           children: [
             // ═══════ Account Type Selector ═══════
-            const Text('TYPE', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-            const Gap(12),
+            Text('TYPE', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+            Gap(12.h),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 8.w,
+              runSpacing: 8.h,
               children: AccountType.values.map((type) {
                 final isSelected = _selectedType == type;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedType = type),
                   child: AnimatedContainer(
                     duration: 200.ms,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.primary : AppColors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border, width: 2),
-                      boxShadow: isSelected ? const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))] : null,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: AppColors.border, width: 2.r),
+                      boxShadow: isSelected ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))] : null,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(type.icon, style: const TextStyle(fontSize: 18)),
-                        const Gap(6),
+                        Text(type.icon, style: TextStyle(fontSize: 18.sp)),
+                        Gap(6.w),
                         Text(
                           type.displayName.toUpperCase(),
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
                             color: isSelected ? AppColors.white : AppColors.textDark,
@@ -223,11 +224,11 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               }).toList(),
             ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.1),
 
-            const Gap(28),
+            Gap(28.h),
 
             // ═══════ Account Name ═══════
-            const Text('NAME', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-            const Gap(12),
+            Text('NAME', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+            Gap(12.h),
             _NeoTextField(
               controller: _nameController,
               hint: 'e.g. Vodafone Cash, NBE Visa',
@@ -235,11 +236,11 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
             ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
 
-            const Gap(28),
+            Gap(28.h),
 
             // ═══════ Balance ═══════
-            const Text('CURRENT BALANCE', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-            const Gap(12),
+            Text('CURRENT BALANCE', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+            Gap(12.h),
             _NeoTextField(
               controller: _balanceController,
               hint: '0.00',
@@ -252,14 +253,14 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               },
             ).animate().fadeIn(delay: 300.ms).slideX(begin: 0.1),
 
-            const Gap(28),
+            Gap(28.h),
 
             // ═══════ Card Color ═══════
-            const Text('CARD COLOR', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-            const Gap(12),
+            Text('CARD COLOR', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+            Gap(12.h),
             Wrap(
-              spacing: 10,
-              runSpacing: 10,
+              spacing: 10.w,
+              runSpacing: 10.h,
               children: _colorChoices.map((hex) {
                 final isSelected = _selectedColor == hex;
                 final color = hex != null
@@ -269,8 +270,8 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                 return GestureDetector(
                   onTap: () => setState(() => _selectedColor = hex),
                   child: Container(
-                    width: 38,
-                    height: 38,
+                    width: 38.r,
+                    height: 38.r,
                     decoration: BoxDecoration(
                       color: hex != null ? color : null,
                       gradient: hex == null
@@ -279,42 +280,42 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected ? AppColors.cardYellow : AppColors.border,
-                        width: isSelected ? 4 : 2,
+                        width: isSelected ? 4.r : 2.r,
                       ),
-                      boxShadow: isSelected ? const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))] : null,
+                      boxShadow: isSelected ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))] : null,
                     ),
                     child: hex == null
-                        ? const Center(child: Text('A', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12)))
+                        ? Center(child: Text('A', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12.sp)))
                         : null,
                   ),
                 );
               }).toList(),
             ).animate().fadeIn(delay: 400.ms),
 
-            const Gap(28),
+            Gap(28.h),
 
             // ═══════ Default Toggle ═══════
             GestureDetector(
               onTap: () => setState(() => _isDefault = !_isDefault),
               child: NeoCard(
                 backgroundColor: _isDefault ? AppColors.cardYellow : AppColors.white,
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.star, size: 20, color: AppColors.textDark),
-                    const Gap(12),
-                    const Expanded(
-                      child: Text('SET AS DEFAULT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1)),
+                    Icon(LucideIcons.star, size: 20.r, color: AppColors.textDark),
+                    Gap(12.w),
+                    Expanded(
+                      child: Text('SET AS DEFAULT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: 1)),
                     ),
                     Container(
-                      width: 24, height: 24,
+                      width: 24.r, height: 24.r,
                       decoration: BoxDecoration(
                         color: _isDefault ? AppColors.primary : AppColors.background,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: AppColors.border, width: 2),
+                        borderRadius: BorderRadius.circular(4.r),
+                        border: Border.all(color: AppColors.border, width: 2.r),
                       ),
                       child: _isDefault
-                          ? const Icon(Icons.check, size: 16, color: AppColors.white)
+                          ? Icon(Icons.check, size: 16.r, color: AppColors.white)
                           : null,
                     ),
                   ],
@@ -322,35 +323,35 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               ),
             ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
 
-            const Gap(28),
+            Gap(28.h),
 
             // ═══════ Optional Details Toggle ═══════
             GestureDetector(
               onTap: () => setState(() => _showDetails = !_showDetails),
               child: Row(
                 children: [
-                  const Text('ACCOUNT DETAILS', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-                  const Gap(8),
+                  Text('ACCOUNT DETAILS', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                  Gap(8.w),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                     decoration: BoxDecoration(
                       color: AppColors.secondary.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(6.r),
                     ),
-                    child: const Text('OPTIONAL', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                    child: Text('OPTIONAL', style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
                   ),
                   const Spacer(),
-                  Icon(_showDetails ? LucideIcons.chevronUp : LucideIcons.chevronDown, size: 20),
+                  Icon(_showDetails ? LucideIcons.chevronUp : LucideIcons.chevronDown, size: 20.r),
                 ],
               ),
             ),
 
             if (_showDetails) ...[
-              const Gap(16),
+              Gap(16.h),
               ..._buildDetailFields(),
             ],
 
-            const Gap(40),
+            Gap(40.h),
 
             // ═══════ Save Button ═══════
             NeoButton(
@@ -359,7 +360,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               backgroundColor: AppColors.primary,
             ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
 
-            const Gap(100),
+            Gap(100.h),
           ],
         ),
       ),
@@ -371,24 +372,24 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
       case AccountType.prepaidCard:
         return [
           _NeoTextField(controller: _lastFourController, hint: 'Last 4 digits', icon: LucideIcons.creditCard),
-          const Gap(12),
+          Gap(12.h),
           _NeoTextField(controller: _cardholderController, hint: 'Cardholder name', icon: LucideIcons.user),
-          const Gap(12),
+          Gap(12.h),
           _NeoTextField(controller: _expiryController, hint: 'Expiry (MM/YY)', icon: LucideIcons.calendar),
         ];
       case AccountType.bankAccount:
       case AccountType.savingsAccount:
         return [
           _NeoTextField(controller: _bankNameController, hint: 'Bank name', icon: LucideIcons.building2),
-          const Gap(12),
+          Gap(12.h),
           _NeoTextField(controller: _accountNumberController, hint: 'Account number', icon: LucideIcons.hash),
-          const Gap(12),
+          Gap(12.h),
           _NeoTextField(controller: _ibanController, hint: 'IBAN', icon: LucideIcons.globe),
         ];
       case AccountType.eWallet:
         return [
           _NeoTextField(controller: _walletProviderController, hint: 'Provider (e.g. Vodafone Cash)', icon: LucideIcons.smartphone),
-          const Gap(12),
+          Gap(12.h),
           _NeoTextField(controller: _phoneController, hint: 'Phone number', icon: LucideIcons.phone),
         ];
       default:
@@ -422,20 +423,20 @@ class _NeoTextField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 3),
-        boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))],
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: AppColors.border, width: 3.r),
+        boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))],
       ),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         validator: validator,
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
         decoration: InputDecoration(
           hintText: hint,
-          prefixIcon: Icon(icon, color: AppColors.textLight),
+          prefixIcon: Icon(icon, color: AppColors.textLight, size: 20.r),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         ),
       ),
     );

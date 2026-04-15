@@ -5,7 +5,7 @@ import 'package:planzy/features/goals/data/repository/goal_repository.dart';
 class GoalsNotifier extends AsyncNotifier<List<Goal>> {
   @override
   Future<List<Goal>> build() async {
-    final repo = ref.read(goalRepositoryProvider);
+    final repo = ref.watch(goalRepositoryProvider);
     if (repo == null) return [];
     return repo.getAll();
   }

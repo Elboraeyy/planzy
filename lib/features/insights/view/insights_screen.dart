@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_card.dart';
@@ -19,21 +20,21 @@ class InsightsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('INSIGHTS / STATS'),
+        title: Text('INSIGHTS / STATS', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        children: const [
-          _SummaryCardsGrid(),
-          Gap(40),
-          Text('FINANCIAL BREAKDOWN', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1)),
-          Gap(16),
-          _BreakdownChart(),
-          Gap(40),
-          Text('YOUR CASH FLOW', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1)),
-          Gap(16),
-          _CashFlowBarChart(),
-          Gap(80),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+        children: [
+          const _SummaryCardsGrid(),
+          Gap(40.h),
+          Text('FINANCIAL BREAKDOWN', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+          Gap(16.h),
+          const _BreakdownChart(),
+          Gap(40.h),
+          Text('YOUR CASH FLOW', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+          Gap(16.h),
+          const _CashFlowBarChart(),
+          Gap(80.h),
         ],
       ),
     );
@@ -62,20 +63,20 @@ class _SummaryCardsGrid extends ConsumerWidget {
               final total = list.fold<double>(0, (sum, i) => sum + i.amount);
               return NeoCard(
                 backgroundColor: AppColors.cardYellow,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.r),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.white, border: Border.all(color: AppColors.border, width: 2), borderRadius: BorderRadius.circular(8)),
-                      child: const Icon(LucideIcons.flame, color: AppColors.textDark),
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(color: AppColors.white, border: Border.all(color: AppColors.border, width: 2.r), borderRadius: BorderRadius.circular(8.r)),
+                      child: Icon(LucideIcons.flame, color: AppColors.textDark, size: 24.r),
                     ),
-                    const Gap(16),
-                    const Text('MONTHLY BURN', style: TextStyle(color: AppColors.textDark, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    const Gap(4),
+                    Gap(16.h),
+                    Text('MONTHLY BURN', style: TextStyle(color: AppColors.textDark, fontSize: 11.sp, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    Gap(4.h),
                     FittedBox(
-                      child: Text('${NumberFormat.compact().format(total)} $currency', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -1)),
+                      child: Text('${NumberFormat.compact().format(total)} $currency', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -1)),
                     ),
                   ],
                 ),
@@ -85,27 +86,27 @@ class _SummaryCardsGrid extends ConsumerWidget {
             error: (e, _) => const SizedBox(),
           ),
         ),
-        const Gap(16),
+        Gap(16.w),
         Expanded(
           child: goalsAsync.when(
             data: (list) {
               final totalSaved = list.fold<double>(0, (sum, i) => sum + i.savedAmount);
               return NeoCard(
                 backgroundColor: AppColors.cardBlue,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.r),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.white, border: Border.all(color: AppColors.border, width: 2), borderRadius: BorderRadius.circular(8)),
-                      child: const Icon(LucideIcons.piggyBank, color: AppColors.textDark),
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(color: AppColors.white, border: Border.all(color: AppColors.border, width: 2.r), borderRadius: BorderRadius.circular(8.r)),
+                      child: Icon(LucideIcons.piggyBank, color: AppColors.textDark, size: 24.r),
                     ),
-                    const Gap(16),
-                    const Text('TOTAL SAVED', style: TextStyle(color: AppColors.textDark, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    const Gap(4),
+                    Gap(16.h),
+                    Text('TOTAL SAVED', style: TextStyle(color: AppColors.textDark, fontSize: 11.sp, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    Gap(4.h),
                     FittedBox(
-                      child: Text('${NumberFormat.compact().format(totalSaved)} $currency', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -1)),
+                      child: Text('${NumberFormat.compact().format(totalSaved)} $currency', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -1)),
                     ),
                   ],
                 ),
@@ -130,7 +131,7 @@ class _BreakdownChart extends ConsumerWidget {
 
     return NeoCard(
       backgroundColor: AppColors.white,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       child: commitmentsAsync.when(
         data: (commitments) => goalsAsync.when(
           data: (goals) {
@@ -139,28 +140,28 @@ class _BreakdownChart extends ConsumerWidget {
             final remainingInGoals = goals.fold<double>(0, (sum, i) => sum + (max(0, i.targetAmount - i.savedAmount)));
 
             if (totalCommitments == 0 && totalSaved == 0 && remainingInGoals == 0) {
-              return const SizedBox(
-                height: 200, 
-                child: Center(child: Text("NOT ENOUGH DATA", style: TextStyle(fontWeight: FontWeight.w900)))
+              return SizedBox(
+                height: 200.h, 
+                child: Center(child: Text("NOT ENOUGH DATA", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)))
               );
             }
 
             return SizedBox(
-              height: 240,
+              height: 240.h,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   PieChart(
                     PieChartData(
-                      sectionsSpace: 4,
-                      centerSpaceRadius: 60,
+                      sectionsSpace: 4.r,
+                      centerSpaceRadius: 60.r,
                       sections: [
                         if (totalCommitments > 0)
-                          PieChartSectionData(color: AppColors.primary, value: totalCommitments, title: '', radius: 30),
+                          PieChartSectionData(color: AppColors.primary, value: totalCommitments, title: '', radius: 30.r),
                         if (totalSaved > 0)
-                          PieChartSectionData(color: AppColors.secondary, value: totalSaved, title: '', radius: 35),
+                          PieChartSectionData(color: AppColors.secondary, value: totalSaved, title: '', radius: 35.r),
                         if (remainingInGoals > 0)
-                          PieChartSectionData(color: AppColors.cardYellow, value: remainingInGoals, title: '', radius: 25),
+                          PieChartSectionData(color: AppColors.cardYellow, value: remainingInGoals, title: '', radius: 25.r),
                       ],
                     ),
                   ).animate().scale(duration: 800.ms, curve: Curves.elasticOut),
@@ -168,9 +169,9 @@ class _BreakdownChart extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _LegendItem(color: AppColors.primary, label: 'PAYMENTS'),
-                      const Gap(4),
+                      Gap(4.h),
                       _LegendItem(color: AppColors.secondary, label: 'SAVED'),
-                      const Gap(4),
+                      Gap(4.h),
                       _LegendItem(color: AppColors.cardYellow, label: 'GOALS LEFT'),
                     ],
                   ).animate().fadeIn(delay: 400.ms),
@@ -178,11 +179,11 @@ class _BreakdownChart extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator())),
-          error: (error, stack) => const SizedBox(height: 200),
+          loading: () => SizedBox(height: 200.h, child: const Center(child: CircularProgressIndicator())),
+          error: (error, stack) => SizedBox(height: 200.h),
         ),
-        loading: () => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator())),
-        error: (error, stack) => const SizedBox(height: 200),
+        loading: () => SizedBox(height: 200.h, child: const Center(child: CircularProgressIndicator())),
+        error: (error, stack) => SizedBox(height: 200.h),
       ),
     ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack, delay: 200.ms);
   }
@@ -200,12 +201,12 @@ class _LegendItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(color: color, border: Border.all(color: AppColors.border, width: 2), shape: BoxShape.circle),
+          width: 10.r,
+          height: 10.r,
+          decoration: BoxDecoration(color: color, border: Border.all(color: AppColors.border, width: 2.r), shape: BoxShape.circle),
         ),
-        const Gap(6),
-        Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+        Gap(6.w),
+        Text(label, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900)),
       ],
     );
   }
@@ -218,9 +219,9 @@ class _CashFlowBarChart extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return NeoCard(
       backgroundColor: AppColors.primary,
-      padding: const EdgeInsets.only(top: 32, bottom: 16, left: 16, right: 24),
+      padding: EdgeInsets.only(top: 32.h, bottom: 16.h, left: 16.w, right: 24.w),
       child: SizedBox(
-        height: 220,
+        height: 220.h,
         child: BarChart(
           BarChartData(
             alignment: BarChartAlignment.spaceAround,
@@ -230,13 +231,13 @@ class _CashFlowBarChart extends ConsumerWidget {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30,
+                  reservedSize: 30.h,
                   getTitlesWidget: (value, meta) {
                     const titles = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'];
                     if (value.toInt() >= 0 && value.toInt() < titles.length) {
                       return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(titles[value.toInt()], style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.w900, fontSize: 10)),
+                        padding: EdgeInsets.only(top: 8.h),
+                        child: Text(titles[value.toInt()], style: TextStyle(color: AppColors.white, fontWeight: FontWeight.w900, fontSize: 10.sp)),
                       );
                     }
                     return const SizedBox();
@@ -253,7 +254,7 @@ class _CashFlowBarChart extends ConsumerWidget {
               horizontalInterval: 20,
                   getDrawingHorizontalLine: (val) => FlLine(
                     color: AppColors.white.withValues(alpha: 0.2),
-                    strokeWidth: 1,
+                    strokeWidth: 1.r,
                     dashArray: [4, 4],
                   ),
             ),
@@ -278,9 +279,9 @@ class _CashFlowBarChart extends ConsumerWidget {
         BarChartRodData(
           toY: y,
           color: AppColors.cardYellow,
-          width: 16,
-          borderSide: const BorderSide(color: AppColors.textDark, width: 2),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+          width: 16.w,
+          borderSide: BorderSide(color: AppColors.textDark, width: 2.r),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(4.r)),
         ),
       ],
     );

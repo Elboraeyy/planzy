@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -24,33 +25,33 @@ class SubscriptionsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SUBSCRIPTIONS'),
+        title: Text('SUBSCRIPTIONS', style: TextStyle(fontSize: 18.sp)),
         leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
           onPressed: () => context.pop(),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 16.w),
             child: GestureDetector(
               onTap: () => _showAddSheet(context, ref),
               child: Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10.r),
                 decoration: BoxDecoration(
                   color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border, width: 3),
-                  boxShadow: const [
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.border, width: 3.r),
+                  boxShadow: [
                     BoxShadow(
                       color: AppColors.border,
-                      offset: Offset(3, 3),
+                      offset: Offset(3.w, 3.h),
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   LucideIcons.plus,
                   color: AppColors.textDark,
-                  size: 20,
+                  size: 20.r,
                 ),
               ),
             ).animate().scale(delay: 200.ms, curve: Curves.easeOutBack),
@@ -66,7 +67,7 @@ class SubscriptionsScreen extends ConsumerWidget {
           }
 
           return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
             children: [
               // Summary banner
               _SummaryBanner(
@@ -74,16 +75,16 @@ class SubscriptionsScreen extends ConsumerWidget {
                 totalCount: subscriptions.length,
                 monthlyCost: monthlyCost,
               ),
-              const Gap(24),
+              Gap(24.h),
 
               // Section label
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'ALL SUBSCRIPTIONS',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2,
                       color: AppColors.textLight,
@@ -91,22 +92,22 @@ class SubscriptionsScreen extends ConsumerWidget {
                   ),
                   Text(
                     '${subscriptions.length}',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: TextStyle(
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w900,
                       color: AppColors.textLight,
                     ),
                   ),
                 ],
               ).animate().fadeIn(delay: 300.ms),
-              const Gap(16),
+              Gap(16.h),
 
               // Subscription cards
               ...subscriptions.asMap().entries.map((entry) {
                 final index = entry.key;
                 final sub = entry.value;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.only(bottom: 12.h),
                   child: _SubscriptionCard(
                     subscription: sub,
                     index: index,
@@ -147,7 +148,7 @@ class SubscriptionsScreen extends ConsumerWidget {
                 );
               }),
 
-              const Gap(100),
+              Gap(100.h),
             ],
           );
         },
@@ -156,28 +157,28 @@ class SubscriptionsScreen extends ConsumerWidget {
         ),
         error: (err, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32.r),
             child: NeoCard(
               backgroundColor: AppColors.white,
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24.r),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('😕', style: TextStyle(fontSize: 48)),
-                  const Gap(16),
-                  const Text(
+                   Text('😕', style: TextStyle(fontSize: 48.sp)),
+                  Gap(16.h),
+                   Text(
                     'OOPS!',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 20,
+                      fontSize: 20.sp,
                     ),
                   ),
-                  const Gap(8),
+                  Gap(8.h),
                   Text(
                     'Failed to load subscriptions.\n$err',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textLight,
-                      fontSize: 13,
+                      fontSize: 13.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -217,21 +218,21 @@ class _SummaryBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return NeoCard(
       backgroundColor: AppColors.primary,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       child: Row(
         children: [
           // Progress ring
           SizedBox(
-            width: 64,
-            height: 64,
+            width: 64.r,
+            height: 64.r,
             child: Stack(
               children: [
                 SizedBox(
-                  width: 64,
-                  height: 64,
+                  width: 64.r,
+                  height: 64.r,
                   child: CircularProgressIndicator(
                     value: totalCount > 0 ? activeCount / totalCount : 0,
-                    strokeWidth: 6,
+                    strokeWidth: 6.r,
                     backgroundColor: AppColors.white.withValues(alpha: 0.15),
                     valueColor: const AlwaysStoppedAnimation(AppColors.secondary),
                     strokeCap: StrokeCap.round,
@@ -240,8 +241,8 @@ class _SummaryBanner extends StatelessWidget {
                 Center(
                   child: Text(
                     '$activeCount',
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.w900,
                       color: AppColors.white,
                     ),
@@ -250,7 +251,7 @@ class _SummaryBanner extends StatelessWidget {
               ],
             ),
           ),
-          const Gap(20),
+          Gap(20.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,29 +259,29 @@ class _SummaryBanner extends StatelessWidget {
                 Text(
                   'MONTHLY TOTAL',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.w900,
                     color: AppColors.white.withValues(alpha: 0.6),
                     letterSpacing: 1.5,
                   ),
                 ),
-                const Gap(6),
+                Gap(6.h),
                 FittedBox(
                   child: Text(
                     NumberFormat.compact().format(monthlyCost),
-                    style: const TextStyle(
-                      fontSize: 28,
+                    style: TextStyle(
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.w900,
                       color: AppColors.white,
                       letterSpacing: -1,
                     ),
                   ),
                 ),
-                const Gap(4),
+                Gap(4.h),
                 Text(
                   '$activeCount active · ${totalCount - activeCount} paused',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.white.withValues(alpha: 0.5),
                   ),
@@ -324,16 +325,16 @@ class _SubscriptionCard extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
+        padding: EdgeInsets.only(right: 24.w),
         decoration: BoxDecoration(
           color: Colors.red.shade400,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border, width: 3),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: AppColors.border, width: 3.r),
         ),
-        child: const Icon(
+        child: Icon(
           LucideIcons.trash2,
           color: AppColors.white,
-          size: 24,
+          size: 24.r,
         ),
       ),
       confirmDismiss: (_) async {
@@ -346,35 +347,35 @@ class _SubscriptionCard extends StatelessWidget {
         isInteractive: true,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           child: Row(
             children: [
               // Icon
               Container(
-                width: 48,
-                height: 48,
+                width: 48.r,
+                height: 48.r,
                 decoration: BoxDecoration(
                   color: _getCategoryColor(subscription.category)
                       .withValues(alpha: isActive ? 0.2 : 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: isActive
                         ? AppColors.border
                         : AppColors.textLight.withValues(alpha: 0.3),
-                    width: 2,
+                    width: 2.r,
                   ),
                 ),
                 child: Center(
                   child: Text(
                     subscription.iconEmoji ?? subscription.category.emoji,
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 22.sp,
                       color: isActive ? null : AppColors.textLight,
                     ),
                   ),
                 ),
               ),
-              const Gap(14),
+              Gap(14.w),
 
               // Name + details
               Expanded(
@@ -388,7 +389,7 @@ class _SubscriptionCard extends StatelessWidget {
                             subscription.name.toUpperCase(),
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
-                              fontSize: 15,
+                              fontSize: 15.sp,
                               letterSpacing: -0.5,
                               color: isActive
                                   ? AppColors.textDark
@@ -402,8 +403,8 @@ class _SubscriptionCard extends StatelessWidget {
                         ),
                         // Active indicator dot
                         Container(
-                          width: 8,
-                          height: 8,
+                          width: 8.r,
+                          height: 8.r,
                           decoration: BoxDecoration(
                             color: isActive
                                 ? AppColors.secondary
@@ -413,24 +414,24 @@ class _SubscriptionCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const Gap(4),
+                    Gap(4.h),
                     Row(
                       children: [
                         // Category tag
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6.w,
+                            vertical: 2.h,
                           ),
                           decoration: BoxDecoration(
                             color: _getCategoryColor(subscription.category)
                                 .withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(
                             subscription.category.displayName.toUpperCase(),
                             style: TextStyle(
-                              fontSize: 9,
+                              fontSize: 9.sp,
                               fontWeight: FontWeight.w800,
                               color: isActive
                                   ? AppColors.textDark
@@ -439,7 +440,7 @@ class _SubscriptionCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Gap(8),
+                        Gap(8.w),
                         // Renewal info
                         if (isActive)
                           Text(
@@ -449,7 +450,7 @@ class _SubscriptionCard extends StatelessWidget {
                                     ? 'Renews tomorrow'
                                     : 'in $daysLeft days',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 11.sp,
                               fontWeight: FontWeight.w600,
                               color: daysLeft <= 3
                                   ? AppColors.primary
@@ -457,10 +458,10 @@ class _SubscriptionCard extends StatelessWidget {
                             ),
                           )
                         else
-                          const Text(
+                          Text(
                             'PAUSED',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 11.sp,
                               fontWeight: FontWeight.w800,
                               color: AppColors.textLight,
                               letterSpacing: 1,
@@ -472,7 +473,7 @@ class _SubscriptionCard extends StatelessWidget {
                 ),
               ),
 
-              const Gap(12),
+              Gap(12.w),
 
               // Amount
               Column(
@@ -482,7 +483,7 @@ class _SubscriptionCard extends StatelessWidget {
                     NumberFormat.compact().format(subscription.amount),
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       letterSpacing: -0.5,
                       color: isActive
                           ? AppColors.textDark
@@ -492,7 +493,7 @@ class _SubscriptionCard extends StatelessWidget {
                   Text(
                     '${subscription.currency} ${subscription.cycle.shortLabel}',
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 10.sp,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textLight.withValues(alpha: 0.7),
                     ),
@@ -548,23 +549,23 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: EdgeInsets.symmetric(horizontal: 32.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Fun visual
             Container(
-              width: 120,
-              height: 120,
+              width: 120.r,
+              height: 120.r,
               decoration: BoxDecoration(
                 color: AppColors.cardYellow.withValues(alpha: 0.3),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border, width: 3),
+                border: Border.all(color: AppColors.border, width: 3.r),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   '🔄',
-                  style: TextStyle(fontSize: 48),
+                  style: TextStyle(fontSize: 48.sp),
                 ),
               ),
             )
@@ -576,43 +577,43 @@ class _EmptyState extends StatelessWidget {
                   end: const Offset(1.08, 1.08),
                   duration: 2.seconds,
                 ),
-            const Gap(32),
-            const Text(
+            Gap(32.h),
+            Text(
               'NO SUBS YET',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 24.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
               ),
             ),
-            const Gap(12),
-            const Text(
+            Gap(12.h),
+            Text(
               "Track your subscriptions and never\nbe surprised by a renewal again!",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textLight,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
-            const Gap(32),
+            Gap(32.h),
             GestureDetector(
               onTap: onAddTap,
               child: NeoCard(
                 backgroundColor: AppColors.secondary,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                child: const Row(
+                    EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(LucideIcons.plus, color: AppColors.textDark),
-                    Gap(8),
+                    Icon(LucideIcons.plus, color: AppColors.textDark, size: 24.r),
+                    Gap(8.w),
                     Text(
                       'ADD FIRST SUB',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         letterSpacing: 0.5,
                       ),
                     ),

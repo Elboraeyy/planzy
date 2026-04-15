@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -171,18 +172,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       appBar: AppBar(
         title: Text(
           _selectedType == TransactionType.expense
-              ? 'Add Expense'
-              : 'Add Income',
+              ? 'ADD EXPENSE'
+              : 'ADD INCOME',
+          style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900),
         ),
         leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
           onPressed: () => context.pop(),
         ),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           children: [
             // Type Toggle
             TransactionTypeToggle(
@@ -196,44 +198,44 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               },
             ).animate().fadeIn(duration: 200.ms).slideY(begin: -0.1),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Amount Input
-            const Text(
+            Text(
               'AMOUNT',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
               ),
             ),
-            const Gap(12),
+            Gap(12.h),
             Container(
               decoration: BoxDecoration(
                 color: AppColors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border, width: 3),
-                boxShadow: const [
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: AppColors.border, width: 3.r),
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.border,
-                    offset: Offset(4, 4),
+                    offset: Offset(4.w, 4.h),
                   ),
                 ],
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                    decoration: const BoxDecoration(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
+                    decoration: BoxDecoration(
                       color: AppColors.secondary,
                       border: Border(
-                        right: BorderSide(color: AppColors.border, width: 3),
+                        right: BorderSide(color: AppColors.border, width: 3.r),
                       ),
                     ),
                     child: Text(
                       currency,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: TextStyle(
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -242,14 +244,14 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     child: TextFormField(
                       controller: _amountController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      style: const TextStyle(
-                        fontSize: 32,
+                      style: TextStyle(
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.w900,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '0.00',
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                       ),
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
@@ -263,58 +265,59 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               ),
             ).animate().fadeIn(duration: 200.ms, delay: 100.ms).slideX(begin: 0.1),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Date Picker
-            const Text(
+            Text(
               'DATE',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
               ),
             ),
-            const Gap(12),
+            Gap(12.h),
             GestureDetector(
               onTap: _selectDate,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border, width: 3),
-                  boxShadow: const [
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.border, width: 3.r),
+                  boxShadow: [
                     BoxShadow(
                       color: AppColors.border,
-                      offset: Offset(4, 4),
+                      offset: Offset(4.w, 4.h),
                     ),
                   ],
                 ),
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.calendar, color: AppColors.textDark),
-                    const Gap(12),
-                    Text(
-                      DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                    Icon(LucideIcons.calendar, color: AppColors.textDark, size: 24.r),
+                    Gap(12.w),
+                    Expanded(
+                      child: Text(
+                        DateFormat('EEEE, MMM d, yyyy').format(_selectedDate).toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
-                    const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                       decoration: BoxDecoration(
                         color: _selectedDate.day == DateTime.now().day
                             ? AppColors.secondary
                             : AppColors.background,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.border, width: 2),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.border, width: 2.r),
                       ),
                       child: Text(
                         _selectedDate.day == DateTime.now().day ? 'TODAY' : 'CHANGE',
-                        style: const TextStyle(
-                          fontSize: 10,
+                        style: TextStyle(
+                          fontSize: 10.sp,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1,
                         ),
@@ -325,12 +328,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               ),
             ).animate().fadeIn(duration: 200.ms, delay: 200.ms).slideX(begin: 0.1),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Account Selector
             _buildAccountSelector(),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Category Selector
             CategorySelector(
@@ -349,40 +352,41 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               },
             ).animate().fadeIn(duration: 200.ms, delay: 300.ms).slideX(begin: 0.1),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Notes Input
-            const Text(
+            Text(
               'NOTES',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
               ),
             ),
-            const Gap(12),
+            Gap(12.h),
             TextFormField(
               controller: _notesController,
               maxLines: 3,
-              decoration: const InputDecoration(
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
                 hintText: 'Add a note (optional)',
-                prefixIcon: Icon(LucideIcons.fileText),
+                prefixIcon: Icon(LucideIcons.fileText, size: 20.r),
               ),
             ).animate().fadeIn(duration: 200.ms, delay: 400.ms).slideX(begin: 0.1),
 
-            const Gap(32),
+            Gap(32.h),
 
             // Receipt Picker (for expenses only)
             if (_selectedType == TransactionType.expense) ...[
-              const Text(
+              Text(
                 'RECEIPT',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1,
                 ),
               ),
-              const Gap(12),
+              Gap(12.h),
               ReceiptPicker(
                 localImage: _receiptImage,
                 remoteUrl: _receiptUrl,
@@ -396,7 +400,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   });
                 },
               ).animate().fadeIn(duration: 200.ms, delay: 500.ms).slideX(begin: 0.1),
-              const Gap(32),
+              Gap(32.h),
             ],
 
             // Recurring Toggle (for expenses only)
@@ -404,19 +408,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               GestureDetector(
                 onTap: () => setState(() => _isRecurring = !_isRecurring),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.r),
                   decoration: BoxDecoration(
                     color: _isRecurring ? AppColors.cardYellow : AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
                       color: AppColors.border,
-                      width: 3,
+                      width: 3.r,
                     ),
                     boxShadow: _isRecurring
-                        ? const [
+                        ? [
                             BoxShadow(
                               color: AppColors.border,
-                              offset: Offset(4, 4),
+                              offset: Offset(4.w, 4.h),
                             ),
                           ]
                         : null,
@@ -424,35 +428,36 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   child: Row(
                     children: [
                       Icon(
-                        _isRecurring ? LucideIcons.repeat : LucideIcons.repeat,
+                        LucideIcons.repeat,
                         color: AppColors.textDark,
+                        size: 24.r,
                       ),
-                      const Gap(12),
-                      const Expanded(
+                      Gap(12.w),
+                      Expanded(
                         child: Text(
                           'RECURRING EXPENSE',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1,
                           ),
                         ),
                       ),
                       Container(
-                        width: 24,
-                        height: 24,
+                        width: 24.r,
+                        height: 24.r,
                         decoration: BoxDecoration(
                           color: _isRecurring ? AppColors.primary : AppColors.background,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(4.r),
                           border: Border.all(
                             color: AppColors.border,
-                            width: 2,
+                            width: 2.r,
                           ),
                         ),
                         child: _isRecurring
-                            ? const Icon(
+                            ? Icon(
                                 Icons.check,
-                                size: 16,
+                                size: 16.r,
                                 color: AppColors.white,
                               )
                             : null,
@@ -461,7 +466,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   ),
                 ),
               ).animate().fadeIn(duration: 200.ms, delay: 600.ms).slideX(begin: 0.1),
-              const Gap(40),
+              Gap(40.h),
             ],
 
             // Save Button
@@ -472,6 +477,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   ? AppColors.primary
                   : AppColors.secondary,
             ).animate().fadeIn(duration: 200.ms, delay: 700.ms).slideY(begin: 0.2),
+            Gap(40.h),
           ],
         ),
       ),
@@ -498,15 +504,15 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           children: [
             Text(
               _selectedType == TransactionType.income ? 'RECEIVE INTO' : 'PAY FROM',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
             ),
-            const Gap(12),
+            Gap(12.h),
             SizedBox(
-              height: 60,
+              height: 64.h,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: accounts.length,
-                    separatorBuilder: (context, index) => const Gap(10),
+                    separatorBuilder: (context, index) => Gap(12.w),
                 itemBuilder: (context, index) {
                   final account = accounts[index];
                   final isSelected = account.id == _selectedAccountId;
@@ -515,13 +521,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     onTap: () => setState(() => _selectedAccountId = account.id),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.primary : AppColors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.border, width: 2),
+                        borderRadius: BorderRadius.circular(14.r),
+                        border: Border.all(color: AppColors.border, width: 2.r),
                         boxShadow: isSelected
-                            ? const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))]
+                            ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
                             : null,
                       ),
                       child: Row(
@@ -529,9 +535,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                         children: [
                           Text(
                             account.iconEmoji ?? account.type.icon,
-                            style: const TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 20.sp),
                           ),
-                          const Gap(8),
+                          Gap(8.w),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -540,16 +546,16 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                                 account.name,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w900,
-                                  fontSize: 13,
+                                  fontSize: 13.sp,
                                   color: isSelected ? AppColors.white : AppColors.textDark,
                                 ),
                               ),
                               Text(
                                 account.type.displayName,
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: isSelected ? Colors.white60 : AppColors.textLight,
+                                  color: isSelected ? Colors.white70 : AppColors.textLight,
                                 ),
                               ),
                             ],

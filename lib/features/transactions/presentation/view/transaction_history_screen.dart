@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -36,10 +37,10 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transaction History'),
+        title: Text('TRANSACTIONS', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.filter, color: AppColors.textDark),
+            icon: Icon(LucideIcons.filter, color: AppColors.textDark, size: 24.r),
             onPressed: () => _showFilterBottomSheet(context),
           ),
         ],
@@ -48,16 +49,16 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
         children: [
           // Monthly Summary Card
           Container(
-            margin: const EdgeInsets.all(24),
-            padding: const EdgeInsets.all(20),
+            margin: EdgeInsets.all(24.r),
+            padding: EdgeInsets.all(20.r),
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border, width: 3),
-              boxShadow: const [
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: AppColors.border, width: 3.r),
+              boxShadow: [
                 BoxShadow(
                   color: AppColors.border,
-                  offset: Offset(6, 6),
+                  offset: Offset(6.w, 6.h),
                 ),
               ],
             ),
@@ -68,26 +69,26 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                   children: [
                     Text(
                       DateFormat('MMMM yyyy').format(DateTime.now()).toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1,
                         color: AppColors.textLight,
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                       decoration: BoxDecoration(
                         color: monthlyStats['balance']! >= 0
                             ? AppColors.secondary
                             : AppColors.primary,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.border, width: 2),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.border, width: 2.r),
                       ),
                       child: Text(
                         monthlyStats['balance']! >= 0 ? 'SURPLUS' : 'DEFICIT',
-                        style: const TextStyle(
-                          fontSize: 10,
+                        style: TextStyle(
+                          fontSize: 10.sp,
                           fontWeight: FontWeight.w900,
                           color: AppColors.textDark,
                         ),
@@ -95,7 +96,7 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                     ),
                   ],
                 ),
-                const Gap(16),
+                Gap(16.h),
                 Row(
                   children: [
                     Expanded(
@@ -103,14 +104,14 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                         label: 'INCOME',
                         amount: monthlyStats['income']!,
                         currency: currency,
-                        color: AppColors.secondary,
+                        color: const Color(0xFF2E7D32),
                       ),
                     ),
                     Container(
-                      width: 3,
-                      height: 50,
-                      color: AppColors.border,
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      width: 3.w,
+                      height: 50.h,
+                      color: AppColors.border.withValues(alpha: 0.1),
+                      margin: EdgeInsets.symmetric(horizontal: 16.w),
                     ),
                     Expanded(
                       child: _SummaryItem(
@@ -128,8 +129,8 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
 
           // Filter Chips
           Container(
-            height: 50,
-            margin: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+            height: 52.h,
+            margin: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 16.h),
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -138,14 +139,14 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                   isSelected: _filterType == null,
                   onTap: () => setState(() => _filterType = null),
                 ),
-                const Gap(12),
+                Gap(12.w),
                 _FilterChip(
                   label: 'Expenses',
                   isSelected: _filterType == TransactionType.expense,
                   onTap: () => setState(() => _filterType = TransactionType.expense),
                   color: AppColors.primary,
                 ),
-                const Gap(12),
+                Gap(12.w),
                 _FilterChip(
                   label: 'Income',
                   isSelected: _filterType == TransactionType.income,
@@ -171,32 +172,33 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(24),
+                          padding: EdgeInsets.all(24.r),
                           decoration: BoxDecoration(
                             color: AppColors.cardYellow,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.border, width: 3),
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(color: AppColors.border, width: 3.r),
+                            boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             LucideIcons.receipt,
-                            size: 48,
+                            size: 48.r,
                             color: AppColors.textDark,
                           ),
                         ),
-                        const Gap(16),
-                        const Text(
+                        Gap(24.h),
+                        Text(
                           'NO TRANSACTIONS YET',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1,
                             color: AppColors.textLight,
                           ),
                         ),
-                        const Gap(8),
+                        Gap(8.h),
                         TextButton(
                           onPressed: () => context.push('/add-transaction'),
-                          child: const Text('Add your first transaction'),
+                          child: Text('Add your first transaction', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.primary)),
                         ),
                       ],
                     ),
@@ -207,7 +209,7 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                 final groupedTransactions = _groupByDate(filteredTransactions);
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   itemCount: groupedTransactions.length,
                   itemBuilder: (context, index) {
                     final entry = groupedTransactions.entries.elementAt(index);
@@ -219,34 +221,34 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                       children: [
                         // Date Header
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
                           child: Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 6.h,
                                 ),
                                 decoration: BoxDecoration(
                                   color: AppColors.cardBlue,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: AppColors.border, width: 2),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  border: Border.all(color: AppColors.border, width: 2.r),
                                 ),
                                 child: Text(
                                   _getDateLabel(date),
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1,
                                   ),
                                 ),
                               ),
-                              const Gap(12),
+                              Gap(12.w),
                               Expanded(
                                 child: Text(
                                   DateFormat('MMM d, yyyy').format(date),
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.textLight,
                                   ),
@@ -255,8 +257,8 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
                               // Daily total
                               Text(
                                 _calculateDailyTotal(dayTransactions, currency),
-                                style: const TextStyle(
-                                  fontSize: 14,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
@@ -266,7 +268,7 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
 
                         // Transactions for this day
                         ...dayTransactions.map((transaction) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
+                              padding: EdgeInsets.only(bottom: 12.h),
                               child: _TransactionCard(
                                 transaction: transaction,
                                 currency: currency,
@@ -286,7 +288,7 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/add-transaction'),
-        child: const Icon(LucideIcons.plus, size: 28),
+        child: Icon(LucideIcons.plus, size: 28.r),
       ),
     );
   }
@@ -295,27 +297,28 @@ class _TransactionHistoryScreenState extends ConsumerState<TransactionHistoryScr
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        side: BorderSide(color: AppColors.border, width: 3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        side: BorderSide(color: AppColors.border, width: 3.r),
       ),
       builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.r),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'FILTER BY DATE',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
               ),
             ),
-            const Gap(16),
+            Gap(16.h),
             // Add date range picker here if needed
-            const Text('Coming soon...'),
+            Text('Coming soon...', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: AppColors.textLight)),
+            Gap(20.h),
           ],
         ),
       ),
@@ -393,19 +396,19 @@ class _SummaryItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 10,
+          style: TextStyle(
+            fontSize: 10.sp,
             fontWeight: FontWeight.w900,
             letterSpacing: 1,
             color: AppColors.textLight,
           ),
         ),
-        const Gap(4),
+        Gap(4.h),
         FittedBox(
           child: Text(
             '${NumberFormat.decimalPattern().format(amount)} $currency',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 18.sp,
               fontWeight: FontWeight.w900,
               color: color,
             ),
@@ -435,19 +438,19 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
         decoration: BoxDecoration(
           color: isSelected ? (color ?? AppColors.secondary) : AppColors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: AppColors.border,
-            width: isSelected ? 3 : 2,
+            width: isSelected ? 3.r : 2.r,
           ),
           boxShadow: isSelected
-              ? const [
+              ? [
                   BoxShadow(
                     color: AppColors.border,
-                    offset: Offset(3, 3),
+                    offset: Offset(3.w, 3.h),
                   ),
                 ]
               : null,
@@ -455,7 +458,7 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label.toUpperCase(),
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 12.sp,
             fontWeight: FontWeight.w900,
             letterSpacing: 1,
             color: isSelected ? AppColors.textDark : AppColors.textLight,
@@ -485,25 +488,25 @@ class _TransactionCard extends StatelessWidget {
       onLongPress: onDelete,
       child: NeoCard(
         backgroundColor: isExpense ? AppColors.white : AppColors.cardYellow,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         child: Row(
           children: [
             // Icon
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 color: isExpense ? AppColors.primary : AppColors.secondary,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.border, width: 2),
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: AppColors.border, width: 2.r),
               ),
               child: Text(
                 isExpense
                     ? (transaction.expenseCategory?.icon ?? '📦')
                     : (transaction.incomeSource?.icon ?? '💵'),
-                style: const TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20.sp),
               ),
             ),
-            const Gap(12),
+            Gap(12.w),
 
             // Details
             Expanded(
@@ -514,27 +517,27 @@ class _TransactionCard extends StatelessWidget {
                     isExpense
                         ? (transaction.expenseCategory?.displayName ?? 'Expense')
                         : (transaction.incomeSource?.displayName ?? 'Income'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                   ),
-                  const Gap(2),
+                  Gap(2.h),
                   if (transaction.notes != null)
                     Text(
                       transaction.notes!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textLight,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   Text(
                     DateFormat.jm().format(transaction.date),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textLight,
-                      fontSize: 11,
+                      fontSize: 11.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -550,15 +553,15 @@ class _TransactionCard extends StatelessWidget {
                   '${isExpense ? '-' : '+'}${NumberFormat.decimalPattern().format(transaction.amount)}',
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                    color: isExpense ? AppColors.primary : AppColors.textDark,
+                    fontSize: 17.sp,
+                    color: isExpense ? AppColors.primary : const Color(0xFF2E7D32),
                   ),
                 ),
                 Text(
                   currency,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textLight,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

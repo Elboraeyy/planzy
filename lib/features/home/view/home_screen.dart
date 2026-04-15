@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
@@ -22,16 +23,16 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          children: const [
-            _HomeHeaderWidget(),
-            Gap(32),
-            _FinancialDashboard(),
-            Gap(32),
-            _CommitmentsListWidget(),
-            Gap(24),
-            _GoalsProgressWidget(),
-            Gap(80),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+          children: [
+            const _HomeHeaderWidget(),
+            Gap(32.h),
+            const _FinancialDashboard(),
+            Gap(32.h),
+            const _CommitmentsListWidget(),
+            Gap(24.h),
+            const _GoalsProgressWidget(),
+            Gap(80.h),
           ],
         ),
       ),
@@ -62,18 +63,18 @@ class _HomeHeaderWidget extends ConsumerWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Hello,',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 color: AppColors.textLight,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               '$userName ✌️',
-              style: const TextStyle(
-                fontSize: 32,
+              style: TextStyle(
+                fontSize: 32.sp,
                 color: AppColors.textDark,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -1,
@@ -82,16 +83,16 @@ class _HomeHeaderWidget extends ConsumerWidget {
           ],
         ),
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12.r),
           decoration: BoxDecoration(
             color: AppColors.cardYellow,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border, width: 3),
-            boxShadow: const [
-              BoxShadow(color: AppColors.border, offset: Offset(4, 4)),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: AppColors.border, width: 3.r),
+            boxShadow: [
+              BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h)),
             ]
           ),
-          child: const Icon(LucideIcons.bell, color: AppColors.textDark),
+          child: Icon(LucideIcons.bell, color: AppColors.textDark, size: 24.r),
         ).animate().slideX(begin: 1, curve: Curves.easeOutBack).rotate(begin: 0.1),
       ],
     );
@@ -153,7 +154,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
       if (!_dayScrollController.hasClients) return;
       final index = days.indexWhere((d) => d.day == day.day);
       if (index < 0) return;
-      final target = (index * 68.0) - (MediaQuery.of(context).size.width / 2 - 58);
+      final target = (index * 68.w) - (MediaQuery.of(context).size.width / 2 - 58.w);
       _dayScrollController.animateTo(
         target.clamp(0.0, _dayScrollController.position.maxScrollExtent),
         duration: const Duration(milliseconds: 400),
@@ -245,7 +246,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
         // THE RED CARD — Swipeable month summary
         // ═══════════════════════════════════════════════
         SizedBox(
-          height: 310,
+          height: 310.h,
           child: PageView.builder(
             controller: _pageController,
             itemCount: _totalMonths,
@@ -280,13 +281,13 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
           ),
         ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack).fadeIn(),
 
-        const Gap(20),
+        Gap(20.h),
 
         // ═══════════════════════════════════════════════
         // DAY SCROLLER
         // ═══════════════════════════════════════════════
         SizedBox(
-          height: 72,
+          height: 72.h,
           child: ListView.builder(
             controller: _dayScrollController,
             scrollDirection: Axis.horizontal,
@@ -305,7 +306,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
               );
 
               return Padding(
-                padding: const EdgeInsets.only(right: 10),
+                padding: EdgeInsets.only(right: 10.w),
                 child: GestureDetector(
                   onTap: () {
                     setState(() => _selectedDay = day);
@@ -313,20 +314,20 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeOutBack,
-                    width: 58,
+                    width: 58.w,
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
                           : isToday
                               ? AppColors.secondary.withValues(alpha: 0.3)
                               : AppColors.white,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                       border: Border.all(
                         color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
-                        width: isSelected ? 3 : 2,
+                        width: isSelected ? 3.r : 2.r,
                       ),
                       boxShadow: isSelected
-                          ? const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))]
+                          ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
                           : null,
                     ),
                     child: Column(
@@ -335,25 +336,25 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                         Text(
                           dayName,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.w900,
                             color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
                             letterSpacing: 0.5,
                           ),
                         ),
-                        const Gap(4),
+                        Gap(4.h),
                         Text(
                           '${day.day}',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.w900,
                             color: isSelected ? AppColors.white : AppColors.textDark,
                           ),
                         ),
                         if (hasTx && !isSelected) ...[
-                          const Gap(2),
+                          Gap(2.h),
                           Container(
-                            width: 6, height: 6,
+                            width: 6.r, height: 6.r,
                             decoration: const BoxDecoration(
                               color: AppColors.primary,
                               shape: BoxShape.circle,
@@ -369,7 +370,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
           ),
         ).animate().fadeIn(delay: 200.ms),
 
-        const Gap(24),
+        Gap(24.h),
 
         // ═══════════════════════════════════════════════
         // DAY TRANSACTIONS FEED
@@ -379,38 +380,38 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
           children: [
             Text(
               DateFormat('EEEE, d MMM').format(_selectedDay).toUpperCase(),
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
+              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
             ),
             if (dayTransactions.isNotEmpty)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppColors.border, width: 2),
+                  borderRadius: BorderRadius.circular(6.r),
+                  border: Border.all(color: AppColors.border, width: 2.r),
                 ),
                 child: Text(
                   '${dayTransactions.length} item${dayTransactions.length > 1 ? 's' : ''}',
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+                  style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900),
                 ),
               ),
           ],
         ).animate().fadeIn(delay: 300.ms),
-        const Gap(16),
+        Gap(16.h),
 
         if (dayTransactions.isEmpty)
           NeoCard(
             backgroundColor: AppColors.white,
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24.r),
                 child: Column(
                   children: [
-                    const Text('📭', style: TextStyle(fontSize: 32)),
-                    const Gap(8),
+                    Text('📭', style: TextStyle(fontSize: 32.sp)),
+                    Gap(8.h),
                     Text(
                       'NO ACTIVITY ON ${DateFormat('MMMM d').format(_selectedDay).toUpperCase()}',
-                      style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13),
+                      style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13.sp),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -434,42 +435,42 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   : (t.incomeSource?.displayName ?? 'Income');
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.only(bottom: 12.h),
                 child: NeoCard(
                   backgroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                   child: Row(
                     children: [
                       Container(
-                        width: 44, height: 44,
+                        width: 44.r, height: 44.r,
                         decoration: BoxDecoration(
                           color: isExpense
                               ? AppColors.primary.withValues(alpha: 0.08)
                               : AppColors.secondary.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppColors.border.withValues(alpha: 0.1), width: 2),
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(color: AppColors.border.withValues(alpha: 0.1), width: 2.r),
                         ),
-                        child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
+                        child: Center(child: Text(emoji, style: TextStyle(fontSize: 20.sp))),
                       ),
-                      const Gap(14),
+                      Gap(14.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               categoryName.toUpperCase(),
-                              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: -0.3),
+                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: -0.3),
                             ),
-                            const Gap(2),
+                            Gap(2.h),
                             Text(
                               DateFormat('HH:mm').format(t.date),
-                              style: const TextStyle(color: AppColors.textLight, fontSize: 11, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: AppColors.textLight, fontSize: 11.sp, fontWeight: FontWeight.w600),
                             ),
                             if (t.notes != null && t.notes!.isNotEmpty) ...[
-                              const Gap(2),
+                              Gap(2.h),
                               Text(
                                 t.notes!,
-                                style: const TextStyle(color: AppColors.textLight, fontSize: 11),
+                                style: TextStyle(color: AppColors.textLight, fontSize: 11.sp),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -484,11 +485,11 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                             '${isExpense ? '-' : '+'}${NumberFormat.compact().format(t.amount)}',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                               color: isExpense ? AppColors.primary : const Color(0xFF2E7D32),
                             ),
                           ),
-                          Text(currency, style: const TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.bold)),
+                          Text(currency, style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ],
@@ -516,16 +517,16 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     final isCurrentMonth = month.year == now.year && month.month == now.month;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2),
+      margin: EdgeInsets.symmetric(horizontal: 2.w),
       decoration: BoxDecoration(
         color: AppColors.primary,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border, width: 3),
-        boxShadow: const [
-          BoxShadow(color: AppColors.border, offset: Offset(6, 6)),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: AppColors.border, width: 3.r),
+        boxShadow: [
+          BoxShadow(color: AppColors.border, offset: Offset(6.w, 6.h)),
         ],
       ),
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -539,58 +540,58 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border, width: 2),
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(color: AppColors.border, width: 2.r),
                     ),
                     child: Text(
                       DateFormat('MMMM').format(month).toUpperCase(),
-                      style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
+                      style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13.sp, letterSpacing: 0.5),
                     ),
                   ),
-                  const Gap(8),
+                  Gap(8.w),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: AppColors.secondary,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border, width: 2),
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(color: AppColors.border, width: 2.r),
                     ),
                     child: Text(
                       '${month.year}',
-                      style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13),
+                      style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13.sp),
                     ),
                   ),
                 ],
               ),
               if (isCurrentMonth)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                   decoration: BoxDecoration(
                     color: AppColors.cardYellow,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.border, width: 2),
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(color: AppColors.border, width: 2.r),
 
                     ),
                     child: Text(
                       DateFormat('E, d').format(now).toUpperCase(),
-                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp),
                     ),
                   ),
               ],
             ),
           ),
           
-          const Gap(16),
+          Gap(16.h),
 
           // Balance
-          const Text(
+          Text(
             'BALANCE',
-            style: TextStyle(color: Colors.white60, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2),
+            style: TextStyle(color: Colors.white60, fontSize: 11.sp, fontWeight: FontWeight.w900, letterSpacing: 2),
           ),
-          const Gap(4),
+          Gap(4.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -601,31 +602,31 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     NumberFormat.decimalPattern().format(balance),
-                    style: const TextStyle(color: AppColors.white, fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: -2),
+                    style: TextStyle(color: AppColors.white, fontSize: 40.sp, fontWeight: FontWeight.w900, letterSpacing: -2),
                   ),
                 ),
               ),
-              const Gap(8),
+              Gap(8.w),
               Text(
                 currency,
-                style: const TextStyle(color: AppColors.cardYellow, fontSize: 22, fontWeight: FontWeight.w900),
+                style: TextStyle(color: AppColors.cardYellow, fontSize: 22.sp, fontWeight: FontWeight.w900),
               ),
             ],
           ),
 
-          const Gap(16),
+          Gap(16.h),
 
           // Income & Expense row
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
                     color: AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border, width: 2),
-                    boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))],
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.border, width: 2.r),
+                    boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -633,33 +634,33 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                       Row(
                         children: [
                           Container(
-                            width: 8, height: 8,
+                            width: 8.r, height: 8.r,
                             decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
                           ),
-                          const Gap(6),
-                          const Text('INCOME', style: TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                          Gap(6.w),
+                          Text('INCOME', style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
                         ],
                       ),
-                      const Gap(6),
+                      Gap(6.h),
                       FittedBox(
                         child: Text(
                           '+${NumberFormat.compact().format(income)} $currency',
-                          style: const TextStyle(color: Color(0xFF2E7D32), fontSize: 17, fontWeight: FontWeight.w900),
+                          style: TextStyle(color: const Color(0xFF2E7D32), fontSize: 17.sp, fontWeight: FontWeight.w900),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Gap(10),
+              Gap(10.w),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
                     color: AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border, width: 2),
-                    boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))],
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.border, width: 2.r),
+                    boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -667,18 +668,18 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                       Row(
                         children: [
                           Container(
-                            width: 8, height: 8,
+                            width: 8.r, height: 8.r,
                             decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
                           ),
-                          const Gap(6),
-                          const Text('EXPENSE', style: TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                          Gap(6.w),
+                          Text('EXPENSE', style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
                         ],
                       ),
-                      const Gap(6),
+                      Gap(6.h),
                       FittedBox(
                         child: Text(
                           '-${NumberFormat.compact().format(expense)} $currency',
-                          style: const TextStyle(color: AppColors.primary, fontSize: 17, fontWeight: FontWeight.w900),
+                          style: TextStyle(color: AppColors.primary, fontSize: 17.sp, fontWeight: FontWeight.w900),
                         ),
                       ),
                     ],
@@ -689,7 +690,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
           ),
           
           // Swipe hint & Buttons
-          const Gap(8),
+          Gap(8.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -700,17 +701,17 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4.r),
                     decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
-                    child: const Icon(LucideIcons.chevronLeft, size: 16, color: AppColors.white),
+                    child: Icon(LucideIcons.chevronLeft, size: 16.r, color: AppColors.white),
                   ),
                 )
               else
-                const SizedBox(width: 24),
+                SizedBox(width: 24.w),
                 
               Text(
                 'SWIPE FOR MONTHS',
-                style: TextStyle(color: AppColors.white.withValues(alpha: 0.5), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                style: TextStyle(color: AppColors.white.withValues(alpha: 0.5), fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 1.5),
               ),
 
               if (index < _FinancialDashboardState._totalMonths - 1)
@@ -720,13 +721,13 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4.r),
                     decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
-                    child: const Icon(LucideIcons.chevronRight, size: 16, color: AppColors.white),
+                    child: Icon(LucideIcons.chevronRight, size: 16.r, color: AppColors.white),
                   ),
                 )
               else
-                const SizedBox(width: 24),
+                SizedBox(width: 24.w),
             ],
           ),
         ],
@@ -747,7 +748,7 @@ class _CommitmentsListWidget extends ConsumerWidget {
     final commitmentsAsync = ref.watch(commitmentsProvider);
     final settingsAsync = ref.watch(settingsProvider);
     final currency = settingsAsync.when(
-      data: (s) => s.currency,
+      data: (settings) => settings.currency,
       loading: () => '',
       error: (_, _) => '',
     );
@@ -755,19 +756,19 @@ class _CommitmentsListWidget extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'YOUR PAYMENTS',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.textDark, letterSpacing: 1),
+          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: AppColors.textDark, letterSpacing: 1),
         ).animate().fadeIn(delay: 200.ms),
-        const Gap(20),
+        Gap(20.h),
         commitmentsAsync.when(
           data: (commitments) {
             if (commitments.isEmpty) {
               return NeoCard(
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text('NO DATA YET', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight)),
+                    padding: EdgeInsets.all(16.r),
+                    child: Text('NO DATA YET', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13.sp)),
                   ),
                 ),
               );
@@ -779,7 +780,7 @@ class _CommitmentsListWidget extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final item = commitments[index];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
+                  padding: EdgeInsets.only(bottom: 16.h),
                   child: GestureDetector(
                     onLongPress: () => NeoDialog.show(
                       context: context,
@@ -793,26 +794,26 @@ class _CommitmentsListWidget extends ConsumerWidget {
                       },
                     ),
                     child: NeoCard(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(12.r),
                             decoration: BoxDecoration(
                               color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.border, width: 2),
+                              borderRadius: BorderRadius.circular(8.r),
+                              border: Border.all(color: AppColors.border, width: 2.r),
                             ),
-                            child: const Icon(LucideIcons.zap, color: AppColors.textDark),
+                            child: Icon(LucideIcons.zap, color: AppColors.textDark, size: 24.r),
                           ),
-                          const Gap(16),
+                          Gap(16.w),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(item.title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5)),
-                                const Gap(4),
-                                Text(item.repeatType.name.toUpperCase(), style: const TextStyle(color: AppColors.textLight, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                                Text(item.title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, letterSpacing: -0.5)),
+                                Gap(4.h),
+                                Text(item.repeatType.name.toUpperCase(), style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.bold, letterSpacing: 1)),
                               ],
                             ),
                           ),
@@ -821,9 +822,9 @@ class _CommitmentsListWidget extends ConsumerWidget {
                             children: [
                               Text(
                                 NumberFormat.decimalPattern().format(item.amount),
-                                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+                                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20.sp),
                               ),
-                              Text(currency, style: const TextStyle(color: AppColors.textLight, fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text(currency, style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ],
@@ -864,19 +865,19 @@ class _GoalsProgressWidget extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'SAVINGS GOALS',
-           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.textDark, letterSpacing: 1),
+           style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: AppColors.textDark, letterSpacing: 1),
         ).animate().fadeIn(delay: 400.ms),
-        const Gap(20),
+        Gap(20.h),
         goalsAsync.when(
           data: (goals) {
             if (goals.isEmpty) {
               return NeoCard(
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text('NO GOALS YET', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight)),
+                    padding: EdgeInsets.all(16.r),
+                    child: Text('NO GOALS YET', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13.sp)),
                   ),
                 ),
               );
@@ -889,7 +890,7 @@ class _GoalsProgressWidget extends ConsumerWidget {
                 final goal = goals[index];
                 final progress = goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount).clamp(0.0, 1.0) : 0.0;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
+                  padding: EdgeInsets.only(bottom: 16.h),
                   child: GestureDetector(
                     onLongPress: () => NeoDialog.show(
                       context: context,
@@ -911,32 +912,32 @@ class _GoalsProgressWidget extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
-                                child: Text(goal.title.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18), overflow: TextOverflow.ellipsis),
+                                child: Text(goal.title.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp), overflow: TextOverflow.ellipsis),
                               ),
-                              const Gap(8),
+                              Gap(8.w),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
                                   color: AppColors.textDark,
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(4.r),
                                 ),
                                 child: Text(
                                   '${(progress * 100).toStringAsFixed(0)}%', 
-                                  style: const TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 14)
+                                  style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 14.sp)
                                 ),
                               ),
                             ],
                           ),
-                          const Gap(12),
-                          Text('${NumberFormat.decimalPattern().format(goal.savedAmount)} / ${NumberFormat.decimalPattern().format(goal.targetAmount)} $currency', style: const TextStyle(color: AppColors.textDark, fontSize: 14, fontWeight: FontWeight.bold)),
-                          const Gap(16),
+                          Gap(12.h),
+                          Text('${NumberFormat.decimalPattern().format(goal.savedAmount)} / ${NumberFormat.decimalPattern().format(goal.targetAmount)} $currency', style: TextStyle(color: AppColors.textDark, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+                          Gap(16.h),
                           Container(
-                            height: 16,
+                            height: 16.h,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: AppColors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.border, width: 2),
+                              borderRadius: BorderRadius.circular(8.r),
+                              border: Border.all(color: AppColors.border, width: 2.r),
                             ),
                             child: FractionallySizedBox(
                               alignment: Alignment.centerLeft,
@@ -944,24 +945,24 @@ class _GoalsProgressWidget extends ConsumerWidget {
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: AppColors.secondary,
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: const Border(right: BorderSide(color: AppColors.border, width: 2))
+                                  borderRadius: BorderRadius.circular(6.r),
+                                  border: Border(right: BorderSide(color: AppColors.border, width: 2.r))
                                 ),
                               ),
                             ).animate().scaleX(begin: 0, duration: 600.ms, curve: Curves.easeOutBack),
                           ),
-                          const Gap(16),
+                          Gap(16.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TextButton.icon(
                                 onPressed: () => _showAddFundsDialog(context, ref, goal.id, goal.title, currency),
-                                icon: const Icon(LucideIcons.plus, size: 16, color: AppColors.textDark),
-                                label: const Text('ADD FUNDS', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 12)),
+                                icon: Icon(LucideIcons.plus, size: 16.r, color: AppColors.textDark),
+                                label: Text('ADD FUNDS', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 12.sp)),
                                 style: TextButton.styleFrom(
                                   backgroundColor: AppColors.secondary,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: const BorderSide(color: AppColors.border, width: 2)),
+                                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r), side: BorderSide(color: AppColors.border, width: 2.r)),
                                 ),
                               ),
                             ],
@@ -997,19 +998,19 @@ class _GoalsProgressWidget extends ConsumerWidget {
           TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
             decoration: InputDecoration(
               hintText: '0.00',
               suffixText: currency,
               filled: true,
               fillColor: AppColors.white,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border, width: 3),
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: AppColors.border, width: 3.r),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary, width: 3),
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: AppColors.primary, width: 3.r),
               ),
             ),
             autofocus: true,

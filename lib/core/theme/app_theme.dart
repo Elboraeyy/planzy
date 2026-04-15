@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
@@ -22,36 +23,36 @@ class AppTheme {
         centerTitle: false,
         titleTextStyle: GoogleFonts.spaceGrotesk(
           color: AppColors.textDark,
-          fontSize: 24,
+          fontSize: 24.sp,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
         ),
-        iconTheme: const IconThemeData(color: AppColors.textDark, size: 28),
+        iconTheme: IconThemeData(color: AppColors.textDark, size: 28.r),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.secondary,
         foregroundColor: AppColors.textDark,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.border, width: 3),
+          borderRadius: BorderRadius.circular(16.r),
+          side: BorderSide(color: AppColors.border, width: 3.r),
         ),
         elevation: 0,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border, width: 3),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: AppColors.border, width: 3.r),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 3),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: AppColors.primary, width: 3.r),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 3),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: Colors.red, width: 3.r),
         ),
         hintStyle: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.w600),
       ),

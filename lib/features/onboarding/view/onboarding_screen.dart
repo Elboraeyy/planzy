@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -73,47 +74,47 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final page = _pages[index];
                   return Padding(
-                    padding: const EdgeInsets.all(32.0),
+                    padding: EdgeInsets.all(32.r),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Large Neo-Brutalist Icon
                         Container(
-                          width: 160,
-                          height: 160,
+                          width: 160.r,
+                          height: 160.r,
                           decoration: BoxDecoration(
                             color: page.color,
-                            borderRadius: BorderRadius.circular(32),
-                            border: Border.all(color: AppColors.border, width: 4),
-                            boxShadow: const [
+                            borderRadius: BorderRadius.circular(32.r),
+                            border: Border.all(color: AppColors.border, width: 4.r),
+                            boxShadow: [
                               BoxShadow(
                                 color: AppColors.border,
-                                offset: Offset(10, 10),
+                                offset: Offset(10.w, 10.h),
                               ),
                             ],
                           ),
-                          child: Icon(page.icon, size: 80, color: AppColors.textDark),
+                          child: Icon(page.icon, size: 80.r, color: AppColors.textDark),
                         ).animate(key: ValueKey(index)).scale(curve: Curves.elasticOut, duration: 800.ms),
                         
-                        const Gap(60),
+                        Gap(60.h),
                         
                         Text(
                           page.title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 32,
+                          style: TextStyle(
+                            fontSize: 32.sp,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1,
                           ),
                         ).animate(key: ValueKey('title_$index')).fadeIn().slideY(begin: 0.3),
                         
-                        const Gap(24),
+                        Gap(24.h),
                         
                         Text(
                           page.description,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textLight,
                           ),
@@ -127,7 +128,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             
             // Bottom Controls
             Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: EdgeInsets.all(32.r),
               child: Column(
                 children: [
                   // Indicators
@@ -137,19 +138,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       _pages.length,
                       (index) => AnimatedContainer(
                         duration: 300.ms,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentPage == index ? 32 : 12,
-                        height: 12,
+                        margin: EdgeInsets.symmetric(horizontal: 4.w),
+                        width: _currentPage == index ? 32.w : 12.w,
+                        height: 12.h,
                         decoration: BoxDecoration(
                           color: _currentPage == index ? AppColors.primary : AppColors.border.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: AppColors.border, width: 2),
+                          borderRadius: BorderRadius.circular(6.r),
+                          border: Border.all(color: AppColors.border, width: 2.r),
                         ),
                       ),
                     ),
                   ),
                   
-                  const Gap(40),
+                  Gap(40.h),
                   
                   // Action Button
                   NeoButton(

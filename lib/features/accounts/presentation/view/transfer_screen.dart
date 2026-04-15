@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -84,9 +85,9 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transfer'),
+        title: Text('TRANSFER', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
         leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
           onPressed: () => context.pop(),
         ),
       ),
@@ -95,14 +96,14 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
           if (accounts.length < 2) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32.r),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('You need at least 2 accounts to make a transfer.',
+                    Text('You need at least 2 accounts to make a transfer.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                    const Gap(24),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700)),
+                    Gap(24.h),
                     NeoButton(
                       text: 'ADD ACCOUNT',
                       onPressed: () => context.push('/add-account'),
@@ -118,11 +119,11 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
           final toAccount = accounts.where((a) => a.id == _toAccountId).firstOrNull;
 
           return ListView(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24.r),
             children: [
               // ═══════ FROM ═══════
-              const Text('FROM', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              const Gap(12),
+              Text('FROM', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              Gap(12.h),
               _AccountSelector(
                 accounts: accounts,
                 selectedId: _fromAccountId,
@@ -131,27 +132,27 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 onSelected: (id) => setState(() => _fromAccountId = id),
               ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.1),
 
-              const Gap(8),
+              Gap(8.h),
 
               // Arrow indicator
               Center(
                 child: Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10.r),
                   decoration: BoxDecoration(
                     color: AppColors.cardYellow,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border, width: 2),
-                    boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))],
+                    border: Border.all(color: AppColors.border, width: 2.r),
+                    boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
                   ),
-                  child: const Icon(LucideIcons.arrowDown, size: 20, color: AppColors.textDark),
+                  child: Icon(LucideIcons.arrowDown, size: 20.r, color: AppColors.textDark),
                 ),
               ).animate().fadeIn(delay: 200.ms).scale(curve: Curves.easeOutBack),
 
-              const Gap(8),
+              Gap(8.h),
 
               // ═══════ TO ═══════
-              const Text('TO', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              const Gap(12),
+              Text('TO', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              Gap(12.h),
               _AccountSelector(
                 accounts: accounts,
                 selectedId: _toAccountId,
@@ -160,37 +161,37 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 onSelected: (id) => setState(() => _toAccountId = id),
               ).animate().fadeIn(delay: 300.ms).slideX(begin: 0.1),
 
-              const Gap(32),
+              Gap(32.h),
 
               // ═══════ Amount ═══════
-              const Text('AMOUNT', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              const Gap(12),
+              Text('AMOUNT', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              Gap(12.h),
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border, width: 3),
-                  boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(4, 4))],
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.border, width: 3.r),
+                  boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))],
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
+                      decoration: BoxDecoration(
                         color: AppColors.secondary,
-                        border: Border(right: BorderSide(color: AppColors.border, width: 3)),
+                        border: Border(right: BorderSide(color: AppColors.border, width: 3.r)),
                       ),
-                      child: Text(currency, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                      child: Text(currency, style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900)),
                     ),
                     Expanded(
                       child: TextField(
                         controller: _amountController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
-                        decoration: const InputDecoration(
+                        style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w900),
+                        decoration: InputDecoration(
                           hintText: '0.00',
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                         ),
                       ),
                     ),
@@ -198,61 +199,61 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 ),
               ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.1),
 
-              const Gap(24),
+              Gap(24.h),
 
               // ═══════ Fee (optional) ═══════
-              const Text('TRANSFER FEE', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              const Gap(4),
-              const Text('Deducted from source account', style: TextStyle(color: AppColors.textLight, fontSize: 12, fontWeight: FontWeight.w600)),
-              const Gap(12),
+              Text('TRANSFER FEE', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              Gap(4.h),
+              Text('Deducted from source account', style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.w600)),
+              Gap(12.h),
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border, width: 2),
-                  boxShadow: const [BoxShadow(color: AppColors.border, offset: Offset(2, 2))],
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.border, width: 2.r),
+                  boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
                 ),
                 child: TextField(
                   controller: _feeController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
                   decoration: InputDecoration(
                     hintText: '0',
-                    prefixIcon: const Icon(LucideIcons.percent, color: AppColors.textLight),
+                    prefixIcon: Icon(LucideIcons.percent, color: AppColors.textLight, size: 20.r),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                     suffixText: currency,
-                    suffixStyle: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textLight),
+                    suffixStyle: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textLight, fontSize: 14.sp),
                   ),
                 ),
               ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
 
               // Summary preview
               if (fromAccount != null && toAccount != null && _amountController.text.isNotEmpty) ...[
-                const Gap(24),
+                Gap(24.h),
                 NeoCard(
                   backgroundColor: AppColors.background,
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.r),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${fromAccount.name}:', style: const TextStyle(fontWeight: FontWeight.w700)),
+                          Text('${fromAccount.name}:', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.sp)),
                           Text(
                             NumberFormat.decimalPattern().format(fromAccount.balance),
-                            style: const TextStyle(fontWeight: FontWeight.w900),
+                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
                           ),
                         ],
                       ),
-                      const Gap(4),
+                      Gap(4.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${toAccount.name}:', style: const TextStyle(fontWeight: FontWeight.w700)),
+                          Text('${toAccount.name}:', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.sp)),
                           Text(
                             NumberFormat.decimalPattern().format(toAccount.balance),
-                            style: const TextStyle(fontWeight: FontWeight.w900),
+                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
                           ),
                         ],
                       ),
@@ -261,7 +262,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 ),
               ],
 
-              const Gap(40),
+              Gap(40.h),
 
               // ═══════ Transfer Button ═══════
               NeoButton(
@@ -270,7 +271,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 backgroundColor: AppColors.cardBlue,
               ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
 
-              const Gap(100),
+              Gap(100.h),
             ],
           );
         },
@@ -304,11 +305,11 @@ class _AccountSelector extends StatelessWidget {
     final filteredAccounts = accounts.where((a) => a.id != excludeId).toList();
 
     return SizedBox(
-      height: 80,
+      height: 84.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: filteredAccounts.length,
-        separatorBuilder: (context, index) => const Gap(10),
+        separatorBuilder: (context, index) => Gap(12.w),
         itemBuilder: (context, index) {
           final account = filteredAccounts[index];
           final isSelected = account.id == selectedId;
@@ -317,12 +318,12 @@ class _AccountSelector extends StatelessWidget {
             onTap: () => onSelected(account.id),
             child: AnimatedContainer(
               duration: 200.ms,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary : AppColors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border, width: 2),
-                boxShadow: isSelected ? const [BoxShadow(color: AppColors.border, offset: Offset(3, 3))] : null,
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: AppColors.border, width: 2.r),
+                boxShadow: isSelected ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))] : null,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,16 +333,16 @@ class _AccountSelector extends StatelessWidget {
                     account.name,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       color: isSelected ? AppColors.white : AppColors.textDark,
                     ),
                   ),
-                  const Gap(4),
+                  Gap(4.h),
                   Text(
                     '${NumberFormat.compact().format(account.balance)} $currency',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       color: isSelected ? Colors.white70 : AppColors.textLight,
                     ),
                   ),
@@ -354,3 +355,5 @@ class _AccountSelector extends StatelessWidget {
     );
   }
 }
+
+

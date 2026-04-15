@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
@@ -25,18 +26,18 @@ class TimelineScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TIMELINE'),
+        title: Text('TIMELINE', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 16),
+            margin: EdgeInsets.only(right: 16.w),
             decoration: BoxDecoration(
               color: AppColors.secondary,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.border, width: 2),
+              border: Border.all(color: AppColors.border, width: 2.r),
             ),
             child: IconButton(
               onPressed: () {},
-              icon: const Icon(LucideIcons.calendar, size: 20),
+              icon: Icon(LucideIcons.calendar, size: 20.r),
             ),
           ).animate().scale(delay: 200.ms, curve: Curves.easeOutBack),
         ],
@@ -45,10 +46,10 @@ class TimelineScreen extends ConsumerWidget {
         data: (commitments) {
           if (commitments.isEmpty) {
             return Center(
-              child: const NeoCard(
+              child: NeoCard(
                 child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: Text('NO EVENTS FOUND', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight)),
+                  padding: EdgeInsets.all(32.r),
+                  child: Text('NO EVENTS FOUND', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 16.sp)),
                 ),
               ).animate().fadeIn(delay: 200.ms),
             );
@@ -61,24 +62,24 @@ class TimelineScreen extends ConsumerWidget {
           final currentMonthName = DateFormat('MMMM yyyy').format(now).toUpperCase();
 
           return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.border, width: 2),
-                      boxShadow: const [
-                        BoxShadow(color: AppColors.border, offset: Offset(3, 3)),
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(color: AppColors.border, width: 2.r),
+                      boxShadow: [
+                        BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h)),
                       ]
                     ),
                     child: Text(
                       currentMonthName,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w900,
                         color: AppColors.white,
                         letterSpacing: 1,
@@ -87,13 +88,13 @@ class TimelineScreen extends ConsumerWidget {
                   ).animate().slideX(begin: -0.2, curve: Curves.easeOutBack),
                 ],
               ),
-              const Gap(24),
+              Gap(24.h),
               Container(
-                margin: const EdgeInsets.only(left: 20, bottom: 24),
-                padding: const EdgeInsets.only(left: 24),
-                decoration: const BoxDecoration(
+                margin: EdgeInsets.only(left: 20.w, bottom: 24.h),
+                padding: EdgeInsets.only(left: 24.w),
+                decoration: BoxDecoration(
                   border: Border(
-                    left: BorderSide(color: AppColors.textDark, width: 4),
+                    left: BorderSide(color: AppColors.textDark, width: 4.w),
                   ),
                 ),
                 child: Column(
@@ -102,20 +103,20 @@ class TimelineScreen extends ConsumerWidget {
                     final item = entry.value;
                     
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 24.0),
+                      padding: EdgeInsets.only(bottom: 24.h),
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
                           Positioned(
-                            left: -40,
-                            top: 20,
+                            left: -40.r, // Position based on ScreenUtil radius for consistency
+                            top: 20.h,
                             child: Container(
-                              width: 24,
-                              height: 24,
+                              width: 24.r,
+                              height: 24.r,
                               decoration: BoxDecoration(
                                 color: AppColors.cardYellow,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.border, width: 3),
+                                border: Border.all(color: AppColors.border, width: 3.r),
                               ),
                             ).animate(onPlay: (controller) => controller.repeat(reverse: true))
                              .scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 1.seconds),
@@ -133,31 +134,31 @@ class TimelineScreen extends ConsumerWidget {
                               },
                             ),
                             child: NeoCard(
-                              padding: const EdgeInsets.all(16),
+                              padding: EdgeInsets.all(16.r),
                               child: Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(12),
+                                    padding: EdgeInsets.all(12.r),
                                     decoration: BoxDecoration(
                                       color: AppColors.cardBlue,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: AppColors.border, width: 2),
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      border: Border.all(color: AppColors.border, width: 2.r),
                                     ),
-                                    child: const Icon(LucideIcons.repeat, color: AppColors.textDark),
+                                    child: Icon(LucideIcons.repeat, color: AppColors.textDark, size: 24.r),
                                   ),
-                                  const Gap(16),
+                                  Gap(16.w),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           item.title.toUpperCase(),
-                                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.5),
+                                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: -0.5),
                                         ),
-                                        const Gap(4),
+                                        Gap(4.h),
                                         Text(
                                           DateFormat('dd MMM yyyy').format(item.startDate).toUpperCase(),
-                                          style: const TextStyle(color: AppColors.textLight, fontSize: 12, fontWeight: FontWeight.bold),
+                                          style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
@@ -167,9 +168,9 @@ class TimelineScreen extends ConsumerWidget {
                                     children: [
                                        Text(
                                           NumberFormat.compact().format(item.amount),
-                                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+                                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp),
                                         ),
-                                        Text(currency, style: const TextStyle(color: AppColors.textLight, fontSize: 10, fontWeight: FontWeight.bold)),
+                                        Text(currency, style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                                     ],
                                   ),
                                 ],

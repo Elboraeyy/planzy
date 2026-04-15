@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -54,34 +55,34 @@ class ProfileScreen extends ConsumerWidget {
             );
 
             return ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
               children: [
                 // Top bar with settings icon
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'PROFILE',
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: -1),
+                      style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
                     ),
                     GestureDetector(
                       onTap: () => context.push('/settings'),
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12.r),
                         decoration: BoxDecoration(
                           color: AppColors.cardYellow,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border, width: 3),
-                          boxShadow: const [
-                            BoxShadow(color: AppColors.border, offset: Offset(4, 4)),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(color: AppColors.border, width: 3.r),
+                          boxShadow: [
+                            BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h)),
                           ],
                         ),
-                        child: const Icon(LucideIcons.settings, color: AppColors.textDark, size: 22),
+                        child: Icon(LucideIcons.settings, color: AppColors.textDark, size: 22.r),
                       ),
                     ).animate().slideX(begin: 1, curve: Curves.easeOutBack),
                   ],
                 ),
-                const Gap(32),
+                Gap(32.h),
 
                 // Profile Card — big hero section
                 SizedBox(
@@ -91,24 +92,24 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       NeoCard(
                             backgroundColor: AppColors.primary,
-                            padding: const EdgeInsets.all(28),
+                            padding: EdgeInsets.all(28.r),
                             child: Column(
                               children: [
                                 // Avatar
                                 Container(
-                                  width: 100,
-                                  height: 100,
+                                  width: 100.r,
+                                  height: 100.r,
                                   decoration: BoxDecoration(
                                     color: AppColors.secondary,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: AppColors.border,
-                                      width: 4,
+                                      width: 4.r,
                                     ),
-                                    boxShadow: const [
+                                    boxShadow: [
                                       BoxShadow(
                                         color: AppColors.border,
-                                        offset: Offset(4, 4),
+                                        offset: Offset(4.w, 4.h),
                                       ),
                                     ],
                                     image:
@@ -130,8 +131,8 @@ class ProfileScreen extends ConsumerWidget {
                                             userName.isNotEmpty
                                                 ? userName[0].toUpperCase()
                                                 : 'P',
-                                            style: const TextStyle(
-                                              fontSize: 40,
+                                            style: TextStyle(
+                                              fontSize: 40.sp,
                                               fontWeight: FontWeight.w900,
                                               color: AppColors.textDark,
                                             ),
@@ -139,13 +140,13 @@ class ProfileScreen extends ConsumerWidget {
                                         )
                                       : null,
                                 ).animate().scale(curve: Curves.easeOutBack),
-                                const Gap(20),
+                                Gap(20.h),
 
                                 // Name
                                 Text(
                                   userName.toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 28,
+                                  style: TextStyle(
+                                    fontSize: 28.sp,
                                     fontWeight: FontWeight.w900,
                                     color: AppColors.white,
                                     letterSpacing: -0.5,
@@ -153,11 +154,11 @@ class ProfileScreen extends ConsumerWidget {
                                 ).animate().fadeIn(delay: 100.ms),
 
                                 if (userBio.isNotEmpty) ...[
-                                  const Gap(8),
+                                  Gap(8.h),
                                   Text(
                                     userBio,
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.white.withValues(
                                         alpha: 0.7,
@@ -168,22 +169,22 @@ class ProfileScreen extends ConsumerWidget {
                                 ],
 
                                 if (userEmail.isNotEmpty) ...[
-                                  const Gap(8),
+                                  Gap(8.h),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 6,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w,
+                                      vertical: 6.h,
                                     ),
                                     decoration: BoxDecoration(
                                       color: AppColors.white.withValues(
                                         alpha: 0.15,
                                       ),
-                                      borderRadius: BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20.r),
                                     ),
                                     child: Text(
                                       userEmail,
                                       style: TextStyle(
-                                        fontSize: 13,
+                                        fontSize: 13.sp,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.white.withValues(
                                           alpha: 0.8,
@@ -201,31 +202,31 @@ class ProfileScreen extends ConsumerWidget {
 
                       // Edit button - top left corner
                       Positioned(
-                        top: 12,
-                        left: 12,
+                        top: 12.h,
+                        left: 12.w,
                         child:
                             GestureDetector(
                                   onTap: () => context.push('/edit-profile'),
                                   child: Container(
-                                    padding: const EdgeInsets.all(10),
+                                    padding: EdgeInsets.all(10.r),
                                     decoration: BoxDecoration(
                                       color: AppColors.secondary,
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10.r),
                                       border: Border.all(
                                         color: AppColors.border,
-                                        width: 3,
+                                        width: 3.r,
                                       ),
-                                      boxShadow: const [
+                                      boxShadow: [
                                         BoxShadow(
                                           color: AppColors.border,
-                                          offset: Offset(3, 3),
+                                          offset: Offset(3.w, 3.h),
                                         ),
                                       ],
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       LucideIcons.pencil,
                                       color: AppColors.textDark,
-                                      size: 18,
+                                      size: 18.r,
                                     ),
                                   ),
                                 )
@@ -241,7 +242,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
 
-                const Gap(32),
+                Gap(32.h),
 
                 // MY VAULT - Quick Action
                 _QuickActionTile(
@@ -260,7 +261,7 @@ class ProfileScreen extends ConsumerWidget {
                     )
                     .fadeIn(),
 
-                const Gap(32),
+                Gap(32.h),
 
                 // Stats Grid
                 Row(
@@ -274,7 +275,7 @@ class ProfileScreen extends ConsumerWidget {
                         delay: 0,
                       ),
                     ),
-                    const Gap(16),
+                    Gap(16.w),
                     Expanded(
                       child: _StatCard(
                         label: 'SAVED',
@@ -286,7 +287,7 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const Gap(16),
+                Gap(16.h),
                 Row(
                   children: [
                     Expanded(
@@ -298,7 +299,7 @@ class ProfileScreen extends ConsumerWidget {
                         delay: 200,
                       ),
                     ),
-                    const Gap(16),
+                    Gap(16.w),
                     Expanded(
                       child: _StatCard(
                         label: 'CURRENCY',
@@ -311,14 +312,14 @@ class ProfileScreen extends ConsumerWidget {
                   ],
                 ),
 
-                const Gap(40),
+                Gap(40.h),
 
                 // Quick Actions
-                const Text(
+                Text(
                   'QUICK ACTIONS',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1),
+                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
                 ).animate().fadeIn(delay: 400.ms),
-                const Gap(16),
+                Gap(16.h),
 
                 _QuickActionTile(
                   icon: LucideIcons.receipt,
@@ -329,18 +330,18 @@ class ProfileScreen extends ConsumerWidget {
                   delay: 500,
                 ),
 
-                const Gap(32),
+                Gap(32.h),
 
                 // ABOUT section
-                const Text(
+                Text(
                   'ABOUT',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1,
                   ),
                 ).animate().fadeIn(delay: 700.ms),
-                const Gap(16),
+                Gap(16.h),
 
                 NeoCard(
                       backgroundColor: AppColors.white,
@@ -348,47 +349,47 @@ class ProfileScreen extends ConsumerWidget {
                       isInteractive: true,
                       onTap: () {},
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 16.h,
                         ),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12.r),
                               decoration: BoxDecoration(
                                 color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10.r),
                                 border: Border.all(
                                   color: AppColors.border,
-                                  width: 2,
+                                  width: 2.r,
                                 ),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 LucideIcons.sparkles,
                                 color: AppColors.textDark,
-                                size: 20,
+                                size: 20.r,
                               ),
                             ),
-                            const Gap(16),
+                            Gap(16.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'PLANZY',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w900,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
-                                  const Gap(2),
-                                  const Text(
+                                  Gap(2.h),
+                                  Text(
                                     'VERSION 1.0.0',
                                     style: TextStyle(
                                       color: AppColors.textLight,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -407,7 +408,7 @@ class ProfileScreen extends ConsumerWidget {
                     )
                     .fadeIn(),
 
-                const Gap(12),
+                Gap(12.h),
 
                 NeoCard(
                       backgroundColor: AppColors.white,
@@ -415,57 +416,57 @@ class ProfileScreen extends ConsumerWidget {
                       isInteractive: true,
                       onTap: () {},
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 16.h,
                         ),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12.r),
                               decoration: BoxDecoration(
                                 color: AppColors.cardYellow,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10.r),
                                 border: Border.all(
                                   color: AppColors.border,
-                                  width: 2,
+                                  width: 2.r,
                                 ),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 LucideIcons.helpCircle,
                                 color: AppColors.textDark,
-                                size: 20,
+                                size: 20.r,
                               ),
                             ),
-                            const Gap(16),
+                            Gap(16.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'HELP & SUPPORT',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w900,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
-                                  const Gap(2),
-                                  const Text(
+                                  Gap(2.h),
+                                  Text(
                                     'Get help or contact us',
                                     style: TextStyle(
                                       color: AppColors.textLight,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               LucideIcons.chevronRight,
                               color: AppColors.textLight,
-                              size: 20,
+                              size: 20.r,
                             ),
                           ],
                         ),
@@ -479,7 +480,7 @@ class ProfileScreen extends ConsumerWidget {
                     )
                     .fadeIn(),
 
-                const Gap(12),
+                Gap(12.h),
 
                 NeoCard(
                       backgroundColor: AppColors.white,
@@ -487,57 +488,57 @@ class ProfileScreen extends ConsumerWidget {
                       isInteractive: true,
                       onTap: () {},
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 16.h,
                         ),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12.r),
                               decoration: BoxDecoration(
                                 color: AppColors.cardBlue,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10.r),
                                 border: Border.all(
                                   color: AppColors.border,
-                                  width: 2,
+                                  width: 2.r,
                                 ),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 LucideIcons.shield,
                                 color: AppColors.textDark,
-                                size: 20,
+                                size: 20.r,
                               ),
                             ),
-                            const Gap(16),
+                            Gap(16.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'PRIVACY POLICY',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w900,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
-                                  const Gap(2),
-                                  const Text(
+                                  Gap(2.h),
+                                  Text(
                                     'Read our privacy policy',
                                     style: TextStyle(
                                       color: AppColors.textLight,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               LucideIcons.chevronRight,
                               color: AppColors.textLight,
-                              size: 20,
+                              size: 20.r,
                             ),
                           ],
                         ),
@@ -551,7 +552,7 @@ class ProfileScreen extends ConsumerWidget {
                     )
                     .fadeIn(),
 
-                const Gap(100),
+                Gap(100.h),
               ],
             );
           },
@@ -582,24 +583,24 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return NeoCard(
       backgroundColor: color,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.border, width: 2),
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(color: AppColors.border, width: 2.r),
             ),
-            child: Icon(icon, color: AppColors.textDark, size: 18),
+            child: Icon(icon, color: AppColors.textDark, size: 18.r),
           ),
-          const Gap(12),
-          Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.textDark, letterSpacing: 1)),
-          const Gap(4),
+          Gap(12.h),
+          Text(label, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: AppColors.textDark, letterSpacing: 1)),
+          Gap(4.h),
           FittedBox(
-            child: Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -1)),
+            child: Text(value, style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900, letterSpacing: -1)),
           ),
         ],
       ),
@@ -632,30 +633,30 @@ class _QuickActionTile extends StatelessWidget {
       isInteractive: true,
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12.r),
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border, width: 2),
+                borderRadius: BorderRadius.circular(10.r),
+                border: Border.all(color: AppColors.border, width: 2.r),
               ),
-              child: Icon(icon, color: AppColors.textDark, size: 20),
+              child: Icon(icon, color: AppColors.textDark, size: 20.r),
             ),
-            const Gap(16),
+            Gap(16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.5)),
-                  const Gap(2),
-                  Text(subtitle, style: const TextStyle(color: AppColors.textLight, fontSize: 12, fontWeight: FontWeight.w600)),
+                  Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: -0.5)),
+                  Gap(2.h),
+                  Text(subtitle, style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
-            const Icon(LucideIcons.chevronRight, color: AppColors.textLight, size: 20),
+            Icon(LucideIcons.chevronRight, color: AppColors.textLight, size: 20.r),
           ],
         ),
       ),

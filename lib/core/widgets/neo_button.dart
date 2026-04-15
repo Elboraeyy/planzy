@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 
 class NeoButton extends StatefulWidget {
@@ -31,7 +32,7 @@ class _NeoButtonState extends State<NeoButton> {
 
   @override
   Widget build(BuildContext context) {
-    const double shadowOffset = 6.0;
+    final double shadowOffset = 6.0.r;
 
     return GestureDetector(
       onTapDown: _handleTapDown,
@@ -41,16 +42,16 @@ class _NeoButtonState extends State<NeoButton> {
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeOutBack,
         transform: Matrix4.translationValues(
-          _isPressed ? shadowOffset - 2 : 0, 
-          _isPressed ? shadowOffset - 2 : 0, 
+          _isPressed ? shadowOffset - 2.r : 0, 
+          _isPressed ? shadowOffset - 2.r : 0, 
           0
         ),
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: EdgeInsets.symmetric(vertical: 20.h),
         decoration: BoxDecoration(
           color: widget.backgroundColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border, width: 3),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: AppColors.border, width: 3.r),
           boxShadow: [
             BoxShadow(
               color: AppColors.border,
@@ -65,8 +66,8 @@ class _NeoButtonState extends State<NeoButton> {
           child: Text(
             widget.text.toUpperCase(),
             style: TextStyle(
-              color: widget.textColor, // With Neo-brutalism, button text is often bold black
-              fontSize: 18,
+              color: widget.textColor,
+              fontSize: 18.sp,
               fontWeight: FontWeight.w900,
               letterSpacing: 2.0,
             ),

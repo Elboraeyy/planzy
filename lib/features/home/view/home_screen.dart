@@ -103,6 +103,20 @@ class _HomeHeaderWidget extends ConsumerWidget {
 // Financial Dashboard — Swipeable month card + day scroller + feed
 // ──────────────────────────────────────────────────────────────
 
+enum DateRangeFilter {
+  thisMonth('THIS MONTH', '📅'),
+  today('TODAY', '☀️'),
+  thisWeek('THIS WEEK', '📆'),
+  lastMonth('LAST MONTH', '⏪'),
+  thisYear('THIS YEAR', '🗓️'),
+  allTime('ALL TIME', '♾️'),
+  custom('CUSTOM', '🎯');
+
+  final String label;
+  final String emoji;
+  const DateRangeFilter(this.label, this.emoji);
+}
+
 class _FinancialDashboard extends ConsumerStatefulWidget {
   const _FinancialDashboard();
 
@@ -119,6 +133,11 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
 
   // We allow swiping from 3 years ago to current month
   static const int _totalMonths = 36;
+
+  // Date range filter
+  DateRangeFilter _activeFilter = DateRangeFilter.thisMonth;
+  DateTime? _customStart;
+  DateTime? _customEnd;
 
   @override
   void initState() {
@@ -191,6 +210,195 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     }
   }
 
+  void _goToToday() {
+    final now = DateTime.now();
+    setState(() {
+      _selectedMonth = DateTime(now.year, now.month);
+      _selectedDay = DateTime(now.year, now.month, now.day);
+      _activeFilter = DateRangeFilter.thisMonth;
+    });
+    _pageController.animateToPage(
+      _totalMonths - 1,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutBack,
+    );
+    _scrollToDay(_selectedDay, _daysInMonth(_selectedMonth));
+  }
+
+  /// Get date range from the active filter
+  (DateTime, DateTime) _getFilterDateRange() {
+    final now = DateTime.now();
+    switch (_activeFilter) {
+      case DateRangeFilter.today:
+        final start = DateTime(now.year, now.month, now.day);
+        return (start, now);
+      case DateRangeFilter.thisWeek:
+        final weekday = now.weekday; // Mon=1 .. Sun=7
+        final start = DateTime(now.year, now.month, now.day - (weekday - 1));
+        return (start, now);
+      case DateRangeFilter.thisMonth:
+        final start = DateTime(now.year, now.month, 1);
+        return (start, now);
+      case DateRangeFilter.lastMonth:
+        final start = DateTime(now.year, now.month - 1, 1);
+        final end = DateTime(now.year, now.month, 0, 23, 59, 59);
+        return (start, end);
+      case DateRangeFilter.thisYear:
+        final start = DateTime(now.year, 1, 1);
+        return (start, now);
+      case DateRangeFilter.allTime:
+        final start = DateTime(2000, 1, 1);
+        return (start, now);
+      case DateRangeFilter.custom:
+        return (
+          _customStart ?? DateTime(now.year, now.month, 1),
+          _customEnd ?? now,
+        );
+    }
+  }
+
+  void _onFilterSelected(DateRangeFilter filter) {
+    if (filter == DateRangeFilter.custom) {
+      _showCustomRangePicker();
+      return;
+    }
+    setState(() => _activeFilter = filter);
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _showCustomRangePicker() async {
+    Navigator.of(context).pop(); // close the filter sheet first
+    final now = DateTime.now();
+    final startPicked = await NeoDatePicker.show(
+      context: context,
+      initialDate: _customStart ?? DateTime(now.year, now.month, 1),
+      firstDate: DateTime(now.year - 3),
+      lastDate: now,
+    );
+    if (startPicked == null || !mounted) return;
+
+    final endPicked = await NeoDatePicker.show(
+      context: context,
+      initialDate: _customEnd ?? now,
+      firstDate: startPicked,
+      lastDate: now,
+    );
+    if (endPicked == null || !mounted) return;
+
+    setState(() {
+      _activeFilter = DateRangeFilter.custom;
+      _customStart = startPicked;
+      _customEnd = endPicked;
+    });
+  }
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Container(
+          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          padding: EdgeInsets.fromLTRB(16.r, 12.r, 16.r, 20.r),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(24.r),
+            border: Border.all(color: AppColors.border, width: 3.r),
+            boxShadow: [
+              BoxShadow(color: AppColors.border, offset: Offset(6.w, 6.h)),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle
+              Container(
+                width: 40.w, height: 5.h,
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(3.r),
+                ),
+              ),
+              Gap(16.h),
+              // Title row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(LucideIcons.filter, size: 18.r, color: AppColors.cardYellow),
+                  Gap(8.w),
+                  Text(
+                    'SHOW DATA FOR',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ],
+              ),
+              Gap(20.h),
+              // Grid of filter options
+              Wrap(
+                spacing: 10.w,
+                runSpacing: 10.h,
+                children: DateRangeFilter.values.map((filter) {
+                  final isActive = _activeFilter == filter;
+                  final isCustom = filter == DateRangeFilter.custom;
+                  return GestureDetector(
+                    onTap: () => _onFilterSelected(filter),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isCustom ? 20.w : 16.w,
+                        vertical: 12.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? AppColors.secondary
+                            : AppColors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(14.r),
+                        border: Border.all(
+                          color: isActive ? AppColors.border : AppColors.white.withValues(alpha: 0.25),
+                          width: isActive ? 3.r : 2.r,
+                        ),
+                        boxShadow: isActive
+                            ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(filter.emoji, style: TextStyle(fontSize: 16.sp)),
+                          Gap(8.w),
+                          Text(
+                            filter.label,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w900,
+                              color: isActive ? AppColors.textDark : AppColors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          if (isActive) ...[
+                            Gap(6.w),
+                            Icon(LucideIcons.check, size: 14.r, color: AppColors.textDark),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              Gap(8.h),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final transactionsAsync = ref.watch(transactionsProvider);
@@ -205,10 +413,14 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
 
     final allTransactions = transactionsAsync.valueOrNull ?? [];
 
-    // Month stats
-    final monthTransactions = allTransactions.where((t) =>
-      t.date.year == _selectedMonth.year && t.date.month == _selectedMonth.month
+    // Filter transactions based on active date range filter
+    final (filterStart, filterEnd) = _getFilterDateRange();
+    final filteredTransactions = allTransactions.where((t) =>
+      !t.date.isBefore(filterStart) && !t.date.isAfter(filterEnd)
     ).toList();
+
+    // Month stats (using filtered data)
+    final monthTransactions = filteredTransactions;
 
     double monthIncome = 0;
     double monthExpense = 0;
@@ -221,17 +433,35 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     }
     final balance = monthIncome - monthExpense;
 
-    // Day transactions
-    final dayTransactions = allTransactions.where((t) =>
+    // Day transactions (filtered by selected day)
+    final dayTransactions = filteredTransactions.where((t) =>
       t.date.year == _selectedDay.year &&
       t.date.month == _selectedDay.month &&
       t.date.day == _selectedDay.day
     ).toList()
       ..sort((a, b) => b.date.compareTo(a.date));
 
-    final days = _daysInMonth(_selectedMonth);
+    // Build days list based on filter range
+    final bool isDefaultFilter = _activeFilter == DateRangeFilter.thisMonth;
+    final List<DateTime> days;
+    if (isDefaultFilter) {
+      days = _daysInMonth(_selectedMonth);
+    } else {
+      // Generate all days within the filter range
+      final daysList = <DateTime>[];
+      var cursor = DateTime(filterStart.year, filterStart.month, filterStart.day);
+      final endDay = DateTime(filterEnd.year, filterEnd.month, filterEnd.day);
+      while (!cursor.isAfter(endDay)) {
+        daysList.add(cursor);
+        cursor = cursor.add(const Duration(days: 1));
+      }
+      days = daysList;
+    }
+
     final now = DateTime.now();
-    final isCurrentMonth = _selectedMonth.year == now.year && _selectedMonth.month == now.month;
+    final isTodaySelected = _selectedDay.year == now.year &&
+        _selectedDay.month == now.month &&
+        _selectedDay.day == now.day;
 
     // Auto-scroll to current day on first build
     if (!_hasInitScrolled) {
@@ -246,7 +476,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
         // THE RED CARD — Swipeable month summary
         // ═══════════════════════════════════════════════
         SizedBox(
-          height: 310.h,
+          height: 320.h,
           child: PageView.builder(
             controller: _pageController,
             itemCount: _totalMonths,
@@ -276,6 +506,10 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                 currency: currency,
                 commitments: commitmentsAsync.valueOrNull ?? [],
                 index: index,
+                showTodayButton: !isTodaySelected,
+                onTodayPressed: _goToToday,
+                activeFilter: _activeFilter,
+                onFilterTap: _showFilterSheet,
               );
             },
           ),
@@ -287,84 +521,117 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
         // DAY SCROLLER
         // ═══════════════════════════════════════════════
         SizedBox(
-          height: 72.h,
+          height: 80.h,
           child: ListView.builder(
             controller: _dayScrollController,
             scrollDirection: Axis.horizontal,
             itemCount: days.length,
             itemBuilder: (context, index) {
               final day = days[index];
-              final isSelected = day.day == _selectedDay.day;
-              final isToday = isCurrentMonth && day.day == now.day;
+              final isSelected = day.year == _selectedDay.year &&
+                  day.month == _selectedDay.month &&
+                  day.day == _selectedDay.day;
+              final isToday = day.year == now.year && day.month == now.month && day.day == now.day;
               final dayName = DateFormat('E').format(day).toUpperCase().substring(0, 2);
               
               // Check if this day has transactions
-              final hasTx = allTransactions.any((t) =>
+              final hasTx = filteredTransactions.any((t) =>
                 t.date.year == day.year &&
                 t.date.month == day.month &&
                 t.date.day == day.day
               );
 
-              return Padding(
-                padding: EdgeInsets.only(right: 10.w),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() => _selectedDay = day);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOutBack,
-                    width: 58.w,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary
-                          : isToday
-                              ? AppColors.secondary.withValues(alpha: 0.3)
-                              : AppColors.white,
-                      borderRadius: BorderRadius.circular(14.r),
-                      border: Border.all(
-                        color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
-                        width: isSelected ? 3.r : 2.r,
-                      ),
-                      boxShadow: isSelected
-                          ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                          : null,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          dayName,
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w900,
-                            color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
-                            letterSpacing: 0.5,
-                          ),
+              // Show month label for first day or when month changes
+              final showMonthLabel = !isDefaultFilter && 
+                  (index == 0 || day.month != days[index - 1].month);
+
+              return Row(
+                children: [
+                  if (showMonthLabel)
+                    Padding(
+                      padding: EdgeInsets.only(right: 6.w, bottom: 6.h, top: 2.h),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardYellow,
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(color: AppColors.border, width: 2.r),
                         ),
-                        Gap(4.h),
-                        Text(
-                          '${day.day}',
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w900,
-                            color: isSelected ? AppColors.white : AppColors.textDark,
-                          ),
-                        ),
-                        if (hasTx && !isSelected) ...[
-                          Gap(2.h),
-                          Container(
-                            width: 6.r, height: 6.r,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
+                        child: RotatedBox(
+                          quarterTurns: 3,
+                          child: Text(
+                            DateFormat('MMM').format(day).toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
                             ),
                           ),
-                        ],
-                      ],
+                        ),
+                      ),
+                    ),
+                  Padding(
+                    padding: EdgeInsets.only(right: 10.w, bottom: 6.h, top: 2.h),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() => _selectedDay = day);
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutBack,
+                        width: 58.w,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary
+                              : isToday
+                                  ? AppColors.secondary.withValues(alpha: 0.3)
+                                  : AppColors.white,
+                          borderRadius: BorderRadius.circular(14.r),
+                          border: Border.all(
+                            color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
+                            width: isSelected ? 3.r : 2.r,
+                          ),
+                          boxShadow: isSelected
+                              ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
+                              : null,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              dayName,
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w900,
+                                color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Gap(4.h),
+                            Text(
+                              '${day.day}',
+                              style: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w900,
+                                color: isSelected ? AppColors.white : AppColors.textDark,
+                              ),
+                            ),
+                            if (hasTx && !isSelected) ...[
+                              Gap(2.h),
+                              Container(
+                                width: 6.r, height: 6.r,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               );
             },
           ),
@@ -512,12 +779,16 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     required String currency,
     required List<dynamic> commitments,
     required int index,
+    required bool showTodayButton,
+    required VoidCallback onTodayPressed,
+    required DateRangeFilter activeFilter,
+    required VoidCallback onFilterTap,
   }) {
     final now = DateTime.now();
     final isCurrentMonth = month.year == now.year && month.month == now.month;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 2.w),
+      margin: EdgeInsets.only(left: 2.w, right: 8.w, top: 2.h, bottom: 8.h),
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(20.r),
@@ -690,7 +961,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
           ),
           
           // Swipe hint & Buttons
-          Gap(8.h),
+          const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -701,17 +972,108 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
-                    padding: EdgeInsets.all(4.r),
-                    decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
-                    child: Icon(LucideIcons.chevronLeft, size: 16.r, color: AppColors.white),
+                    padding: EdgeInsets.all(6.r),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardYellow,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.border, width: 2.r),
+                      boxShadow: [
+                        BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
+                      ],
+                    ),
+                    child: Icon(LucideIcons.chevronLeft, size: 18.r, color: AppColors.textDark),
                   ),
                 )
               else
                 SizedBox(width: 24.w),
                 
-              Text(
-                'SWIPE FOR MONTHS',
-                style: TextStyle(color: AppColors.white.withValues(alpha: 0.5), fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+              // Filter + Today buttons
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Filter button
+                  GestureDetector(
+                    onTap: onFilterTap,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+                      decoration: BoxDecoration(
+                        color: activeFilter == DateRangeFilter.thisMonth
+                            ? AppColors.white.withValues(alpha: 0.15)
+                            : AppColors.secondary,
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: Border.all(
+                          color: activeFilter == DateRangeFilter.thisMonth
+                              ? AppColors.white.withValues(alpha: 0.3)
+                              : AppColors.border,
+                          width: 2.r,
+                        ),
+                        boxShadow: activeFilter != DateRangeFilter.thisMonth
+                            ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(activeFilter.emoji, style: TextStyle(fontSize: 11.sp)),
+                          Gap(5.w),
+                          Text(
+                            activeFilter.label,
+                            style: TextStyle(
+                              color: activeFilter == DateRangeFilter.thisMonth
+                                  ? AppColors.white
+                                  : AppColors.textDark,
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          Gap(3.w),
+                          Icon(
+                            LucideIcons.chevronDown,
+                            size: 11.r,
+                            color: activeFilter == DateRangeFilter.thisMonth
+                                ? AppColors.white.withValues(alpha: 0.6)
+                                : AppColors.textDark,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // TODAY button (only when not on today)
+                  if (showTodayButton) ...[
+                    Gap(8.w),
+                    GestureDetector(
+                      onTap: onTodayPressed,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardYellow,
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(color: AppColors.border, width: 2.r),
+                          boxShadow: [
+                            BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(LucideIcons.rotateCcw, size: 11.r, color: AppColors.textDark),
+                            Gap(4.w),
+                            Text(
+                              'TODAY',
+                              style: TextStyle(
+                                color: AppColors.textDark,
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
 
               if (index < _FinancialDashboardState._totalMonths - 1)
@@ -721,9 +1083,16 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
-                    padding: EdgeInsets.all(4.r),
-                    decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
-                    child: Icon(LucideIcons.chevronRight, size: 16.r, color: AppColors.white),
+                    padding: EdgeInsets.all(6.r),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardYellow,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.border, width: 2.r),
+                      boxShadow: [
+                        BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
+                      ],
+                    ),
+                    child: Icon(LucideIcons.chevronRight, size: 18.r, color: AppColors.textDark),
                   ),
                 )
               else

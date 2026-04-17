@@ -6,7 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
-import 'package:planzy/features/commitments/presentation/providers/commitments_provider.dart';
+
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
 import 'package:planzy/features/transactions/presentation/providers/transactions_provider.dart';
 import 'package:planzy/features/transactions/data/models/transaction.dart';
@@ -29,8 +29,7 @@ class HomeScreen extends StatelessWidget {
             Gap(32.h),
             const _FinancialDashboard(),
             Gap(32.h),
-            const _CommitmentsListWidget(),
-            Gap(24.h),
+
             const _GoalsProgressWidget(),
             Gap(80.h),
           ],
@@ -403,7 +402,6 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
   Widget build(BuildContext context) {
     final transactionsAsync = ref.watch(transactionsProvider);
     final settingsAsync = ref.watch(settingsProvider);
-    final commitmentsAsync = ref.watch(commitmentsProvider);
 
     final currency = settingsAsync.when(
       data: (s) => s.currency,
@@ -504,7 +502,6 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                 income: monthIncome,
                 expense: monthExpense,
                 currency: currency,
-                commitments: commitmentsAsync.valueOrNull ?? [],
                 index: index,
                 showTodayButton: !isTodaySelected,
                 onTodayPressed: _goToToday,
@@ -777,7 +774,6 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     required double income,
     required double expense,
     required String currency,
-    required List<dynamic> commitments,
     required int index,
     required bool showTodayButton,
     required VoidCallback onTodayPressed,
@@ -1105,114 +1101,6 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
   }
 }
 
-// ──────────────────────────────────────────────────────────────
-// Commitments (Payments) List
-// ──────────────────────────────────────────────────────────────
-
-class _CommitmentsListWidget extends ConsumerWidget {
-  const _CommitmentsListWidget();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final commitmentsAsync = ref.watch(commitmentsProvider);
-    final settingsAsync = ref.watch(settingsProvider);
-    final currency = settingsAsync.when(
-      data: (settings) => settings.currency,
-      loading: () => '',
-      error: (_, _) => '',
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'YOUR PAYMENTS',
-          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: AppColors.textDark, letterSpacing: 1),
-        ).animate().fadeIn(delay: 200.ms),
-        Gap(20.h),
-        commitmentsAsync.when(
-          data: (commitments) {
-            if (commitments.isEmpty) {
-              return NeoCard(
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.r),
-                    child: Text('NO DATA YET', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13.sp)),
-                  ),
-                ),
-              );
-            }
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: commitments.length,
-              itemBuilder: (context, index) {
-                final item = commitments[index];
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 16.h),
-                  child: GestureDetector(
-                    onLongPress: () => NeoDialog.show(
-                      context: context,
-                      title: 'DELETE PAYMENT?',
-                      message: 'Are you sure you want to remove "${item.title}"?',
-                      confirmText: 'YES, DELETE',
-                      cancelText: 'NO, KEEP IT',
-                      isDestructive: true,
-                      onConfirm: () {
-                        ref.read(commitmentsProvider.notifier).removeCommitment(item.id);
-                      },
-                    ),
-                    child: NeoCard(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12.r),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(color: AppColors.border, width: 2.r),
-                            ),
-                            child: Icon(LucideIcons.zap, color: AppColors.textDark, size: 24.r),
-                          ),
-                          Gap(16.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(item.title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, letterSpacing: -0.5)),
-                                Gap(4.h),
-                                Text(item.repeatType.name.toUpperCase(), style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                NumberFormat.decimalPattern().format(item.amount),
-                                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20.sp),
-                              ),
-                              Text(currency, style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ).animate()
-                   .slideX(begin: 0.2, delay: (100 * index).ms, curve: Curves.easeOutBack)
-                   .fadeIn(),
-                );
-              },
-            );
-          },
-          loading: () => const SizedBox(),
-          error: (err, _) => const SizedBox(),
-        ),
-      ],
-    );
-  }
-}
 
 // ──────────────────────────────────────────────────────────────
 // Goals Progress

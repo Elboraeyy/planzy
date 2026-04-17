@@ -10,7 +10,7 @@ import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
-import 'package:planzy/features/commitments/presentation/providers/commitments_provider.dart';
+
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -21,7 +21,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsProvider);
-    final commitmentsAsync = ref.watch(commitmentsProvider);
+
     final goalsAsync = ref.watch(goalsProvider);
     final currentUser = ref.watch(currentUserProvider);
 
@@ -38,11 +38,7 @@ class ProfileScreen extends ConsumerWidget {
             final profileImagePath = settings.profileImagePath;
 
             // Stats
-            final totalCommitments = commitmentsAsync.when(
-              data: (list) => list.fold<double>(0, (sum, i) => sum + i.amount),
-              loading: () => 0.0,
-              error: (_, _) => 0.0,
-            );
+
             final totalSaved = goalsAsync.when(
               data: (list) => list.fold<double>(0, (sum, i) => sum + i.savedAmount),
               loading: () => 0.0,
@@ -266,15 +262,7 @@ class ProfileScreen extends ConsumerWidget {
                 // Stats Grid
                 Row(
                   children: [
-                    Expanded(
-                      child: _StatCard(
-                        label: 'MONTHLY BURN',
-                        value: '${NumberFormat.compact().format(totalCommitments)} $currency',
-                        icon: LucideIcons.flame,
-                        color: AppColors.cardYellow,
-                        delay: 0,
-                      ),
-                    ),
+                    const Expanded(child: SizedBox()),
                     Gap(16.w),
                     Expanded(
                       child: _StatCard(

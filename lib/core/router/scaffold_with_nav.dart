@@ -72,44 +72,21 @@ class ScaffoldWithNav extends StatelessWidget {
                 style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
               ),
               Gap(24.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: NeoCard(
-                      backgroundColor: AppColors.cardYellow,
-                      onTap: () {
-                        context.pop();
-                        context.push('/add-commitment');
-                      },
-                      padding: EdgeInsets.symmetric(vertical: 24.h),
-                      child: Column(
-                        children: [
-                          Icon(LucideIcons.repeat, size: 32.r, color: AppColors.textDark),
-                          Gap(12.h),
-                          Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Gap(16.w),
-                  Expanded(
-                    child: NeoCard(
-                      backgroundColor: AppColors.secondary,
-                      onTap: () {
-                        context.pop();
-                        context.push('/add-goal');
-                      },
-                      padding: EdgeInsets.symmetric(vertical: 24.h),
-                      child: Column(
-                        children: [
-                          Icon(LucideIcons.target, size: 32.r, color: AppColors.textDark),
-                          Gap(12.h),
-                          Text('GOAL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              NeoCard(
+                backgroundColor: AppColors.secondary,
+                onTap: () {
+                  context.pop();
+                  context.push('/add-goal');
+                },
+                padding: EdgeInsets.symmetric(vertical: 20.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(LucideIcons.target, size: 28.r, color: AppColors.textDark),
+                    Gap(12.w),
+                    Text('NEW GOAL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
+                  ],
+                ),
               ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack),
               Gap(16.h),
               // New Transaction button

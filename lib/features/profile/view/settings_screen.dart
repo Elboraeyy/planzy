@@ -143,7 +143,7 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () => NeoDialog.show(
                         context: context,
                         title: 'WIPE ALL DATA?',
-                        message: 'This action cannot be undone. All your local data (settings, goals, commitments) will be permanently deleted.',
+                        message: 'This action cannot be undone. All your local data (settings, goals) will be permanently deleted.',
                         confirmText: 'YES, DELETE EVERYTHING',
                         cancelText: 'NO, KEEP MY DATA',
                         isDestructive: true,

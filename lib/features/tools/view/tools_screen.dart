@@ -147,17 +147,7 @@ class ToolsScreen extends ConsumerWidget {
                   ),
                 ),
                 Gap(16.w),
-                // Timeline Tool — preserved from old tab
-                Expanded(
-                  child: _ToolCard(
-                    emoji: '📅',
-                    title: 'TIMELINE',
-                    subtitle: 'Payment events',
-                    color: AppColors.cardBlue,
-                    onTap: () => context.push('/timeline'),
-                    delay: 400,
-                  ),
-                ),
+                const Expanded(child: SizedBox()),
               ],
             ),
 

@@ -5,11 +5,11 @@ import 'package:planzy/core/providers/auth_provider.dart';
 import 'package:planzy/core/router/scaffold_with_nav.dart';
 import 'package:planzy/features/home/view/home_screen.dart';
 import 'package:planzy/features/tools/view/tools_screen.dart';
-import 'package:planzy/features/timeline/view/timeline_screen.dart';
+
 import 'package:planzy/features/subscriptions/view/subscriptions_screen.dart';
 import 'package:planzy/features/insights/view/insights_screen.dart';
 import 'package:planzy/features/profile/view/profile_screen.dart';
-import 'package:planzy/features/commitments/view/add_commitment_screen.dart';
+
 import 'package:planzy/features/goals/view/add_goal_screen.dart';
 import 'package:planzy/features/onboarding/view/splash_screen.dart';
 import 'package:planzy/features/onboarding/view/onboarding_screen.dart';
@@ -139,10 +139,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      GoRoute(
-        path: '/add-commitment',
-        builder: (context, state) => const AddCommitmentScreen(),
-      ),
+
       GoRoute(
         path: '/add-goal',
         builder: (context, state) => const AddGoalScreen(),
@@ -170,10 +167,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/subscriptions',
         builder: (context, state) => const SubscriptionsScreen(),
       ),
-      GoRoute(
-        path: '/timeline',
-        builder: (context, state) => const TimelineScreen(),
-      ),
+
       GoRoute(
         path: '/transfer',
         builder: (context, state) => const TransferScreen(),

@@ -108,10 +108,11 @@ class _HomeHeaderWidget extends ConsumerWidget {
 // ──────────────────────────────────────────────────────────────
 
 enum DateRangeFilter {
-  thisMonth('THIS MONTH', '📅'),
   today('TODAY', '☀️'),
-  thisWeek('THIS WEEK', '📆'),
+  thisMonth('THIS MONTH', '📅'),
   lastMonth('LAST MONTH', '⏪'),
+  thisWeek('THIS WEEK', '📆'),
+  lastWeek('LAST WEEK', '⏮️'),
   thisYear('THIS YEAR', '🗓️'),
   allTime('ALL TIME', '♾️'),
   custom('CUSTOM', '🎯');
@@ -175,7 +176,9 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
   void _scrollToDay(DateTime day, List<DateTime> days) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_dayScrollController.hasClients) return;
-      final index = days.indexWhere((d) => d.day == day.day);
+      final index = days.indexWhere(
+        (d) => d.year == day.year && d.month == day.month && d.day == day.day,
+      );
       if (index < 0) return;
       final target = (index * 68.w) - (MediaQuery.of(context).size.width / 2 - 58.w);
       _dayScrollController.animateTo(
@@ -229,23 +232,59 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     _scrollToDay(_selectedDay, _daysInMonth(_selectedMonth));
   }
 
-  /// Get date range from the active filter
-  (DateTime, DateTime) _getFilterDateRange() {
+  /// Get date range from the active filter relative to a reference month
+  (DateTime, DateTime) _getFilterDateRange(DateTime referenceMonth) {
     final now = DateTime.now();
+    final isCurrentMonth = referenceMonth.year == now.year && referenceMonth.month == now.month;
+
     switch (_activeFilter) {
       case DateRangeFilter.today:
+        if (!isCurrentMonth) {
+          // If not in current month, "today" doesn't make sense, default to full month or first day
+          final start = DateTime(referenceMonth.year, referenceMonth.month, 1);
+          final end = DateTime(referenceMonth.year, referenceMonth.month + 1, 0, 23, 59, 59);
+          return (start, end);
+        }
         final start = DateTime(now.year, now.month, now.day);
         return (start, now);
       case DateRangeFilter.thisWeek:
-        final weekday = now.weekday; // Mon=1 .. Sun=7
-        final start = DateTime(now.year, now.month, now.day - (weekday - 1));
+        if (!isCurrentMonth) {
+          final start = DateTime(referenceMonth.year, referenceMonth.month, 1);
+          final end = DateTime(referenceMonth.year, referenceMonth.month + 1, 0, 23, 59, 59);
+          return (start, end);
+        }
+        final daysSinceSaturday = now.weekday % 7; // Sat=0, Sun=1, ... Fri=6
+        final start = DateTime(
+          now.year,
+          now.month,
+          now.day - daysSinceSaturday,
+        );
         return (start, now);
       case DateRangeFilter.thisMonth:
-        final start = DateTime(now.year, now.month, 1);
-        return (start, now);
+        final start = DateTime(referenceMonth.year, referenceMonth.month, 1);
+        final end = isCurrentMonth ? now : DateTime(referenceMonth.year, referenceMonth.month + 1, 0, 23, 59, 59);
+        return (start, end);
       case DateRangeFilter.lastMonth:
+        // Relative to now
         final start = DateTime(now.year, now.month - 1, 1);
         final end = DateTime(now.year, now.month, 0, 23, 59, 59);
+        return (start, end);
+      case DateRangeFilter.lastWeek:
+        // Relative to now
+        final daysSinceSaturday = now.weekday % 7; // Sat=0, Sun=1, ... Fri=6
+        final start = DateTime(
+          now.year,
+          now.month,
+          now.day - daysSinceSaturday - 7,
+        );
+        final end = DateTime(
+          start.year,
+          start.month,
+          start.day + 6,
+          23,
+          59,
+          59,
+        );
         return (start, end);
       case DateRangeFilter.thisYear:
         final start = DateTime(now.year, 1, 1);
@@ -261,12 +300,82 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     }
   }
 
+  DateTime _normalizeDate(DateTime value) {
+    return DateTime(value.year, value.month, value.day);
+  }
+
+  void _applyFilterSelection(DateRangeFilter filter) {
+    final previousFilter = _activeFilter;
+    final previousCustomStart = _customStart;
+    final previousCustomEnd = _customEnd;
+
+    setState(() => _activeFilter = filter);
+
+    final (rangeStart, rangeEnd) = _getFilterDateRange(_selectedMonth);
+    final startDay = _normalizeDate(rangeStart);
+    final endDay = _normalizeDate(rangeEnd);
+    final today = _normalizeDate(DateTime.now());
+
+    final transactions = ref.read(transactionsProvider).valueOrNull ?? [];
+    final matchingDays =
+        transactions
+            .where(
+              (t) => !t.date.isBefore(rangeStart) && !t.date.isAfter(rangeEnd),
+            )
+            .map((t) => _normalizeDate(t.date))
+            .toSet()
+            .toList()
+          ..sort((a, b) => a.compareTo(b));
+
+    final bool todayInsideRange =
+        !today.isBefore(startDay) && !today.isAfter(endDay);
+    final DateTime targetDay = todayInsideRange
+        ? today
+        : (matchingDays.isNotEmpty ? matchingDays.first : startDay);
+
+    setState(() {
+      _selectedDay = targetDay;
+      _selectedMonth = DateTime(targetDay.year, targetDay.month);
+    });
+
+    final now = DateTime.now();
+    final diff =
+        (now.year - targetDay.year) * 12 + now.month - targetDay.month;
+    final targetIndex = (_totalMonths - 1) - diff;
+    if (targetIndex >= 0 && targetIndex < _totalMonths) {
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          targetIndex,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+
+    final daysList = <DateTime>[];
+    var cursor = startDay;
+    while (!cursor.isAfter(endDay)) {
+      daysList.add(cursor);
+      cursor = cursor.add(const Duration(days: 1));
+    }
+
+    if (daysList.isNotEmpty) {
+      _scrollToDay(targetDay, daysList);
+    } else {
+      setState(() {
+        _activeFilter = previousFilter;
+        _customStart = previousCustomStart;
+        _customEnd = previousCustomEnd;
+      });
+    }
+  }
+
   void _onFilterSelected(DateRangeFilter filter) {
     if (filter == DateRangeFilter.custom) {
       _showCustomRangePicker();
       return;
     }
-    setState(() => _activeFilter = filter);
+    _applyFilterSelection(filter);
     Navigator.of(context).pop();
   }
 
@@ -290,10 +399,27 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     if (endPicked == null || !mounted) return;
 
     setState(() {
-      _activeFilter = DateRangeFilter.custom;
       _customStart = startPicked;
       _customEnd = endPicked;
     });
+    _applyFilterSelection(DateRangeFilter.custom);
+  }
+
+  String _activeFilterDisplayText() {
+    if (_activeFilter != DateRangeFilter.custom) {
+      return _activeFilter.label;
+    }
+
+    final start = _customStart;
+    final end = _customEnd;
+    if (start == null || end == null) {
+      return _activeFilter.label;
+    }
+
+    final sameYear = start.year == end.year;
+    final startFormat = sameYear ? 'd MMM' : 'd MMM yy';
+    const endFormat = 'd MMM yy';
+    return '${DateFormat(startFormat).format(start)} - ${DateFormat(endFormat).format(end)}';
   }
 
   void _showFilterSheet() {
@@ -301,102 +427,124 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
       builder: (ctx) {
-        return Container(
-          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          padding: EdgeInsets.fromLTRB(16.r, 12.r, 16.r, 20.r),
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(color: AppColors.border, width: 3.r),
-            boxShadow: [
-              BoxShadow(color: AppColors.border, offset: Offset(6.w, 6.h)),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Handle
-              Container(
-                width: 40.w, height: 5.h,
+        final mediaQuery = MediaQuery.of(ctx);
+        final navBarClearance = mediaQuery.padding.bottom + 144.h;
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(ctx).pop(),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.fromLTRB(16.r, 12.r, 16.r, 20.r),
                 decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(3.r),
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(24.r),
+                  border: Border.all(color: AppColors.border, width: 3.r),
+                  boxShadow: [
+                    BoxShadow(color: AppColors.border, offset: Offset(6.w, 6.h)),
+                  ],
                 ),
-              ),
-              Gap(16.h),
-              // Title row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(LucideIcons.filter, size: 18.r, color: AppColors.cardYellow),
-                  Gap(8.w),
-                  Text(
-                    'SHOW DATA FOR',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                      color: AppColors.white,
-                    ),
-                  ),
-                ],
-              ),
-              Gap(20.h),
-              // Grid of filter options
-              Wrap(
-                spacing: 10.w,
-                runSpacing: 10.h,
-                children: DateRangeFilter.values.map((filter) {
-                  final isActive = _activeFilter == filter;
-                  final isCustom = filter == DateRangeFilter.custom;
-                  return GestureDetector(
-                    onTap: () => _onFilterSelected(filter),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isCustom ? 20.w : 16.w,
-                        vertical: 12.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isActive
-                            ? AppColors.secondary
-                            : AppColors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(14.r),
-                        border: Border.all(
-                          color: isActive ? AppColors.border : AppColors.white.withValues(alpha: 0.25),
-                          width: isActive ? 3.r : 2.r,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.filter,
+                          size: 18.r,
+                          color: AppColors.cardYellow,
                         ),
-                        boxShadow: isActive
-                            ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(filter.emoji, style: TextStyle(fontSize: 16.sp)),
-                          Gap(8.w),
-                          Text(
-                            filter.label,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w900,
-                              color: isActive ? AppColors.textDark : AppColors.white,
-                              letterSpacing: 0.5,
+                        Gap(8.w),
+                        Text(
+                          'SHOW DATA FOR',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Gap(20.h),
+                    // Grid of filter options
+                    Wrap(
+                      spacing: 10.w,
+                      runSpacing: 10.h,
+                      children: DateRangeFilter.values.map((filter) {
+                        final isActive = _activeFilter == filter;
+                        final isCustom = filter == DateRangeFilter.custom;
+                        return GestureDetector(
+                          onTap: () => _onFilterSelected(filter),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeOutCubic,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isCustom ? 20.w : 16.w,
+                              vertical: 12.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isActive
+                                  ? AppColors.secondary
+                                  : AppColors.background,
+                              borderRadius: BorderRadius.circular(14.r),
+                              border: Border.all(
+                                color: AppColors.border,
+                                width: isActive ? 3.r : 2.r,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.border,
+                                  offset: Offset(
+                                    isActive ? 4.w : 2.w,
+                                    isActive ? 4.h : 2.h,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  filter.emoji,
+                                  style: TextStyle(fontSize: 16.sp),
+                                ),
+                                Gap(8.w),
+                                Text(
+                                  filter.label,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.textDark,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                if (isActive) ...[
+                                  Gap(6.w),
+                                  Icon(
+                                    LucideIcons.check,
+                                    size: 15.r,
+                                    color: AppColors.textDark,
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
-                          if (isActive) ...[
-                            Gap(6.w),
-                            Icon(LucideIcons.check, size: 14.r, color: AppColors.textDark),
-                          ],
-                        ],
-                      ),
+                        );
+                      }).toList(),
                     ),
-                  );
-                }).toList(),
+                    Gap(8.h),
+                  ],
+                ),
               ),
-              Gap(8.h),
-            ],
+            ),
           ),
         );
       },
@@ -417,24 +565,23 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     final allTransactions = transactionsAsync.valueOrNull ?? [];
 
     // Filter transactions based on active date range filter
-    final (filterStart, filterEnd) = _getFilterDateRange();
+    // Filter transactions based on active date range filter relative to selected month
+    final (filterStart, filterEnd) = _getFilterDateRange(_selectedMonth);
     final filteredTransactions = allTransactions.where((t) =>
       !t.date.isBefore(filterStart) && !t.date.isAfter(filterEnd)
     ).toList();
 
-    // Month stats (using filtered data)
-    final monthTransactions = filteredTransactions;
-
-    double monthIncome = 0;
-    double monthExpense = 0;
-    for (final t in monthTransactions) {
+    // Stats for the active filter range
+    double filteredIncome = 0;
+    double filteredExpense = 0;
+    for (final t in filteredTransactions) {
       if (t.type == TransactionType.income) {
-        monthIncome += t.amount;
+        filteredIncome += t.amount;
       } else {
-        monthExpense += t.amount;
+        filteredExpense += t.amount;
       }
     }
-    final balance = monthIncome - monthExpense;
+
 
     // Day transactions (filtered by selected day)
     final dayTransactions = filteredTransactions.where((t) =>
@@ -485,13 +632,19 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
             itemCount: _totalMonths,
             onPageChanged: (index) {
               final newMonth = _monthFromPageIndex(index);
+              final now = DateTime.now();
+              final isMovingToOtherMonth = newMonth.year != now.year || newMonth.month != now.month;
+
               setState(() {
                 _selectedMonth = newMonth;
+                if (isMovingToOtherMonth) {
+                  _activeFilter = DateRangeFilter.thisMonth;
+                }
+                
                 // Preserve the currently selected day number, clamped to the new month's length
                 final maxDaysInNewMonth = DateUtils.getDaysInMonth(newMonth.year, newMonth.month);
                 final targetDay = _selectedDay.day.clamp(1, maxDaysInNewMonth);
                 
-                final now = DateTime.now();
                 if (newMonth.year == now.year && newMonth.month == now.month && targetDay > now.day) {
                   _selectedDay = DateTime(now.year, now.month, now.day);
                 } else {
@@ -501,145 +654,177 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
               _scrollToDay(_selectedDay, _daysInMonth(_monthFromPageIndex(index)));
             },
             itemBuilder: (context, index) {
+              final cardMonth = _monthFromPageIndex(index);
+              final isCurrentMonthCard = cardMonth.year == now.year && cardMonth.month == now.month;
+              final isSelectedCard = cardMonth.year == _selectedMonth.year && cardMonth.month == _selectedMonth.month;
+              
+              double cardIncome;
+              double cardExpense;
+
+              if (isSelectedCard) {
+                // Use the filtered stats calculated in build() for the active card
+                cardIncome = filteredIncome;
+                cardExpense = filteredExpense;
+              } else {
+                // Calculate raw month stats (Full Month) for background cards
+                final cardMonthStart = DateTime(cardMonth.year, cardMonth.month, 1);
+                final cardMonthEnd = DateTime(cardMonth.year, cardMonth.month + 1, 0, 23, 59, 59);
+                
+                cardIncome = 0;
+                cardExpense = 0;
+                for (final t in allTransactions) {
+                  if (!t.date.isBefore(cardMonthStart) && !t.date.isAfter(cardMonthEnd)) {
+                    if (t.type == TransactionType.income) {
+                      cardIncome += t.amount;
+                    } else {
+                      cardExpense += t.amount;
+                    }
+                  }
+                }
+              }
+
               return _buildMonthCard(
-                month: _monthFromPageIndex(index),
-                balance: balance,
-                income: monthIncome,
-                expense: monthExpense,
+                month: cardMonth,
+                balance: cardIncome - cardExpense,
+                income: cardIncome,
+                expense: cardExpense,
                 currency: currency,
                 index: index,
                 showTodayButton: !isTodaySelected,
                 onTodayPressed: _goToToday,
                 activeFilter: _activeFilter,
+                showFilterButton: isCurrentMonthCard,
                 onFilterTap: _showFilterSheet,
               );
             },
           ),
         ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack).fadeIn(),
 
-        Gap(20.h),
+        if (_activeFilter != DateRangeFilter.today) ...[
+          Gap(20.h),
 
-        // ═══════════════════════════════════════════════
-        // DAY SCROLLER
-        // ═══════════════════════════════════════════════
-        SizedBox(
-          height: 80.h,
-          child: ListView.builder(
-            controller: _dayScrollController,
-            scrollDirection: Axis.horizontal,
-            itemCount: days.length,
-            itemBuilder: (context, index) {
-              final day = days[index];
-              final isSelected = day.year == _selectedDay.year &&
-                  day.month == _selectedDay.month &&
-                  day.day == _selectedDay.day;
-              final isToday = day.year == now.year && day.month == now.month && day.day == now.day;
-              final dayName = DateFormat('E').format(day).toUpperCase().substring(0, 2);
-              
-              // Check if this day has transactions
-              final hasTx = filteredTransactions.any((t) =>
-                t.date.year == day.year &&
-                t.date.month == day.month &&
-                t.date.day == day.day
-              );
+          // ═══════════════════════════════════════════════
+          // DAY SCROLLER
+          // ═══════════════════════════════════════════════
+          SizedBox(
+            height: 80.h,
+            child: ListView.builder(
+              controller: _dayScrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: days.length,
+              itemBuilder: (context, index) {
+                final day = days[index];
+                final isSelected = day.year == _selectedDay.year &&
+                    day.month == _selectedDay.month &&
+                    day.day == _selectedDay.day;
+                final isToday = day.year == now.year && day.month == now.month && day.day == now.day;
+                final dayName = DateFormat('E').format(day).toUpperCase().substring(0, 2);
+                
+                // Check if this day has transactions
+                final hasTx = filteredTransactions.any((t) =>
+                  t.date.year == day.year &&
+                  t.date.month == day.month &&
+                  t.date.day == day.day
+                );
 
-              // Show month label for first day or when month changes
-              final showMonthLabel = !isDefaultFilter && 
-                  (index == 0 || day.month != days[index - 1].month);
+                // Show month label for first day or when month changes
+                final showMonthLabel = !isDefaultFilter && 
+                    (index == 0 || day.month != days[index - 1].month);
 
-              return Row(
-                children: [
-                  if (showMonthLabel)
-                    Padding(
-                      padding: EdgeInsets.only(right: 6.w, bottom: 6.h, top: 2.h),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardYellow,
-                          borderRadius: BorderRadius.circular(10.r),
-                          border: Border.all(color: AppColors.border, width: 2.r),
-                        ),
-                        child: RotatedBox(
-                          quarterTurns: 3,
-                          child: Text(
-                            DateFormat('MMM').format(day).toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 9.sp,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1,
+                return Row(
+                  children: [
+                    if (showMonthLabel)
+                      Padding(
+                        padding: EdgeInsets.only(right: 6.w, bottom: 6.h, top: 2.h),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardYellow,
+                            borderRadius: BorderRadius.circular(10.r),
+                            border: Border.all(color: AppColors.border, width: 2.r),
+                          ),
+                          child: RotatedBox(
+                            quarterTurns: 3,
+                            child: Text(
+                              DateFormat('MMM').format(day).toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 10.w, bottom: 6.h, top: 2.h),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() => _selectedDay = day);
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOutBack,
-                        width: 58.w,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primary
-                              : isToday
-                                  ? AppColors.secondary.withValues(alpha: 0.3)
-                                  : AppColors.white,
-                          borderRadius: BorderRadius.circular(14.r),
-                          border: Border.all(
-                            color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
-                            width: isSelected ? 3.r : 2.r,
+                    Padding(
+                      padding: EdgeInsets.only(right: 10.w, bottom: 6.h, top: 2.h),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => _selectedDay = day);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOutBack,
+                          width: 58.w,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary
+                                : isToday
+                                    ? AppColors.secondary.withValues(alpha: 0.3)
+                                    : AppColors.white,
+                            borderRadius: BorderRadius.circular(14.r),
+                            border: Border.all(
+                              color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
+                              width: isSelected ? 3.r : 2.r,
+                            ),
+                            boxShadow: isSelected
+                                ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
+                                : null,
                           ),
-                          boxShadow: isSelected
-                              ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                              : null,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              dayName,
-                              style: TextStyle(
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w900,
-                                color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            Gap(4.h),
-                            Text(
-                              '${day.day}',
-                              style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w900,
-                                color: isSelected ? AppColors.white : AppColors.textDark,
-                              ),
-                            ),
-                            if (hasTx && !isSelected) ...[
-                              Gap(2.h),
-                              Container(
-                                width: 6.r, height: 6.r,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                dayName,
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w900,
+                                  color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
+                              Gap(4.h),
+                              Text(
+                                '${day.day}',
+                                style: TextStyle(
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w900,
+                                  color: isSelected ? AppColors.white : AppColors.textDark,
+                                ),
+                              ),
+                              if (hasTx && !isSelected) ...[
+                                Gap(2.h),
+                                Container(
+                                  width: 6.r, height: 6.r,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ).animate().fadeIn(delay: 200.ms),
+                  ],
+                );
+              },
+            ),
+          ).animate().fadeIn(delay: 200.ms),
 
-        Gap(24.h),
+          Gap(24.h),
+        ],
 
         // ═══════════════════════════════════════════════
         // DAY TRANSACTIONS FEED
@@ -783,6 +968,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     required bool showTodayButton,
     required VoidCallback onTodayPressed,
     required DateRangeFilter activeFilter,
+    required bool showFilterButton,
     required VoidCallback onFilterTap,
   }) {
     final now = DateTime.now();
@@ -993,53 +1179,48 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Filter button
-                  GestureDetector(
-                    onTap: onFilterTap,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
-                      decoration: BoxDecoration(
-                        color: activeFilter == DateRangeFilter.thisMonth
-                            ? AppColors.white.withValues(alpha: 0.15)
-                            : AppColors.secondary,
-                        borderRadius: BorderRadius.circular(10.r),
-                        border: Border.all(
-                          color: activeFilter == DateRangeFilter.thisMonth
-                              ? AppColors.white.withValues(alpha: 0.3)
-                              : AppColors.border,
-                          width: 2.r,
-                        ),
-                        boxShadow: activeFilter != DateRangeFilter.thisMonth
-                            ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))]
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(activeFilter.emoji, style: TextStyle(fontSize: 11.sp)),
-                          Gap(5.w),
-                          Text(
-                            activeFilter.label,
-                            style: TextStyle(
-                              color: activeFilter == DateRangeFilter.thisMonth
-                                  ? AppColors.white
-                                  : AppColors.textDark,
-                              fontSize: 9.sp,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
+                  if (showFilterButton)
+                    GestureDetector(
+                      onTap: onFilterTap,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(color: AppColors.border, width: 2.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.border,
+                              offset: Offset(2.w, 2.h),
                             ),
-                          ),
-                          Gap(3.w),
-                          Icon(
-                            LucideIcons.chevronDown,
-                            size: 11.r,
-                            color: activeFilter == DateRangeFilter.thisMonth
-                                ? AppColors.white.withValues(alpha: 0.6)
-                                : AppColors.textDark,
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(activeFilter.emoji, style: TextStyle(fontSize: 11.sp)),
+                            Gap(5.w),
+                            Text(
+                              _activeFilterDisplayText(),
+                              style: TextStyle(
+                                color: AppColors.textDark,
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Gap(3.w),
+                            Icon(
+                              LucideIcons.chevronDown,
+                              size: 11.r,
+                              color: AppColors.textDark,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   // TODAY button (only when not on today)
                   if (showTodayButton) ...[
                     Gap(8.w),

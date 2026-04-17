@@ -10,7 +10,12 @@ import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
 import 'package:planzy/features/transactions/presentation/providers/transactions_provider.dart';
 import 'package:planzy/features/transactions/data/models/transaction.dart';
+import 'package:planzy/features/goals/data/models/goal.dart';
 import 'package:intl/intl.dart';
+import 'package:planzy/core/providers/auth_provider.dart';
+import 'package:planzy/features/accounts/presentation/providers/accounts_provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/core/widgets/neo_dialog.dart';
 import 'package:planzy/core/widgets/neo_date_picker.dart';
@@ -1161,15 +1166,23 @@ class _GoalsProgressWidget extends ConsumerWidget {
                       },
                     ),
                     child: NeoCard(
-                      backgroundColor: AppColors.cardBlue,
+                      backgroundColor: Color(
+                        int.parse(goal.themeColor.replaceAll('#', '0xFF')),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Text(goal.iconEmoji, style: TextStyle(fontSize: 24.sp)),
+                              Gap(12.w),
                               Expanded(
-                                child: Text(goal.title.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp), overflow: TextOverflow.ellipsis),
+                                child: Text(
+                                  goal.title.toUpperCase(),
+                                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               Gap(8.w),
                               Container(
@@ -1179,14 +1192,17 @@ class _GoalsProgressWidget extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(4.r),
                                 ),
                                 child: Text(
-                                  '${(progress * 100).toStringAsFixed(0)}%', 
-                                  style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 14.sp)
+                                  '${(progress * 100).toStringAsFixed(0)}%',
+                                  style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 14.sp),
                                 ),
                               ),
                             ],
                           ),
                           Gap(12.h),
-                          Text('${NumberFormat.decimalPattern().format(goal.savedAmount)} / ${NumberFormat.decimalPattern().format(goal.targetAmount)} $currency', style: TextStyle(color: AppColors.textDark, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+                          Text(
+                            '${NumberFormat.decimalPattern().format(goal.savedAmount)} / ${NumberFormat.decimalPattern().format(goal.targetAmount)} $currency',
+                            style: TextStyle(color: AppColors.textDark, fontSize: 14.sp, fontWeight: FontWeight.bold),
+                          ),
                           Gap(16.h),
                           Container(
                             height: 16.h,
@@ -1203,7 +1219,7 @@ class _GoalsProgressWidget extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   color: AppColors.secondary,
                                   borderRadius: BorderRadius.circular(6.r),
-                                  border: Border(right: BorderSide(color: AppColors.border, width: 2.r))
+                                  border: Border(right: BorderSide(color: AppColors.border, width: 2.r)),
                                 ),
                               ),
                             ).animate().scaleX(begin: 0, duration: 600.ms, curve: Curves.easeOutBack),
@@ -1213,13 +1229,16 @@ class _GoalsProgressWidget extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TextButton.icon(
-                                onPressed: () => _showAddFundsDialog(context, ref, goal.id, goal.title, currency),
-                                icon: Icon(LucideIcons.plus, size: 16.r, color: AppColors.textDark),
-                                label: Text('ADD FUNDS', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 12.sp)),
+                                onPressed: () => _showManageFundsSheet(context, ref, goal, currency),
+                                icon: Icon(LucideIcons.wallet, size: 16.r, color: AppColors.textDark),
+                                label: Text('MANAGE FUNDS', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 12.sp)),
                                 style: TextButton.styleFrom(
                                   backgroundColor: AppColors.secondary,
                                   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r), side: BorderSide(color: AppColors.border, width: 2.r)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                    side: BorderSide(color: AppColors.border, width: 2.r),
+                                  ),
                                 ),
                               ),
                             ],
@@ -1241,43 +1260,296 @@ class _GoalsProgressWidget extends ConsumerWidget {
     );
   }
 
-  void _showAddFundsDialog(BuildContext context, WidgetRef ref, String id, String title, String currency) {
-    final controller = TextEditingController();
-    
-    NeoDialog.show(
+  void _showManageFundsSheet(BuildContext context, WidgetRef ref, Goal goal, String currency) {
+    showModalBottomSheet(
       context: context,
-      title: 'FUND GOAL',
-      message: 'Add funds to $title',
-      confirmText: 'ADD FUNDS',
-      cancelText: 'CANCEL',
-      customContent: Column(
-        children: [
-          TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
-            decoration: InputDecoration(
-              hintText: '0.00',
-              suffixText: currency,
-              filled: true,
-              fillColor: AppColors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide(color: AppColors.border, width: 3.r),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide(color: AppColors.primary, width: 3.r),
-              ),
-            ),
-            autofocus: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _ManageGoalFundsSheet(goal: goal, currency: currency),
+    );
+  }
+}
+
+class _ManageGoalFundsSheet extends ConsumerStatefulWidget {
+  final Goal goal;
+  final String currency;
+  const _ManageGoalFundsSheet({required this.goal, required this.currency});
+
+  @override
+  ConsumerState<_ManageGoalFundsSheet> createState() => _ManageGoalFundsSheetState();
+}
+
+class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
+  final _amountController = TextEditingController();
+  bool _isDeposit = true;
+  String? _accountId;
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void _submit() async {
+    final amount = double.tryParse(_amountController.text) ?? 0.0;
+    if (amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount.')),
+      );
+      return;
+    }
+
+    if (!_isDeposit && amount > widget.goal.savedAmount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You cannot withdraw more than what is saved!')),
+      );
+      return;
+    }
+
+    if (_accountId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an account to sync with.')),
+      );
+      return;
+    }
+
+    final user = ref.read(currentUserProvider);
+    if (user != null) {
+      final isAddingToGoal = _isDeposit;
+      final txn = Transaction(
+        id: const Uuid().v4(),
+        userId: user.uid,
+        type: isAddingToGoal ? TransactionType.expense : TransactionType.income,
+        amount: amount,
+        date: DateTime.now(),
+        accountId: _accountId,
+        expenseCategory: isAddingToGoal ? ExpenseCategory.other : null,
+        incomeSource: !isAddingToGoal ? IncomeSource.other : null,
+        notes: isAddingToGoal
+            ? 'Funded goal: ${widget.goal.title}'
+            : 'Withdrawn from goal: ${widget.goal.title}',
+        createdAt: DateTime.now(),
+      );
+
+      await ref.read(transactionsProvider.notifier).add(txn);
+      await ref.read(accountsProvider.notifier).adjustBalance(
+        _accountId!,
+        isAddingToGoal ? -amount : amount,
+      );
+    }
+
+    ref.read(goalsProvider.notifier).updateGoalProgress(
+      widget.goal.id,
+      _isDeposit ? amount : -amount,
+    );
+
+    if (mounted) context.pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accounts = ref.watch(accountsProvider).valueOrNull ?? [];
+    final mediaQuery = MediaQuery.of(context);
+    final navBarClearance = mediaQuery.padding.bottom + 124.h;
+    final maxSheetHeight = mediaQuery.size.height - mediaQuery.padding.top;
+
+    return SafeArea(
+      top: false,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: maxSheetHeight.clamp(240.h, mediaQuery.size.height),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+            border: Border.all(color: AppColors.border, width: 4.r),
           ),
-        ],
+          padding: EdgeInsets.only(
+            top: 24.h,
+            left: 24.w,
+            right: 24.w,
+            bottom: mediaQuery.viewInsets.bottom + navBarClearance,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  width: 40.w,
+                  height: 6.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+                Gap(24.h),
+                Text(
+                  widget.goal.title.toUpperCase(),
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5),
+                ),
+                Gap(8.h),
+                Text(
+                  '${widget.goal.iconEmoji} Manage Goal Funds',
+                  style: TextStyle(color: AppColors.textLight, fontWeight: FontWeight.w600),
+                ),
+                Gap(32.h),
+
+                // Deposit / Withdraw tabs
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _isDeposit = true),
+                        child: AnimatedContainer(
+                          duration: 200.ms,
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          decoration: BoxDecoration(
+                            color: _isDeposit ? AppColors.primary : AppColors.white,
+                            border: Border.all(color: AppColors.border, width: _isDeposit ? 3.r : 2.r),
+                            borderRadius: BorderRadius.circular(16.r),
+                            boxShadow: _isDeposit
+                                ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
+                                : [],
+                          ),
+                          child: Center(
+                            child: Text(
+                              'DEPOSIT ➕',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: _isDeposit ? AppColors.white : AppColors.textDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Gap(16.w),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _isDeposit = false),
+                        child: AnimatedContainer(
+                          duration: 200.ms,
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          decoration: BoxDecoration(
+                            color: !_isDeposit ? AppColors.cardYellow : AppColors.white,
+                            border: Border.all(color: AppColors.border, width: !_isDeposit ? 3.r : 2.r),
+                            borderRadius: BorderRadius.circular(16.r),
+                            boxShadow: !_isDeposit
+                                ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
+                                : [],
+                          ),
+                          child: Center(
+                            child: Text(
+                              'WITHDRAW ➖',
+                              style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textDark),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Gap(32.h),
+
+                // Amount input
+                TextFormField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: '0',
+                    suffixText: widget.currency,
+                    suffixStyle: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900),
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                ),
+                Gap(24.h),
+
+                // Account picker
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _isDeposit ? 'WITHDRAW FROM:' : 'DEPOSIT BACK INTO:',
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+                  ),
+                ),
+                Gap(12.h),
+                SizedBox(
+                  height: 90.h,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: accounts.length,
+                    itemBuilder: (context, index) {
+                      final acc = accounts[index];
+                      final isSelected = _accountId == acc.id;
+                      return GestureDetector(
+                        onTap: () => setState(() => _accountId = acc.id),
+                        child: AnimatedContainer(
+                          duration: 200.ms,
+                          width: 120.w,
+                          margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
+                          padding: EdgeInsets.all(12.r),
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.textDark : AppColors.white,
+                            border: Border.all(color: AppColors.border, width: 2.r),
+                            borderRadius: BorderRadius.circular(16.r),
+                            boxShadow: isSelected
+                                ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))]
+                                : [],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(acc.iconEmoji ?? '🏦', style: TextStyle(fontSize: 20.sp)),
+                              Gap(4.h),
+                              Text(
+                                acc.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 11.sp,
+                                  color: isSelected ? AppColors.white : AppColors.textDark,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Gap(32.h),
+
+                // Confirm button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      foregroundColor: AppColors.textDark,
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                        side: BorderSide(color: AppColors.border, width: 3.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'CONFIRM TRANSFER',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      onConfirm: () {
-        final val = double.tryParse(controller.text) ?? 0;
-        ref.read(goalsProvider.notifier).updateGoalProgress(id, val);
-      },
     );
   }
 }

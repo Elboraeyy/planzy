@@ -25,7 +25,13 @@ mixin _$Goal {
   double get targetAmount => throw _privateConstructorUsedError;
   double get savedAmount => throw _privateConstructorUsedError;
   DateTime get targetDate => throw _privateConstructorUsedError;
-  GoalPriority get priority => throw _privateConstructorUsedError;
+  GoalPriority get priority =>
+      throw _privateConstructorUsedError; // UI Customization
+  String get iconEmoji => throw _privateConstructorUsedError;
+  String get themeColor => throw _privateConstructorUsedError; // Vault logic
+  String? get linkedAccountId => throw _privateConstructorUsedError;
+  GoalReminderInterval get reminderInterval =>
+      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,7 +49,11 @@ abstract class $GoalCopyWith<$Res> {
       double targetAmount,
       double savedAmount,
       DateTime targetDate,
-      GoalPriority priority});
+      GoalPriority priority,
+      String iconEmoji,
+      String themeColor,
+      String? linkedAccountId,
+      GoalReminderInterval reminderInterval});
 }
 
 /// @nodoc
@@ -65,6 +75,10 @@ class _$GoalCopyWithImpl<$Res, $Val extends Goal>
     Object? savedAmount = null,
     Object? targetDate = null,
     Object? priority = null,
+    Object? iconEmoji = null,
+    Object? themeColor = null,
+    Object? linkedAccountId = freezed,
+    Object? reminderInterval = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -91,6 +105,22 @@ class _$GoalCopyWithImpl<$Res, $Val extends Goal>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as GoalPriority,
+      iconEmoji: null == iconEmoji
+          ? _value.iconEmoji
+          : iconEmoji // ignore: cast_nullable_to_non_nullable
+              as String,
+      themeColor: null == themeColor
+          ? _value.themeColor
+          : themeColor // ignore: cast_nullable_to_non_nullable
+              as String,
+      linkedAccountId: freezed == linkedAccountId
+          ? _value.linkedAccountId
+          : linkedAccountId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reminderInterval: null == reminderInterval
+          ? _value.reminderInterval
+          : reminderInterval // ignore: cast_nullable_to_non_nullable
+              as GoalReminderInterval,
     ) as $Val);
   }
 }
@@ -108,7 +138,11 @@ abstract class _$$GoalImplCopyWith<$Res> implements $GoalCopyWith<$Res> {
       double targetAmount,
       double savedAmount,
       DateTime targetDate,
-      GoalPriority priority});
+      GoalPriority priority,
+      String iconEmoji,
+      String themeColor,
+      String? linkedAccountId,
+      GoalReminderInterval reminderInterval});
 }
 
 /// @nodoc
@@ -127,6 +161,10 @@ class __$$GoalImplCopyWithImpl<$Res>
     Object? savedAmount = null,
     Object? targetDate = null,
     Object? priority = null,
+    Object? iconEmoji = null,
+    Object? themeColor = null,
+    Object? linkedAccountId = freezed,
+    Object? reminderInterval = null,
   }) {
     return _then(_$GoalImpl(
       id: null == id
@@ -153,6 +191,22 @@ class __$$GoalImplCopyWithImpl<$Res>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as GoalPriority,
+      iconEmoji: null == iconEmoji
+          ? _value.iconEmoji
+          : iconEmoji // ignore: cast_nullable_to_non_nullable
+              as String,
+      themeColor: null == themeColor
+          ? _value.themeColor
+          : themeColor // ignore: cast_nullable_to_non_nullable
+              as String,
+      linkedAccountId: freezed == linkedAccountId
+          ? _value.linkedAccountId
+          : linkedAccountId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reminderInterval: null == reminderInterval
+          ? _value.reminderInterval
+          : reminderInterval // ignore: cast_nullable_to_non_nullable
+              as GoalReminderInterval,
     ));
   }
 }
@@ -166,7 +220,11 @@ class _$GoalImpl implements _Goal {
       required this.targetAmount,
       this.savedAmount = 0.0,
       required this.targetDate,
-      this.priority = GoalPriority.medium});
+      this.priority = GoalPriority.medium,
+      this.iconEmoji = '🎯',
+      this.themeColor = '#FFD600',
+      this.linkedAccountId,
+      this.reminderInterval = GoalReminderInterval.none});
 
   factory _$GoalImpl.fromJson(Map<String, dynamic> json) =>
       _$$GoalImplFromJson(json);
@@ -185,10 +243,23 @@ class _$GoalImpl implements _Goal {
   @override
   @JsonKey()
   final GoalPriority priority;
+// UI Customization
+  @override
+  @JsonKey()
+  final String iconEmoji;
+  @override
+  @JsonKey()
+  final String themeColor;
+// Vault logic
+  @override
+  final String? linkedAccountId;
+  @override
+  @JsonKey()
+  final GoalReminderInterval reminderInterval;
 
   @override
   String toString() {
-    return 'Goal(id: $id, title: $title, targetAmount: $targetAmount, savedAmount: $savedAmount, targetDate: $targetDate, priority: $priority)';
+    return 'Goal(id: $id, title: $title, targetAmount: $targetAmount, savedAmount: $savedAmount, targetDate: $targetDate, priority: $priority, iconEmoji: $iconEmoji, themeColor: $themeColor, linkedAccountId: $linkedAccountId, reminderInterval: $reminderInterval)';
   }
 
   @override
@@ -205,13 +276,31 @@ class _$GoalImpl implements _Goal {
             (identical(other.targetDate, targetDate) ||
                 other.targetDate == targetDate) &&
             (identical(other.priority, priority) ||
-                other.priority == priority));
+                other.priority == priority) &&
+            (identical(other.iconEmoji, iconEmoji) ||
+                other.iconEmoji == iconEmoji) &&
+            (identical(other.themeColor, themeColor) ||
+                other.themeColor == themeColor) &&
+            (identical(other.linkedAccountId, linkedAccountId) ||
+                other.linkedAccountId == linkedAccountId) &&
+            (identical(other.reminderInterval, reminderInterval) ||
+                other.reminderInterval == reminderInterval));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, title, targetAmount, savedAmount, targetDate, priority);
+      runtimeType,
+      id,
+      title,
+      targetAmount,
+      savedAmount,
+      targetDate,
+      priority,
+      iconEmoji,
+      themeColor,
+      linkedAccountId,
+      reminderInterval);
 
   @JsonKey(ignore: true)
   @override
@@ -234,7 +323,11 @@ abstract class _Goal implements Goal {
       required final double targetAmount,
       final double savedAmount,
       required final DateTime targetDate,
-      final GoalPriority priority}) = _$GoalImpl;
+      final GoalPriority priority,
+      final String iconEmoji,
+      final String themeColor,
+      final String? linkedAccountId,
+      final GoalReminderInterval reminderInterval}) = _$GoalImpl;
 
   factory _Goal.fromJson(Map<String, dynamic> json) = _$GoalImpl.fromJson;
 
@@ -250,6 +343,14 @@ abstract class _Goal implements Goal {
   DateTime get targetDate;
   @override
   GoalPriority get priority;
+  @override // UI Customization
+  String get iconEmoji;
+  @override
+  String get themeColor;
+  @override // Vault logic
+  String? get linkedAccountId;
+  @override
+  GoalReminderInterval get reminderInterval;
   @override
   @JsonKey(ignore: true)
   _$$GoalImplCopyWith<_$GoalImpl> get copyWith =>

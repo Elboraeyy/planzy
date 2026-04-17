@@ -23,7 +23,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final List<OnboardingData> _pages = [
     OnboardingData(
       title: 'CONTROL THE CHAOS',
-      description: 'Visualize your subscriptions and regular payments in one bold timeline.',
+      description: 'Manage all your accounts and expenses securely from a single view.',
       icon: LucideIcons.zap,
       color: AppColors.cardYellow,
     ),

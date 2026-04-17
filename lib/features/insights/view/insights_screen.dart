@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_card.dart';
-import 'package:planzy/features/commitments/presentation/providers/commitments_provider.dart';
+
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:intl/intl.dart';
@@ -46,7 +46,6 @@ class _SummaryCardsGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final commitmentsAsync = ref.watch(commitmentsProvider);
     final goalsAsync = ref.watch(goalsProvider);
     final settingsAsync = ref.watch(settingsProvider);
     final currency = settingsAsync.when(
@@ -57,35 +56,7 @@ class _SummaryCardsGrid extends ConsumerWidget {
 
     return Row(
       children: [
-        Expanded(
-          child: commitmentsAsync.when(
-            data: (list) {
-              final total = list.fold<double>(0, (sum, i) => sum + i.amount);
-              return NeoCard(
-                backgroundColor: AppColors.cardYellow,
-                padding: EdgeInsets.all(20.r),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(color: AppColors.white, border: Border.all(color: AppColors.border, width: 2.r), borderRadius: BorderRadius.circular(8.r)),
-                      child: Icon(LucideIcons.flame, color: AppColors.textDark, size: 24.r),
-                    ),
-                    Gap(16.h),
-                    Text('MONTHLY BURN', style: TextStyle(color: AppColors.textDark, fontSize: 11.sp, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    Gap(4.h),
-                    FittedBox(
-                      child: Text('${NumberFormat.compact().format(total)} $currency', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -1)),
-                    ),
-                  ],
-                ),
-              ).animate().slideX(begin: -0.2, curve: Curves.easeOutBack);
-            },
-            loading: () => const SizedBox(),
-            error: (e, _) => const SizedBox(),
-          ),
-        ),
+        const Expanded(child: SizedBox()),
         Gap(16.w),
         Expanded(
           child: goalsAsync.when(
@@ -126,20 +97,17 @@ class _BreakdownChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final commitmentsAsync = ref.watch(commitmentsProvider);
     final goalsAsync = ref.watch(goalsProvider);
 
     return NeoCard(
       backgroundColor: AppColors.white,
       padding: EdgeInsets.all(24.r),
-      child: commitmentsAsync.when(
-        data: (commitments) => goalsAsync.when(
+      child: goalsAsync.when(
           data: (goals) {
-            final totalCommitments = commitments.fold<double>(0, (sum, i) => sum + i.amount);
             final totalSaved = goals.fold<double>(0, (sum, i) => sum + i.savedAmount);
             final remainingInGoals = goals.fold<double>(0, (sum, i) => sum + (max(0, i.targetAmount - i.savedAmount)));
 
-            if (totalCommitments == 0 && totalSaved == 0 && remainingInGoals == 0) {
+            if (totalSaved == 0 && remainingInGoals == 0) {
               return SizedBox(
                 height: 200.h, 
                 child: Center(child: Text("NOT ENOUGH DATA", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)))
@@ -156,8 +124,7 @@ class _BreakdownChart extends ConsumerWidget {
                       sectionsSpace: 4.r,
                       centerSpaceRadius: 60.r,
                       sections: [
-                        if (totalCommitments > 0)
-                          PieChartSectionData(color: AppColors.primary, value: totalCommitments, title: '', radius: 30.r),
+
                         if (totalSaved > 0)
                           PieChartSectionData(color: AppColors.secondary, value: totalSaved, title: '', radius: 35.r),
                         if (remainingInGoals > 0)
@@ -168,8 +135,7 @@ class _BreakdownChart extends ConsumerWidget {
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _LegendItem(color: AppColors.primary, label: 'PAYMENTS'),
-                      Gap(4.h),
+
                       _LegendItem(color: AppColors.secondary, label: 'SAVED'),
                       Gap(4.h),
                       _LegendItem(color: AppColors.cardYellow, label: 'GOALS LEFT'),
@@ -182,9 +148,6 @@ class _BreakdownChart extends ConsumerWidget {
           loading: () => SizedBox(height: 200.h, child: const Center(child: CircularProgressIndicator())),
           error: (error, stack) => SizedBox(height: 200.h),
         ),
-        loading: () => SizedBox(height: 200.h, child: const Center(child: CircularProgressIndicator())),
-        error: (error, stack) => SizedBox(height: 200.h),
-      ),
     ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack, delay: 200.ms);
   }
 }

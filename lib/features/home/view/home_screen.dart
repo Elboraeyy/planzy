@@ -14,11 +14,13 @@ import 'package:planzy/features/goals/data/models/goal.dart';
 import 'package:intl/intl.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
 import 'package:planzy/features/accounts/presentation/providers/accounts_provider.dart';
+import 'package:planzy/features/accounts/data/models/financial_account.dart';
 import 'package:uuid/uuid.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/core/widgets/neo_dialog.dart';
 import 'package:planzy/core/widgets/neo_date_picker.dart';
+import 'package:planzy/core/widgets/neo_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -430,8 +432,6 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
       isDismissible: true,
       enableDrag: true,
       builder: (ctx) {
-        final mediaQuery = MediaQuery.of(ctx);
-        final navBarClearance = mediaQuery.padding.bottom + 144.h;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => Navigator.of(ctx).pop(),
@@ -1415,7 +1415,7 @@ class _GoalsProgressWidget extends ConsumerWidget {
                                 label: Text('MANAGE FUNDS', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 12.sp)),
                                 style: TextButton.styleFrom(
                                   backgroundColor: AppColors.secondary,
-                                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.r),
                                     side: BorderSide(color: AppColors.border, width: 2.r),
@@ -1532,42 +1532,55 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
     final accounts = ref.watch(accountsProvider).valueOrNull ?? [];
     final mediaQuery = MediaQuery.of(context);
     final navBarClearance = mediaQuery.padding.bottom + 124.h;
-    final maxSheetHeight = mediaQuery.size.height - mediaQuery.padding.top;
 
-    return SafeArea(
-      top: false,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: maxSheetHeight.clamp(240.h, mediaQuery.size.height),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-            border: Border.all(color: AppColors.border, width: 4.r),
-          ),
-          padding: EdgeInsets.only(
-            top: 24.h,
-            left: 24.w,
-            right: 24.w,
-            bottom: mediaQuery.viewInsets.bottom + navBarClearance,
-          ),
-          child: SingleChildScrollView(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        minChildSize: 0.3,
+        maxChildSize: 0.95,
+        expand: false,
+        snap: true,
+        snapSizes: const [0.75, 0.95],
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+              border: Border.all(color: AppColors.border, width: 4.r),
+            ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                // Handle bar
-                Container(
-                  width: 40.w,
-                  height: 6.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(4.r),
+                SingleChildScrollView(
+                  controller: scrollController,
+                  physics: const ClampingScrollPhysics(),
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                    child: Container(
+                      width: 40.w,
+                      height: 6.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                    ),
                   ),
                 ),
-                Gap(24.h),
-                Text(
-                  widget.goal.title.toUpperCase(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.only(
+                      left: 24.w,
+                      right: 24.w,
+                      bottom: mediaQuery.viewInsets.bottom + navBarClearance,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.goal.title.toUpperCase(),
                   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5),
                 ),
                 Gap(8.h),
@@ -1667,6 +1680,11 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
                     itemBuilder: (context, index) {
                       final acc = accounts[index];
                       final isSelected = _accountId == acc.id;
+                      final accColorHex = acc.colorHex;
+                      final accColor = accColorHex != null
+                          ? Color(int.parse('FF${accColorHex.replaceAll("#", "")}', radix: 16))
+                          : AppColors.textDark;
+
                       return GestureDetector(
                         onTap: () => setState(() => _accountId = acc.id),
                         child: AnimatedContainer(
@@ -1675,7 +1693,7 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
                           margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
                           padding: EdgeInsets.all(12.r),
                           decoration: BoxDecoration(
-                            color: isSelected ? AppColors.textDark : AppColors.white,
+                            color: isSelected ? accColor : AppColors.white,
                             border: Border.all(color: AppColors.border, width: 2.r),
                             borderRadius: BorderRadius.circular(16.r),
                             boxShadow: isSelected
@@ -1685,7 +1703,7 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(acc.iconEmoji ?? '🏦', style: TextStyle(fontSize: 20.sp)),
+                              Text(acc.iconEmoji ?? acc.type.icon, style: TextStyle(fontSize: 20.sp)),
                               Gap(4.h),
                               Text(
                                 acc.name,
@@ -1726,6 +1744,265 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
                     ),
                   ),
                 ),
+                // Danger Zone / Delete Goal
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(top: 40.h),
+                  padding: EdgeInsets.all(20.r),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(24.r),
+                    border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.3),
+                      width: 2.r,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.alertTriangle, size: 14.r, color: AppColors.primary),
+                          Gap(8.w),
+                          Text(
+                            'DANGER ZONE',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 10.sp,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Gap(16.h),
+                      Text(
+                        'This goal and all its progress will be permanently removed. This action cannot be undone.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.textLight,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11.sp,
+                          height: 1.4,
+                        ),
+                      ),
+                      Gap(24.h),
+                      NeoButton(
+                        text: 'DELETE GOAL',
+                        backgroundColor: AppColors.primary,
+                        textColor: AppColors.white,
+                        onPressed: () {
+                          if (widget.goal.savedAmount > 0) {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => _RefundGoalFundsSheet(
+                                goal: widget.goal,
+                                currency: widget.currency,
+                              ),
+                            );
+                          } else {
+                            NeoDialog.show(
+                              context: context,
+                              title: 'DELETE GOAL?',
+                              message: 'Are you sure you want to remove "${widget.goal.title}"?',
+                              confirmText: 'YES, DELETE',
+                              cancelText: 'NO, KEEP IT',
+                              isDestructive: true,
+                              onConfirm: () {
+                                ref.read(goalsProvider.notifier).removeGoal(widget.goal.id);
+                                if (mounted) context.pop();
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RefundGoalFundsSheet extends ConsumerStatefulWidget {
+  final Goal goal;
+  final String currency;
+  const _RefundGoalFundsSheet({required this.goal, required this.currency});
+
+  @override
+  ConsumerState<_RefundGoalFundsSheet> createState() => _RefundGoalFundsSheetState();
+}
+
+class _RefundGoalFundsSheetState extends ConsumerState<_RefundGoalFundsSheet> {
+  String? _accountId;
+
+  void _submit({required bool refund}) async {
+    if (refund && _accountId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an account to refund to.')),
+      );
+      return;
+    }
+
+    if (refund && widget.goal.savedAmount > 0 && _accountId != null) {
+      final user = ref.read(currentUserProvider);
+      if (user != null) {
+        final txn = Transaction(
+          id: const Uuid().v4(),
+          userId: user.uid,
+          type: TransactionType.income,
+          amount: widget.goal.savedAmount,
+          date: DateTime.now(),
+          accountId: _accountId,
+          incomeSource: IncomeSource.other,
+          notes: 'Refunded from deleted goal: ${widget.goal.title}',
+          createdAt: DateTime.now(),
+        );
+
+        await ref.read(transactionsProvider.notifier).add(txn);
+        await ref.read(accountsProvider.notifier).adjustBalance(
+          _accountId!,
+          widget.goal.savedAmount,
+        );
+      }
+    }
+
+    ref.read(goalsProvider.notifier).removeGoal(widget.goal.id);
+    if (mounted) {
+      context.pop(); // pop refund sheet
+      context.pop(); // pop manage funds sheet
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accounts = ref.watch(accountsProvider).valueOrNull ?? [];
+    final mediaQuery = MediaQuery.of(context);
+    final navBarClearance = mediaQuery.padding.bottom + 124.h;
+    final maxSheetHeight = mediaQuery.size.height - mediaQuery.padding.top;
+
+    return SafeArea(
+      top: false,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: maxSheetHeight.clamp(240.h, mediaQuery.size.height),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+            border: Border.all(color: AppColors.border, width: 4.r),
+          ),
+          padding: EdgeInsets.only(
+            top: 24.h,
+            left: 24.w,
+            right: 24.w,
+            bottom: mediaQuery.viewInsets.bottom + navBarClearance,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40.w,
+                  height: 6.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+                Gap(24.h),
+                Text(
+                  'REFUND SAVINGS',
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5),
+                ),
+                Gap(8.h),
+                Text(
+                  'You have ${NumberFormat.decimalPattern().format(widget.goal.savedAmount)} ${widget.currency} saved. Select an account to deposit these funds back into.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AppColors.textLight, fontWeight: FontWeight.w600, fontSize: 13.sp),
+                ),
+                Gap(32.h),
+
+                // Account picker
+                if (accounts.isEmpty)
+                  const Text('No accounts found.')
+                else
+                  SizedBox(
+                    height: 90.h,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: accounts.length,
+                      itemBuilder: (context, index) {
+                        final acc = accounts[index];
+                        final isSelected = _accountId == acc.id;
+                        final accColorHex = acc.colorHex;
+                        final accColor = accColorHex != null
+                            ? Color(int.parse('FF${accColorHex.replaceAll("#", "")}', radix: 16))
+                            : AppColors.textDark;
+
+                        return GestureDetector(
+                          onTap: () => setState(() => _accountId = acc.id),
+                          child: AnimatedContainer(
+                            duration: 200.ms,
+                            width: 120.w,
+                            margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: isSelected ? accColor : AppColors.white,
+                              border: Border.all(color: AppColors.border, width: 2.r),
+                              borderRadius: BorderRadius.circular(16.r),
+                              boxShadow: isSelected
+                                  ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))]
+                                  : [],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(acc.iconEmoji ?? acc.type.icon, style: TextStyle(fontSize: 20.sp)),
+                                Gap(4.h),
+                                Text(
+                                  acc.name,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 11.sp,
+                                    color: isSelected ? AppColors.white : AppColors.textDark,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                
+                Gap(40.h),
+                NeoButton(
+                  text: 'REFUND & DELETE',
+                  backgroundColor: AppColors.secondary,
+                  onPressed: () => _submit(refund: true),
+                ),
+                Gap(16.h),
+                NeoButton(
+                  text: 'DELETE WITHOUT REFUNDING',
+                  backgroundColor: AppColors.primary,
+                  textColor: AppColors.white,
+                  onPressed: () => _submit(refund: false),
+                ),
+                Gap(16.h),
               ],
             ),
           ),

@@ -172,19 +172,24 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       appBar: AppBar(
         title: Text(
           _selectedType == TransactionType.expense
-              ? 'ADD EXPENSE'
-              : 'ADD INCOME',
-          style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900),
+              ? 'Add Expense'
+              : 'Add Income',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDark,
+            letterSpacing: -0.4,
+          ),
         ),
         leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20.r),
           onPressed: () => context.pop(),
         ),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(24.r),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           children: [
             // Type Toggle
             TransactionTypeToggle(
@@ -196,47 +201,44 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   _selectedIncomeSource = null;
                 });
               },
-            ).animate().fadeIn(duration: 200.ms).slideY(begin: -0.1),
+            ).animate().fadeIn(duration: 150.ms),
 
-            Gap(32.h),
+            Gap(24.h),
 
             // Amount Input
             Text(
-              'AMOUNT',
+              'Amount',
               style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+                color: AppColors.textDark,
               ),
             ),
-            Gap(12.h),
+            Gap(8.h),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: AppColors.border, width: 3.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.border,
-                    offset: Offset(4.w, 4.h),
-                  ),
-                ],
+                border: Border.all(color: AppColors.border, width: 1.r),
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary,
+                      color: AppColors.zinc100,
+                      borderRadius: BorderRadius.horizontal(left: Radius.circular(11.r)),
                       border: Border(
-                        right: BorderSide(color: AppColors.border, width: 3.r),
+                        right: BorderSide(color: AppColors.border, width: 1.r),
                       ),
                     ),
                     child: Text(
                       currency,
                       style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
                       ),
                     ),
                   ),
@@ -245,12 +247,17 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       controller: _amountController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       style: TextStyle(
-                        fontSize: 32.sp,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                        color: AppColors.textDark,
                       ),
                       decoration: InputDecoration(
                         hintText: '0.00',
+                        hintStyle: TextStyle(color: AppColors.zinc300, fontSize: 24.sp),
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                       ),
                       validator: (val) {
@@ -263,77 +270,71 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   ),
                 ],
               ),
-            ).animate().fadeIn(duration: 200.ms, delay: 100.ms).slideX(begin: 0.1),
+            ).animate().fadeIn(duration: 150.ms, delay: 50.ms),
 
-            Gap(32.h),
+            Gap(24.h),
 
             // Date Picker
             Text(
-              'DATE',
+              'Date',
               style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+                color: AppColors.textDark,
               ),
             ),
-            Gap(12.h),
+            Gap(8.h),
             GestureDetector(
               onTap: _selectDate,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.border, width: 3.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.border,
-                      offset: Offset(4.w, 4.h),
-                    ),
-                  ],
+                  border: Border.all(color: AppColors.border, width: 1.r),
                 ),
                 child: Row(
                   children: [
-                    Icon(LucideIcons.calendar, color: AppColors.textDark, size: 24.r),
-                    Gap(12.w),
+                    Icon(LucideIcons.calendar, color: AppColors.zinc500, size: 18.r),
+                    Gap(10.w),
                     Expanded(
                       child: Text(
-                        DateFormat('EEEE, MMM d, yyyy').format(_selectedDate).toUpperCase(),
+                        DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
                         style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w900,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textDark,
                         ),
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                       decoration: BoxDecoration(
-                        color: _selectedDate.day == DateTime.now().day
-                            ? AppColors.secondary
-                            : AppColors.background,
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: AppColors.border, width: 2.r),
+                        color: AppColors.zinc100,
+                        borderRadius: BorderRadius.circular(6.r),
+                        border: Border.all(color: AppColors.border, width: 1.r),
                       ),
                       child: Text(
-                        _selectedDate.day == DateTime.now().day ? 'TODAY' : 'CHANGE',
+                        _selectedDate.day == DateTime.now().day ? 'Today' : 'Change',
                         style: TextStyle(
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textLight,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ).animate().fadeIn(duration: 200.ms, delay: 200.ms).slideX(begin: 0.1),
+            ).animate().fadeIn(duration: 150.ms, delay: 100.ms),
 
-            Gap(32.h),
+            Gap(20.h),
 
             // Account Selector
             _buildAccountSelector(),
 
-            Gap(32.h),
+            Gap(20.h),
 
             // Category Selector
             CategorySelector(
@@ -350,43 +351,46 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   }
                 });
               },
-            ).animate().fadeIn(duration: 200.ms, delay: 300.ms).slideX(begin: 0.1),
+            ).animate().fadeIn(duration: 150.ms, delay: 150.ms),
 
-            Gap(32.h),
+            Gap(20.h),
 
             // Notes Input
             Text(
-              'NOTES',
+              'Notes',
               style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+                color: AppColors.textDark,
               ),
             ),
-            Gap(12.h),
+            Gap(8.h),
             TextFormField(
               controller: _notesController,
-              maxLines: 3,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              maxLines: 2,
+              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
               decoration: InputDecoration(
                 hintText: 'Add a note (optional)',
-                prefixIcon: Icon(LucideIcons.fileText, size: 20.r),
+                hintStyle: TextStyle(color: AppColors.textLight, fontSize: 13.sp),
+                prefixIcon: Icon(LucideIcons.fileText, size: 18.r, color: AppColors.zinc500),
               ),
-            ).animate().fadeIn(duration: 200.ms, delay: 400.ms).slideX(begin: 0.1),
+            ).animate().fadeIn(duration: 150.ms, delay: 200.ms),
 
-            Gap(32.h),
+            Gap(20.h),
 
             // Receipt Picker (for expenses only)
             if (_selectedType == TransactionType.expense) ...[
               Text(
-                'RECEIPT',
+                'Receipt',
                 style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
+                  color: AppColors.textDark,
                 ),
               ),
-              Gap(12.h),
+              Gap(8.h),
               ReceiptPicker(
                 localImage: _receiptImage,
                 remoteUrl: _receiptUrl,
@@ -399,85 +403,72 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     _receiptUrl = null;
                   });
                 },
-              ).animate().fadeIn(duration: 200.ms, delay: 500.ms).slideX(begin: 0.1),
-              Gap(32.h),
+              ).animate().fadeIn(duration: 150.ms, delay: 250.ms),
+              Gap(20.h),
             ],
 
             // Recurring Toggle (for expenses only)
             if (_selectedType == TransactionType.expense) ...[
-              GestureDetector(
-                onTap: () => setState(() => _isRecurring = !_isRecurring),
-                child: Container(
-                  padding: EdgeInsets.all(16.r),
-                  decoration: BoxDecoration(
-                    color: _isRecurring ? AppColors.cardYellow : AppColors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: AppColors.border,
-                      width: 3.r,
-                    ),
-                    boxShadow: _isRecurring
-                        ? [
-                            BoxShadow(
-                              color: AppColors.border,
-                              offset: Offset(4.w, 4.h),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        LucideIcons.repeat,
-                        color: AppColors.textDark,
-                        size: 24.r,
-                      ),
-                      Gap(12.w),
-                      Expanded(
-                        child: Text(
-                          'RECURRING EXPENSE',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 24.r,
-                        height: 24.r,
-                        decoration: BoxDecoration(
-                          color: _isRecurring ? AppColors.primary : AppColors.background,
-                          borderRadius: BorderRadius.circular(4.r),
-                          border: Border.all(
-                            color: AppColors.border,
-                            width: 2.r,
-                          ),
-                        ),
-                        child: _isRecurring
-                            ? Icon(
-                                Icons.check,
-                                size: 16.r,
-                                color: AppColors.white,
-                              )
-                            : null,
-                      ),
-                    ],
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1.r,
                   ),
                 ),
-              ).animate().fadeIn(duration: 200.ms, delay: 600.ms).slideX(begin: 0.1),
-              Gap(40.h),
+                child: Row(
+                  children: [
+                    Icon(
+                      LucideIcons.repeat,
+                      color: AppColors.zinc500,
+                      size: 20.r,
+                    ),
+                    Gap(12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Recurring Expense',
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          Text(
+                            'Repeats every month automatically',
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: AppColors.textLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Switch.adaptive(
+                      value: _isRecurring,
+                      activeTrackColor: AppColors.primary,
+                      onChanged: (val) => setState(() => _isRecurring = val),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(duration: 150.ms, delay: 300.ms),
+              Gap(28.h),
             ],
 
             // Save Button
             NeoButton(
-              text: _isLoading ? 'SAVING...' : 'SAVE TRANSACTION',
+              text: _isLoading ? 'Saving...' : 'Save Transaction',
+              isLoading: _isLoading,
+              height: 48.h,
               onPressed: _isLoading ? () {} : _saveTransaction,
-              backgroundColor: _selectedType == TransactionType.expense
-                  ? AppColors.primary
-                  : AppColors.secondary,
-            ).animate().fadeIn(duration: 200.ms, delay: 700.ms).slideY(begin: 0.2),
-            Gap(40.h),
+            ).animate().fadeIn(duration: 150.ms, delay: 350.ms),
+            Gap(32.h),
           ],
         ),
       ),
@@ -503,16 +494,21 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _selectedType == TransactionType.income ? 'RECEIVE INTO' : 'PAY FROM',
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
+              _selectedType == TransactionType.income ? 'Deposit Into' : 'Pay From',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+                color: AppColors.textDark,
+              ),
             ),
-            Gap(12.h),
+            Gap(8.h),
             SizedBox(
-              height: 64.h,
+              height: 52.h,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: accounts.length,
-                    separatorBuilder: (context, index) => Gap(12.w),
+                separatorBuilder: (context, index) => Gap(10.w),
                 itemBuilder: (context, index) {
                   final account = accounts[index];
                   final isSelected = account.id == _selectedAccountId;
@@ -520,22 +516,21 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   return GestureDetector(
                     onTap: () => setState(() => _selectedAccountId = account.id),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      duration: const Duration(milliseconds: 150),
+                      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : AppColors.white,
-                        borderRadius: BorderRadius.circular(14.r),
-                        border: Border.all(color: AppColors.border, width: 2.r),
-                        boxShadow: isSelected
-                            ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                            : null,
+                        color: isSelected ? AppColors.primary : AppColors.surface,
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: isSelected
+                            ? null
+                            : Border.all(color: AppColors.border, width: 1.r),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             account.iconEmoji ?? account.type.icon,
-                            style: TextStyle(fontSize: 20.sp),
+                            style: TextStyle(fontSize: 18.sp),
                           ),
                           Gap(8.w),
                           Column(
@@ -545,16 +540,16 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                               Text(
                                 account.name,
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 13.sp,
-                                  color: isSelected ? AppColors.white : AppColors.textDark,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  fontSize: 12.sp,
+                                  color: isSelected ? Colors.white : AppColors.textDark,
                                 ),
                               ),
                               Text(
                                 account.type.displayName,
                                 style: TextStyle(
                                   fontSize: 10.sp,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w400,
                                   color: isSelected ? Colors.white70 : AppColors.textLight,
                                 ),
                               ),
@@ -566,7 +561,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   );
                 },
               ),
-            ).animate().fadeIn(duration: 200.ms, delay: 250.ms).slideX(begin: 0.1),
+            ).animate().fadeIn(duration: 150.ms, delay: 100.ms),
           ],
         );
       },

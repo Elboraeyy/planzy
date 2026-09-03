@@ -7,12 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/widgets/planzy_notification.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/features/accounts/data/models/financial_account.dart';
 import 'package:planzy/features/accounts/presentation/providers/accounts_provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class TransferScreen extends ConsumerStatefulWidget {
   const TransferScreen({super.key});
@@ -84,11 +82,32 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
         );
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('TRANSFER', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
-          onPressed: () => context.pop(),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        title: Text(
+          'Transfer Funds',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDark,
+            letterSpacing: -0.3,
+          ),
+        ),
+        leading: Center(
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              width: 36.r,
+              height: 36.r,
+              decoration: BoxDecoration(
+                color: AppColors.zinc100,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 18.r),
+            ),
+          ),
         ),
       ),
       body: accountsAsync.when(
@@ -100,14 +119,26 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('You need at least 2 accounts to make a transfer.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700)),
-                    Gap(24.h),
+                    Container(
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.zinc100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(LucideIcons.arrowLeftRight, size: 32.r, color: AppColors.textLight),
+                    ),
+                    Gap(16.h),
+                    Text(
+                      'You need at least 2 accounts to make a transfer.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: AppColors.textDark),
+                    ),
+                    Gap(20.h),
                     NeoButton(
-                      text: 'ADD ACCOUNT',
+                      text: 'Add Account',
                       onPressed: () => context.push('/add-account'),
-                      backgroundColor: AppColors.secondary,
+                      backgroundColor: AppColors.primary,
+                      textColor: Colors.white,
                     ),
                   ],
                 ),
@@ -119,141 +150,183 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
           final toAccount = accounts.where((a) => a.id == _toAccountId).firstOrNull;
 
           return ListView(
-            padding: EdgeInsets.all(24.r),
+            padding: EdgeInsets.all(20.r),
             children: [
-              // ═══════ FROM ═══════
-              Text('FROM', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              Gap(12.h),
+              // FROM
+              Text(
+                'From Account',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textDark,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              Gap(10.h),
               _AccountSelector(
                 accounts: accounts,
                 selectedId: _fromAccountId,
                 excludeId: _toAccountId,
                 currency: currency,
                 onSelected: (id) => setState(() => _fromAccountId = id),
-              ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.1),
+              ),
 
-              Gap(8.h),
+              Gap(12.h),
 
               // Arrow indicator
               Center(
                 child: Container(
-                  padding: EdgeInsets.all(10.r),
+                  width: 36.r,
+                  height: 36.r,
                   decoration: BoxDecoration(
-                    color: AppColors.cardYellow,
+                    color: AppColors.zinc100,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border, width: 2.r),
-                    boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
+                    border: Border.all(color: AppColors.border, width: 1.r),
                   ),
-                  child: Icon(LucideIcons.arrowDown, size: 20.r, color: AppColors.textDark),
+                  child: Icon(LucideIcons.arrowDown, size: 18.r, color: AppColors.textDark),
                 ),
-              ).animate().fadeIn(delay: 200.ms).scale(curve: Curves.easeOutBack),
+              ),
 
-              Gap(8.h),
-
-              // ═══════ TO ═══════
-              Text('TO', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
               Gap(12.h),
+
+              // TO
+              Text(
+                'To Account',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textDark,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              Gap(10.h),
               _AccountSelector(
                 accounts: accounts,
                 selectedId: _toAccountId,
                 excludeId: _fromAccountId,
                 currency: currency,
                 onSelected: (id) => setState(() => _toAccountId = id),
-              ).animate().fadeIn(delay: 300.ms).slideX(begin: 0.1),
+              ),
 
-              Gap(32.h),
+              Gap(24.h),
 
-              // ═══════ Amount ═══════
-              Text('AMOUNT', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              Gap(12.h),
+              // Amount
+              Text(
+                'Transfer Amount',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textDark,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              Gap(10.h),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.border, width: 3.r),
-                  boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))],
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
+                      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
                       decoration: BoxDecoration(
-                        color: AppColors.secondary,
-                        border: Border(right: BorderSide(color: AppColors.border, width: 3.r)),
+                        color: AppColors.zinc100,
+                        borderRadius: BorderRadius.horizontal(left: Radius.circular(13.r)),
                       ),
-                      child: Text(currency, style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900)),
+                      child: Text(
+                        currency,
+                        style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700, color: AppColors.textDark),
+                      ),
                     ),
                     Expanded(
                       child: TextField(
                         controller: _amountController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w900),
+                        style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w700, color: AppColors.textDark),
+                        onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
                           hintText: '0.00',
+                          hintStyle: TextStyle(color: AppColors.zinc300),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 14.w),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.1),
+              ),
 
-              Gap(24.h),
+              Gap(20.h),
 
-              // ═══════ Fee (optional) ═══════
-              Text('TRANSFER FEE', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
-              Gap(4.h),
-              Text('Deducted from source account', style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.w600)),
-              Gap(12.h),
+              // Fee (optional)
+              Text(
+                'Transfer Fee (Optional)',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textDark,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              Gap(2.h),
+              Text(
+                'Deducted directly from source account',
+                style: TextStyle(color: AppColors.textLight, fontSize: 11.sp, fontWeight: FontWeight.w400),
+              ),
+              Gap(10.h),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.border, width: 2.r),
-                  boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
+                  border: Border.all(color: AppColors.border, width: 1.r),
                 ),
                 child: TextField(
                   controller: _feeController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: AppColors.textDark),
                   decoration: InputDecoration(
                     hintText: '0',
-                    prefixIcon: Icon(LucideIcons.percent, color: AppColors.textLight, size: 20.r),
+                    prefixIcon: Icon(LucideIcons.percent, color: AppColors.zinc400, size: 18.r),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
                     suffixText: currency,
-                    suffixStyle: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textLight, fontSize: 14.sp),
+                    suffixStyle: TextStyle(fontWeight: FontWeight.w600, color: AppColors.textLight, fontSize: 13.sp),
                   ),
                 ),
-              ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
+              ),
 
               // Summary preview
               if (fromAccount != null && toAccount != null && _amountController.text.isNotEmpty) ...[
-                Gap(24.h),
-                NeoCard(
-                  backgroundColor: AppColors.background,
-                  padding: EdgeInsets.all(16.r),
+                Gap(20.h),
+                Container(
+                  padding: EdgeInsets.all(14.r),
+                  decoration: BoxDecoration(
+                    color: AppColors.zinc50,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.border, width: 1.r),
+                  ),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${fromAccount.name}:', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.sp)),
+                          Text('From ${fromAccount.name}:', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp, color: AppColors.textDark)),
                           Text(
-                            NumberFormat.decimalPattern().format(fromAccount.balance),
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+                            '${NumberFormat.decimalPattern().format(fromAccount.balance)} $currency',
+                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13.sp, color: AppColors.textDark),
                           ),
                         ],
                       ),
-                      Gap(4.h),
+                      Gap(6.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${toAccount.name}:', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.sp)),
+                          Text('To ${toAccount.name}:', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp, color: AppColors.textDark)),
                           Text(
-                            NumberFormat.decimalPattern().format(toAccount.balance),
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+                            '${NumberFormat.decimalPattern().format(toAccount.balance)} $currency',
+                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13.sp, color: AppColors.textDark),
                           ),
                         ],
                       ),
@@ -262,16 +335,17 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 ),
               ],
 
-              Gap(40.h),
+              Gap(32.h),
 
-              // ═══════ Transfer Button ═══════
+              // Transfer Button
               NeoButton(
-                text: _isLoading ? 'TRANSFERRING...' : 'TRANSFER FUNDS',
+                text: _isLoading ? 'Transferring...' : 'Transfer Funds',
                 onPressed: _isLoading ? () {} : _transfer,
-                backgroundColor: AppColors.cardBlue,
-              ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
+              ),
 
-              Gap(100.h),
+              Gap(40.h),
             ],
           );
         },
@@ -305,11 +379,11 @@ class _AccountSelector extends StatelessWidget {
     final filteredAccounts = accounts.where((a) => a.id != excludeId).toList();
 
     return SizedBox(
-      height: 84.h,
+      height: 72.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: filteredAccounts.length,
-        separatorBuilder: (context, index) => Gap(12.w),
+        separatorBuilder: (context, index) => Gap(10.w),
         itemBuilder: (context, index) {
           final account = filteredAccounts[index];
           final isSelected = account.id == selectedId;
@@ -317,32 +391,40 @@ class _AccountSelector extends StatelessWidget {
           return GestureDetector(
             onTap: () => onSelected(account.id),
             child: AnimatedContainer(
-              duration: 200.ms,
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              duration: const Duration(milliseconds: 150),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.white,
-                borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(color: AppColors.border, width: 2.r),
-                boxShadow: isSelected ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))] : null,
+                color: isSelected ? AppColors.primary : AppColors.surface,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.border,
+                  width: 1.r,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    account.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14.sp,
-                      color: isSelected ? AppColors.white : AppColors.textDark,
-                    ),
+                  Row(
+                    children: [
+                      Text(account.type.icon, style: TextStyle(fontSize: 14.sp)),
+                      Gap(6.w),
+                      Text(
+                        account.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13.sp,
+                          color: isSelected ? Colors.white : AppColors.textDark,
+                        ),
+                      ),
+                    ],
                   ),
                   Gap(4.h),
                   Text(
                     '${NumberFormat.compact().format(account.balance)} $currency',
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 11.sp,
                       color: isSelected ? Colors.white70 : AppColors.textLight,
                     ),
                   ),
@@ -355,5 +437,3 @@ class _AccountSelector extends StatelessWidget {
     );
   }
 }
-
-

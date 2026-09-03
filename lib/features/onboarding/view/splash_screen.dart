@@ -22,14 +22,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _navigateToNext() async {
-    // Wait for the animation and some delay
-    await Future.delayed(2500.ms);
+    await Future.delayed(2200.ms);
     
     if (!mounted) return;
 
     final settings = ref.read(settingsProvider).value;
     
-    // Fallback if settings aren't loaded yet (though build() handles it)
     if (settings == null) {
       context.go('/onboarding');
       return;
@@ -47,53 +45,66 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.zinc950,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // The "P" logo container
             Container(
-              width: 120.r,
-              height: 120.r,
+              width: 96.r,
+              height: 96.r,
               decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(30.r),
-                border: Border.all(color: AppColors.border, width: 4.r),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(24.r),
+                border: Border.all(color: AppColors.zinc800, width: 1.r),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.border,
-                    offset: Offset(8.w, 8.h),
+                    color: Colors.black.withValues(alpha: 0.35),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
-              padding: EdgeInsets.all(20.r),
+              padding: EdgeInsets.all(18.r),
               child: Image.asset('assets/images/icon.png', fit: BoxFit.contain),
             )
             .animate()
             .scale(
-              begin: const Offset(0, 0),
+              begin: const Offset(0.8, 0.8),
               end: const Offset(1, 1),
-              duration: 800.ms,
-              curve: Curves.elasticOut,
+              duration: 500.ms,
+              curve: Curves.easeOutCubic,
             )
-            .then()
-            .shimmer(duration: 1200.ms),
+            .fadeIn(duration: 400.ms),
 
-            Gap(48.h),
+            Gap(28.h),
 
             Text(
-              'PLANZY',
+              'Planzy',
               style: TextStyle(
-                color: AppColors.white,
-                fontSize: 40.sp,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 4,
+                color: Colors.white,
+                fontSize: 30.sp,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.6,
               ),
             )
             .animate()
-            .fadeIn(delay: 400.ms)
-            .slideY(begin: 0.5, curve: Curves.easeOutBack),
+            .fadeIn(delay: 200.ms, duration: 400.ms)
+            .slideY(begin: 0.2, curve: Curves.easeOutCubic),
+
+            Gap(6.h),
+
+            Text(
+              'Personal Wealth Workspace',
+              style: TextStyle(
+                color: AppColors.zinc400,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.8,
+              ),
+            )
+            .animate()
+            .fadeIn(delay: 350.ms, duration: 400.ms),
           ],
         ),
       ),

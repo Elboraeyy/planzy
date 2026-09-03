@@ -10,10 +10,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -83,49 +81,61 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     });
   }
 
-  Future<ImageSource?> _showImageSourceDialog() async {
-    return showGeneralDialog<ImageSource>(
+  Future<ImageSource?> _showImageSourceDialog() {
+    return showGeneralDialog<ImageSource?>(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (ctx, _, _) {
         return Center(
           child: Material(
             color: Colors.transparent,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: NeoCard(
-                backgroundColor: AppColors.background,
-                padding: EdgeInsets.all(24.r),
+              child: Container(
+                padding: EdgeInsets.all(20.r),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('CHOOSE PHOTO', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900)),
-                    Gap(24.h),
+                    Text(
+                      'Choose Photo',
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700, color: AppColors.textDark, letterSpacing: -0.3),
+                    ),
+                    Gap(16.h),
                     Row(
                       children: [
                         Expanded(
                           child: _ImageSourceOption(
                             icon: LucideIcons.camera,
-                            label: 'CAMERA',
-                            color: AppColors.cardYellow,
+                            label: 'Camera',
                             onTap: () => Navigator.pop(ctx, ImageSource.camera),
                           ),
                         ),
-                        Gap(16.w),
+                        Gap(12.w),
                         Expanded(
                           child: _ImageSourceOption(
                             icon: LucideIcons.image,
-                            label: 'GALLERY',
-                            color: AppColors.cardBlue,
+                            label: 'Gallery',
                             onTap: () => Navigator.pop(ctx, ImageSource.gallery),
                           ),
                         ),
                       ],
                     ),
-                    Gap(16.h),
-                    if (_profileImagePath != null)
+                    if (_profileImagePath != null) ...[
+                      Gap(12.h),
                       GestureDetector(
                         onTap: () {
                           setState(() {
@@ -136,20 +146,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         },
                         child: Container(
                           width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 14.h),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
                           decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: Colors.red, width: 2.r),
+                            color: AppColors.destructiveLight,
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                           child: Center(
-                            child: Text('REMOVE PHOTO', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 14.sp)),
+                            child: Text(
+                              'Remove Photo',
+                              style: TextStyle(color: AppColors.destructive, fontWeight: FontWeight.w600, fontSize: 13.sp),
+                            ),
                           ),
                         ),
                       ),
+                    ],
                   ],
                 ),
-              ).animate().scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack).fadeIn(),
+              ),
             ),
           ),
         );
@@ -176,7 +189,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     if (_profileImagePath != null) {
       await ref.read(settingsProvider.notifier).updateProfileImage(_profileImagePath!);
     } else {
-      // Clear the image if removed
       await ref.read(settingsProvider.notifier).updateProfileImage('');
     }
 
@@ -192,51 +204,40 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final displayName = _nameController.text.isNotEmpty ? _nameController.text : 'P';
 
     return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDark,
+            letterSpacing: -0.3,
+          ),
+        ),
+        leading: Center(
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              width: 36.r,
+              height: 36.r,
+              decoration: BoxDecoration(
+                color: AppColors.zinc100,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 18.r),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: _isSaving
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(color: AppColors.primary),
-                    Gap(24.h),
-                    Text('SAVING CHANGES...', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
-                  ],
-                ),
-              )
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
             : ListView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+                padding: EdgeInsets.all(20.r),
                 children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => context.pop(),
-                            child: Container(
-                              padding: EdgeInsets.all(12.r),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(12.r),
-                                border: Border.all(color: AppColors.border, width: 3.r),
-                              ),
-                              child: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20.r),
-                            ),
-                          ),
-                          Gap(16.w),
-                          Text(
-                            'EDIT PROFILE',
-                            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ).animate().fadeIn(),
-
-                  Gap(40.h),
-
                   // Avatar Section
                   Center(
                     child: GestureDetector(
@@ -245,14 +246,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         alignment: Alignment.bottomRight,
                         children: [
                           Container(
-                            width: 130.r,
-                            height: 130.r,
+                            width: 110.r,
+                            height: 110.r,
                             decoration: BoxDecoration(
-                              color: AppColors.secondary,
+                              color: AppColors.zinc950,
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.border, width: 4.r),
+                              border: Border.all(color: AppColors.border, width: 2.r),
                               boxShadow: [
-                                BoxShadow(color: AppColors.border, offset: Offset(5.w, 5.h)),
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
+                                ),
                               ],
                               image: hasImage
                                   ? DecorationImage(
@@ -265,150 +270,170 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 ? Center(
                                     child: Text(
                                       displayName[0].toUpperCase(),
-                                      style: TextStyle(fontSize: 52.sp, fontWeight: FontWeight.w900, color: AppColors.textDark),
+                                      style: TextStyle(fontSize: 44.sp, fontWeight: FontWeight.w700, color: Colors.white),
                                     ),
                                   )
                                 : null,
                           ),
                           Container(
-                            padding: EdgeInsets.all(10.r),
+                            padding: EdgeInsets.all(8.r),
                             decoration: BoxDecoration(
-                              color: AppColors.cardYellow,
+                              color: AppColors.primary,
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.border, width: 3.r),
-                              boxShadow: [
-                                BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
-                              ],
+                              border: Border.all(color: AppColors.surface, width: 2.r),
                             ),
-                            child: Icon(LucideIcons.camera, size: 18.r, color: AppColors.textDark),
+                            child: Icon(LucideIcons.camera, size: 14.r, color: Colors.white),
                           ),
                         ],
-                      ).animate().scale(curve: Curves.easeOutBack),
+                      ),
                     ),
                   ),
                   Gap(8.h),
                   Center(
                     child: Text(
-                      'TAP TO CHANGE PHOTO',
-                      style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
-                    ).animate().fadeIn(delay: 200.ms),
+                      'Tap to change photo',
+                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w400, color: AppColors.textLight),
+                    ),
                   ),
 
-                  Gap(40.h),
+                  Gap(32.h),
 
                   // Form Fields
-                  _buildFieldLabel('YOUR NAME', LucideIcons.user, 300),
-                  Gap(12.h),
-                  TextField(
-                    controller: _nameController,
-                    onChanged: (_) => _markChanged(),
-                    style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900),
-                    decoration: InputDecoration(
-                      hintText: 'What should we call you?',
-                      contentPadding: EdgeInsets.all(20.r),
+                  _buildFieldLabel('Full Name', LucideIcons.user),
+                  Gap(8.h),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: AppColors.border, width: 1.r),
                     ),
-                  ).animate().slideX(begin: 0.1, delay: 300.ms, curve: Curves.easeOutBack).fadeIn(),
-
-                  Gap(28.h),
-
-                  _buildFieldLabel('BIO', LucideIcons.alignLeft, 400),
-                  Gap(12.h),
-                  TextField(
-                    controller: _bioController,
-                    onChanged: (_) => _markChanged(),
-                    maxLines: 3,
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-                    decoration: InputDecoration(
-                      hintText: 'Write something about yourself...',
-                      contentPadding: EdgeInsets.all(20.r),
-                    ),
-                  ).animate().slideX(begin: 0.1, delay: 400.ms, curve: Curves.easeOutBack).fadeIn(),
-
-                  Gap(28.h),
-
-                  _buildFieldLabel('EMAIL', LucideIcons.mail, 500),
-                  Gap(12.h),
-                  TextField(
-                    controller: _emailController,
-                    enabled: false, // Email comes from Firebase, read-only
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: AppColors.textLight),
-                    decoration: InputDecoration(
-                      hintText: 'Your email',
-                      contentPadding: EdgeInsets.all(20.r),
-                      suffixIcon: Container(
-                        margin: EdgeInsets.only(right: 12.w),
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                        child: Icon(LucideIcons.lock, size: 16.r, color: AppColors.textLight),
+                    child: TextField(
+                      controller: _nameController,
+                      onChanged: (_) => _markChanged(),
+                      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: AppColors.textDark),
+                      decoration: InputDecoration(
+                        hintText: 'What should we call you?',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
                       ),
                     ),
-                  ).animate().slideX(begin: 0.1, delay: 500.ms, curve: Curves.easeOutBack).fadeIn(),
+                  ),
 
-                  Gap(12.h),
+                  Gap(20.h),
+
+                  _buildFieldLabel('Bio', LucideIcons.alignLeft),
+                  Gap(8.h),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: AppColors.border, width: 1.r),
+                    ),
+                    child: TextField(
+                      controller: _bioController,
+                      onChanged: (_) => _markChanged(),
+                      maxLines: 3,
+                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: AppColors.textDark),
+                      decoration: InputDecoration(
+                        hintText: 'Write something about yourself...',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                      ),
+                    ),
+                  ),
+
+                  Gap(20.h),
+
+                  _buildFieldLabel('Email Address', LucideIcons.mail),
+                  Gap(8.h),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.zinc50,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: AppColors.border, width: 1.r),
+                    ),
+                    child: TextField(
+                      controller: _emailController,
+                      enabled: false,
+                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: AppColors.textLight),
+                      decoration: InputDecoration(
+                        hintText: 'Your email',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                        suffixIcon: Icon(LucideIcons.lock, size: 16.r, color: AppColors.zinc400),
+                      ),
+                    ),
+                  ),
+
+                  Gap(6.h),
                   Padding(
                     padding: EdgeInsets.only(left: 4.w),
                     child: Text(
-                      'Email is managed by Firebase and cannot be changed here.',
-                      style: TextStyle(fontSize: 11.sp, color: AppColors.textLight, fontWeight: FontWeight.w600),
-                    ).animate().fadeIn(delay: 550.ms),
+                      'Email is managed securely and cannot be changed directly.',
+                      style: TextStyle(fontSize: 11.sp, color: AppColors.textLight, fontWeight: FontWeight.w400),
+                    ),
                   ),
 
-                  Gap(48.h),
+                  Gap(36.h),
 
                   // Save Button
                   NeoButton(
-                    text: _hasChanged ? 'SAVE CHANGES' : 'NO CHANGES',
-                    backgroundColor: _hasChanged ? AppColors.secondary : AppColors.white,
-                    textColor: AppColors.textDark,
+                    text: _hasChanged ? 'Save Changes' : 'No Changes',
+                    backgroundColor: _hasChanged ? AppColors.primary : AppColors.zinc200,
+                    textColor: _hasChanged ? Colors.white : AppColors.textLight,
                     onPressed: _save,
-                  ).animate().slideY(begin: 0.3, delay: 600.ms, curve: Curves.easeOutBack).fadeIn(),
+                  ),
 
-                  Gap(100.h),
+                  Gap(40.h),
                 ],
               ),
       ),
     );
   }
 
-  Widget _buildFieldLabel(String label, IconData icon, int delayMs) {
+  Widget _buildFieldLabel(String label, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 16.r, color: AppColors.textLight),
-        Gap(8.w),
+        Icon(icon, size: 14.r, color: AppColors.zinc400),
+        Gap(6.w),
         Text(
           label,
-          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2),
+          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600, color: AppColors.textDark, letterSpacing: -0.2),
         ),
       ],
-    ).animate().fadeIn(delay: Duration(milliseconds: delayMs));
+    );
   }
 }
 
 class _ImageSourceOption extends StatelessWidget {
   final IconData icon;
   final String label;
-  final Color color;
   final VoidCallback onTap;
 
   const _ImageSourceOption({
     required this.icon,
     required this.label,
-    required this.color,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return NeoCard(
-      backgroundColor: color,
-      isInteractive: true,
+    return GestureDetector(
       onTap: onTap,
-      padding: EdgeInsets.symmetric(vertical: 24.h),
-      child: Column(
-        children: [
-          Icon(icon, size: 28.r, color: AppColors.textDark),
-          Gap(8.h),
-          Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp)),
-        ],
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16.h),
+        decoration: BoxDecoration(
+          color: AppColors.zinc100,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 24.r, color: AppColors.textDark),
+            Gap(6.h),
+            Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13.sp, color: AppColors.textDark)),
+          ],
+        ),
       ),
     );
   }

@@ -46,46 +46,33 @@ class _NeoCardState extends State<NeoCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Standard unpressed shadow offset
-    final double shadowOffset = 6.0.r;
-
     final card = GestureDetector(
       onTapDown: _handleTapDown,
       onTapUp: _handleTapUp,
       onTapCancel: _handleTapCancel,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOutBack,
-        transform: Matrix4.translationValues(
-          _isPressed ? shadowOffset - 2.r : 0, 
-          _isPressed ? shadowOffset - 2.r : 0, 
-          0
-        ),
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.diagonal3Values(_isPressed ? 0.985 : 1.0, _isPressed ? 0.985 : 1.0, 1.0),
+        transformAlignment: Alignment.center,
         decoration: BoxDecoration(
           color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.border, width: 3.r),
+          border: Border.all(color: AppColors.border, width: 1.r),
           boxShadow: [
             BoxShadow(
-              color: AppColors.border,
-              offset: Offset(
-                _isPressed ? 0 : shadowOffset, 
-                _isPressed ? 0 : shadowOffset
-              ),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Padding(
-          padding: widget.padding ?? EdgeInsets.all(24.r),
+          padding: widget.padding ?? EdgeInsets.all(20.r),
           child: widget.child,
         ),
       ),
     );
-
-    // Only apply hover/tap physics if it has an onTap
-    if (widget.onTap != null) {
-      return card;
-    }
 
     return card;
   }

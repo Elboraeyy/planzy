@@ -46,21 +46,22 @@ class _ExpenseCategorySelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'CATEGORY',
+          'Category',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+            color: AppColors.textDark,
           ),
         ),
-        const Gap(12),
+        const Gap(10),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.1,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.2,
           children: ExpenseCategory.values.map((category) {
             final isSelected = category == selectedCategory;
             return _CategoryItem(
@@ -98,21 +99,22 @@ class _IncomeSourceSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'SOURCE',
+          'Income Source',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+            color: AppColors.textDark,
           ),
         ),
-        const Gap(12),
+        const Gap(10),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.1,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.2,
           children: IncomeSource.values.map((source) {
             final isSelected = source == selectedSource;
             return _CategoryItem(
@@ -147,19 +149,19 @@ class _CategoryItem extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutBack,
+        curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondary : AppColors.white,
+          color: isSelected ? AppColors.primary : AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.border,
-            width: isSelected ? 3 : 2,
-          ),
+          border: isSelected
+              ? null
+              : Border.all(color: AppColors.border, width: 1),
           boxShadow: isSelected
-              ? const [
+              ? [
                   BoxShadow(
-                    color: AppColors.border,
-                    offset: Offset(4, 4),
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ]
               : null,
@@ -169,16 +171,16 @@ class _CategoryItem extends StatelessWidget {
           children: [
             Text(
               icon,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 22),
             ),
-            const Gap(4),
+            const Gap(6),
             Text(
-              label.toUpperCase(),
+              label,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.5,
-                color: isSelected ? AppColors.textDark : AppColors.textLight,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                letterSpacing: -0.2,
+                color: isSelected ? Colors.white : AppColors.textDark,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

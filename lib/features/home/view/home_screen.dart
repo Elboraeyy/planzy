@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
@@ -70,36 +69,42 @@ class _HomeHeaderWidget extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello,',
+              'Welcome back,',
               style: TextStyle(
-                fontSize: 18.sp,
+                fontSize: 13.sp,
                 color: AppColors.textLight,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                letterSpacing: -0.2,
               ),
             ),
+            Gap(2.h),
             Text(
-              '$userName ✌️',
+              userName,
               style: TextStyle(
-                fontSize: 32.sp,
+                fontSize: 26.sp,
                 color: AppColors.textDark,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.6,
               ),
-            ).animate().shimmer(duration: 2.seconds, color: AppColors.secondary),
+            ),
           ],
         ),
         Container(
-          padding: EdgeInsets.all(12.r),
+          padding: EdgeInsets.all(10.r),
           decoration: BoxDecoration(
-            color: AppColors.cardYellow,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.border, width: 3.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
             boxShadow: [
-              BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h)),
-            ]
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          child: Icon(LucideIcons.bell, color: AppColors.textDark, size: 24.r),
-        ).animate().slideX(begin: 1, curve: Curves.easeOutBack).rotate(begin: 0.1),
+          child: Icon(LucideIcons.bell, color: AppColors.textDark, size: 20.r),
+        ),
       ],
     );
   }
@@ -432,119 +437,105 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
       isDismissible: true,
       enableDrag: true,
       builder: (ctx) {
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(ctx).pop(),
-          child: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.w),
-                padding: EdgeInsets.fromLTRB(16.r, 12.r, 16.r, 20.r),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(24.r),
-                  border: Border.all(color: AppColors.border, width: 3.r),
-                  boxShadow: [
-                    BoxShadow(color: AppColors.border, offset: Offset(6.w, 6.h)),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Title row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          LucideIcons.filter,
-                          size: 18.r,
-                          color: AppColors.cardYellow,
-                        ),
-                        Gap(8.w),
-                        Text(
-                          'SHOW DATA FOR',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
-                            color: AppColors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Gap(20.h),
-                    // Grid of filter options
-                    Wrap(
-                      spacing: 10.w,
-                      runSpacing: 10.h,
-                      children: DateRangeFilter.values.map((filter) {
-                        final isActive = _activeFilter == filter;
-                        final isCustom = filter == DateRangeFilter.custom;
-                        return GestureDetector(
-                          onTap: () => _onFilterSelected(filter),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOutCubic,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isCustom ? 20.w : 16.w,
-                              vertical: 12.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isActive
-                                  ? AppColors.secondary
-                                  : AppColors.background,
-                              borderRadius: BorderRadius.circular(14.r),
-                              border: Border.all(
-                                color: AppColors.border,
-                                width: isActive ? 3.r : 2.r,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.border,
-                                  offset: Offset(
-                                    isActive ? 4.w : 2.w,
-                                    isActive ? 4.h : 2.h,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  filter.emoji,
-                                  style: TextStyle(fontSize: 16.sp),
-                                ),
-                                Gap(8.w),
-                                Text(
-                                  filter.label,
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.textDark,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                if (isActive) ...[
-                                  Gap(6.w),
-                                  Icon(
-                                    LucideIcons.check,
-                                    size: 15.r,
-                                    color: AppColors.textDark,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    Gap(8.h),
-                  ],
+        return Container(
+          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            border: Border.all(color: AppColors.border, width: 1.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 30,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.zinc300,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
                 ),
               ),
-            ),
+              Gap(16.h),
+              Text(
+                'Filter by Date',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              Gap(2.h),
+              Text(
+                'Select a timeframe to display transactions and metrics',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: AppColors.textLight,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Gap(20.h),
+              Wrap(
+                spacing: 8.w,
+                runSpacing: 8.h,
+                children: DateRangeFilter.values.map((filter) {
+                  final isActive = _activeFilter == filter;
+                  return GestureDetector(
+                    onTap: () => _onFilterSelected(filter),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      curve: Curves.easeOutCubic,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 10.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isActive ? AppColors.primary : AppColors.zinc100,
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: isActive
+                            ? null
+                            : Border.all(color: AppColors.border, width: 1.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(filter.emoji, style: TextStyle(fontSize: 14.sp)),
+                          Gap(6.w),
+                          Text(
+                            filter.label,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                              color: isActive ? Colors.white : AppColors.textDark,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          if (isActive) ...[
+                            Gap(6.w),
+                            Icon(
+                              LucideIcons.check,
+                              size: 14.r,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              Gap(12.h),
+            ],
           ),
         );
       },
@@ -763,22 +754,30 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                           setState(() => _selectedDay = day);
                         },
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeOutBack,
-                          width: 58.w,
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.easeOutCubic,
+                          width: 54.w,
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? AppColors.primary
-                                : isToday
-                                    ? AppColors.secondary.withValues(alpha: 0.3)
-                                    : AppColors.white,
-                            borderRadius: BorderRadius.circular(14.r),
-                            border: Border.all(
-                              color: isSelected ? AppColors.border : AppColors.border.withValues(alpha: 0.15),
-                              width: isSelected ? 3.r : 2.r,
-                            ),
+                                : AppColors.surface,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: isSelected
+                                ? null
+                                : Border.all(
+                                    color: isToday
+                                        ? AppColors.zinc400
+                                        : AppColors.border,
+                                    width: 1.r,
+                                  ),
                             boxShadow: isSelected
-                                ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.1),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ]
                                 : null,
                           ),
                           child: Column(
@@ -787,25 +786,31 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                               Text(
                                 dayName,
                                 style: TextStyle(
-                                  fontSize: 11.sp,
-                                  fontWeight: FontWeight.w900,
-                                  color: isSelected ? AppColors.white.withValues(alpha: 0.7) : AppColors.textLight,
-                                  letterSpacing: 0.5,
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: isSelected
+                                      ? AppColors.zinc400
+                                      : AppColors.textLight,
+                                  letterSpacing: -0.2,
                                 ),
                               ),
-                              Gap(4.h),
+                              Gap(2.h),
                               Text(
                                 '${day.day}',
                                 style: TextStyle(
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.w900,
-                                  color: isSelected ? AppColors.white : AppColors.textDark,
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.textDark,
+                                  letterSpacing: -0.4,
                                 ),
                               ),
                               if (hasTx && !isSelected) ...[
                                 Gap(2.h),
                                 Container(
-                                  width: 6.r, height: 6.r,
+                                  width: 4.r,
+                                  height: 4.r,
                                   decoration: const BoxDecoration(
                                     color: AppColors.primary,
                                     shape: BoxShape.circle,
@@ -833,43 +838,57 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              DateFormat('EEEE, d MMM').format(_selectedDay).toUpperCase(),
-              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 1),
+              DateFormat('EEEE, d MMMM').format(_selectedDay),
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+                letterSpacing: -0.3,
+              ),
             ),
             if (dayTransactions.isNotEmpty)
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                 decoration: BoxDecoration(
-                  color: AppColors.secondary,
+                  color: AppColors.zinc100,
                   borderRadius: BorderRadius.circular(6.r),
-                  border: Border.all(color: AppColors.border, width: 2.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
                 ),
                 child: Text(
                   '${dayTransactions.length} item${dayTransactions.length > 1 ? 's' : ''}',
-                  style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textLight,
+                  ),
                 ),
               ),
           ],
         ).animate().fadeIn(delay: 300.ms),
-        Gap(16.h),
+        Gap(12.h),
 
         if (dayTransactions.isEmpty)
-          NeoCard(
-            backgroundColor: AppColors.white,
+          Container(
+            padding: EdgeInsets.all(28.r),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: AppColors.border, width: 1.r),
+            ),
             child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(24.r),
-                child: Column(
-                  children: [
-                    Text('📭', style: TextStyle(fontSize: 32.sp)),
-                    Gap(8.h),
-                    Text(
-                      'NO ACTIVITY ON ${DateFormat('MMMM d').format(_selectedDay).toUpperCase()}',
-                      style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13.sp),
-                      textAlign: TextAlign.center,
+              child: Column(
+                children: [
+                  Icon(LucideIcons.inbox, size: 28.r, color: AppColors.zinc400),
+                  Gap(8.h),
+                  Text(
+                    'No activity on this date',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textLight,
+                      fontSize: 13.sp,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           )
@@ -889,42 +908,67 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   : (t.incomeSource?.displayName ?? 'Income');
 
               return Padding(
-                padding: EdgeInsets.only(bottom: 12.h),
-                child: NeoCard(
-                  backgroundColor: AppColors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(14.r),
+                    border: Border.all(color: AppColors.border, width: 1.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 6,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
                   child: Row(
                     children: [
                       Container(
-                        width: 44.r, height: 44.r,
+                        width: 40.r,
+                        height: 40.r,
                         decoration: BoxDecoration(
                           color: isExpense
-                              ? AppColors.primary.withValues(alpha: 0.08)
-                              : AppColors.secondary.withValues(alpha: 0.2),
+                              ? AppColors.destructiveLight
+                              : AppColors.successLight,
                           borderRadius: BorderRadius.circular(10.r),
-                          border: Border.all(color: AppColors.border.withValues(alpha: 0.1), width: 2.r),
                         ),
-                        child: Center(child: Text(emoji, style: TextStyle(fontSize: 20.sp))),
+                        child: Center(
+                          child: Text(emoji, style: TextStyle(fontSize: 18.sp)),
+                        ),
                       ),
-                      Gap(14.w),
+                      Gap(12.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              categoryName.toUpperCase(),
-                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: -0.3),
+                              categoryName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14.sp,
+                                color: AppColors.textDark,
+                                letterSpacing: -0.2,
+                              ),
                             ),
                             Gap(2.h),
                             Text(
-                              DateFormat('HH:mm').format(t.date),
-                              style: TextStyle(color: AppColors.textLight, fontSize: 11.sp, fontWeight: FontWeight.w600),
+                              DateFormat('hh:mm a').format(t.date),
+                              style: TextStyle(
+                                color: AppColors.textLight,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                             if (t.notes != null && t.notes!.isNotEmpty) ...[
                               Gap(2.h),
                               Text(
                                 t.notes!,
-                                style: TextStyle(color: AppColors.textLight, fontSize: 11.sp),
+                                style: TextStyle(
+                                  color: AppColors.textLight,
+                                  fontSize: 11.sp,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -936,22 +980,30 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${isExpense ? '-' : '+'}${NumberFormat.compact().format(t.amount)}',
+                            '${isExpense ? '-' : '+'}${NumberFormat.decimalPattern().format(t.amount)}',
                             style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18.sp,
-                              color: isExpense ? AppColors.primary : const Color(0xFF2E7D32),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15.sp,
+                              color: isExpense
+                                  ? AppColors.textDark
+                                  : AppColors.success,
+                              letterSpacing: -0.3,
                             ),
                           ),
-                          Text(currency, style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.bold)),
+                          Text(
+                            currency,
+                            style: TextStyle(
+                              color: AppColors.textLight,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
-              ).animate()
-                  .slideX(begin: 0.1, delay: (50 * index).ms, curve: Curves.easeOutBack)
-                  .fadeIn();
+              );
             },
           ),
       ],
@@ -977,14 +1029,18 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
     return Container(
       margin: EdgeInsets.only(left: 2.w, right: 8.w, top: 2.h, bottom: 8.h),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: AppColors.zinc950,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.border, width: 3.r),
+        border: Border.all(color: AppColors.zinc800, width: 1.r),
         boxShadow: [
-          BoxShadow(color: AppColors.border, offset: Offset(6.w, 6.h)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 18,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(22.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -995,59 +1051,80 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(8.r),
-                      border: Border.all(color: AppColors.border, width: 2.r),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.zinc900,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.zinc800, width: 1.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            DateFormat('MMMM yyyy').format(month),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12.sp,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          Gap(6.w),
+                          Icon(LucideIcons.calendar, size: 12.r, color: AppColors.zinc400),
+                        ],
+                      ),
                     ),
-                    child: Text(
-                      DateFormat('MMMM').format(month).toUpperCase(),
-                      style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13.sp, letterSpacing: 0.5),
-                    ),
-                  ),
-                  Gap(8.w),
+                  ],
+                ),
+                if (isCurrentMonth)
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary,
+                      color: AppColors.zinc900,
                       borderRadius: BorderRadius.circular(8.r),
-                      border: Border.all(color: AppColors.border, width: 2.r),
+                      border: Border.all(color: AppColors.zinc800, width: 1.r),
                     ),
-                    child: Text(
-                      '${month.year}',
-                      style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 13.sp),
-                    ),
-                  ),
-                ],
-              ),
-              if (isCurrentMonth)
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardYellow,
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: AppColors.border, width: 2.r),
-
-                    ),
-                    child: Text(
-                      DateFormat('E, d').format(now).toUpperCase(),
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 6.r,
+                          height: 6.r,
+                          decoration: const BoxDecoration(
+                            color: AppColors.success,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Gap(6.w),
+                        Text(
+                          DateFormat('E, d MMM').format(now),
+                          style: TextStyle(
+                            color: AppColors.zinc300,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],
             ),
           ),
           
-          Gap(16.h),
+          Gap(18.h),
 
           // Balance
           Text(
-            'BALANCE',
-            style: TextStyle(color: Colors.white60, fontSize: 11.sp, fontWeight: FontWeight.w900, letterSpacing: 2),
+            'TOTAL BALANCE',
+            style: TextStyle(
+              color: AppColors.zinc400,
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.0,
+            ),
           ),
           Gap(4.h),
           Row(
@@ -1060,19 +1137,28 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     NumberFormat.decimalPattern().format(balance),
-                    style: TextStyle(color: AppColors.white, fontSize: 40.sp, fontWeight: FontWeight.w900, letterSpacing: -2),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 38.sp,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -1.0,
+                    ),
                   ),
                 ),
               ),
               Gap(8.w),
               Text(
                 currency,
-                style: TextStyle(color: AppColors.cardYellow, fontSize: 22.sp, fontWeight: FontWeight.w900),
+                style: TextStyle(
+                  color: AppColors.zinc400,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
 
-          Gap(16.h),
+          Gap(18.h),
 
           // Income & Expense row
           Row(
@@ -1081,10 +1167,9 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                 child: Container(
                   padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.zinc900,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.border, width: 2.r),
-                    boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
+                    border: Border.all(color: AppColors.zinc800, width: 1.r),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1092,18 +1177,34 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                       Row(
                         children: [
                           Container(
-                            width: 8.r, height: 8.r,
-                            decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
+                            width: 6.r,
+                            height: 6.r,
+                            decoration: const BoxDecoration(
+                              color: AppColors.success,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           Gap(6.w),
-                          Text('INCOME', style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                          Text(
+                            'INCOME',
+                            style: TextStyle(
+                              color: AppColors.zinc400,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                         ],
                       ),
                       Gap(6.h),
                       FittedBox(
                         child: Text(
                           '+${NumberFormat.compact().format(income)} $currency',
-                          style: TextStyle(color: const Color(0xFF2E7D32), fontSize: 17.sp, fontWeight: FontWeight.w900),
+                          style: TextStyle(
+                            color: AppColors.success,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -1115,10 +1216,9 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                 child: Container(
                   padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.zinc900,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.border, width: 2.r),
-                    boxShadow: [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))],
+                    border: Border.all(color: AppColors.zinc800, width: 1.r),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1126,18 +1226,34 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                       Row(
                         children: [
                           Container(
-                            width: 8.r, height: 8.r,
-                            decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                            width: 6.r,
+                            height: 6.r,
+                            decoration: const BoxDecoration(
+                              color: AppColors.destructive,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           Gap(6.w),
-                          Text('EXPENSE', style: TextStyle(color: AppColors.textLight, fontSize: 10.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                          Text(
+                            'EXPENSE',
+                            style: TextStyle(
+                              color: AppColors.zinc400,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                         ],
                       ),
                       Gap(6.h),
                       FittedBox(
                         child: Text(
                           '-${NumberFormat.compact().format(expense)} $currency',
-                          style: TextStyle(color: AppColors.primary, fontSize: 17.sp, fontWeight: FontWeight.w900),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -1155,20 +1271,20 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
               if (index > 0)
                 GestureDetector(
                   onTap: () {
-                    _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
                     padding: EdgeInsets.all(6.r),
                     decoration: BoxDecoration(
-                      color: AppColors.cardYellow,
+                      color: AppColors.zinc900,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.border, width: 2.r),
-                      boxShadow: [
-                        BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
-                      ],
+                      border: Border.all(color: AppColors.zinc800, width: 1.r),
                     ),
-                    child: Icon(LucideIcons.chevronLeft, size: 18.r, color: AppColors.textDark),
+                    child: Icon(LucideIcons.chevronLeft, size: 16.r, color: Colors.white),
                   ),
                 )
               else
@@ -1183,30 +1299,24 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                     GestureDetector(
                       onTap: onFilterTap,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                         decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          borderRadius: BorderRadius.circular(10.r),
-                          border: Border.all(color: AppColors.border, width: 2.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.border,
-                              offset: Offset(2.w, 2.h),
-                            ),
-                          ],
+                          color: AppColors.zinc900,
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: AppColors.zinc800, width: 1.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(activeFilter.emoji, style: TextStyle(fontSize: 11.sp)),
-                            Gap(5.w),
+                            Gap(4.w),
                             Text(
                               _activeFilterDisplayText(),
                               style: TextStyle(
-                                color: AppColors.textDark,
-                                fontSize: 9.sp,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.5,
+                                color: Colors.white,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.2,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1215,7 +1325,7 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                             Icon(
                               LucideIcons.chevronDown,
                               size: 11.r,
-                              color: AppColors.textDark,
+                              color: AppColors.zinc400,
                             ),
                           ],
                         ),
@@ -1227,27 +1337,23 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
                     GestureDetector(
                       onTap: onTodayPressed,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                         decoration: BoxDecoration(
-                          color: AppColors.cardYellow,
-                          borderRadius: BorderRadius.circular(10.r),
-                          border: Border.all(color: AppColors.border, width: 2.r),
-                          boxShadow: [
-                            BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
-                          ],
+                          color: AppColors.zinc900,
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: AppColors.zinc800, width: 1.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(LucideIcons.rotateCcw, size: 11.r, color: AppColors.textDark),
+                            Icon(LucideIcons.rotateCcw, size: 10.r, color: Colors.white),
                             Gap(4.w),
                             Text(
-                              'TODAY',
+                              'Today',
                               style: TextStyle(
-                                color: AppColors.textDark,
-                                fontSize: 9.sp,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.5,
+                                color: Colors.white,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -1261,20 +1367,20 @@ class _FinancialDashboardState extends ConsumerState<_FinancialDashboard> {
               if (index < _FinancialDashboardState._totalMonths - 1)
                 GestureDetector(
                   onTap: () {
-                    _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
                     padding: EdgeInsets.all(6.r),
                     decoration: BoxDecoration(
-                      color: AppColors.cardYellow,
+                      color: AppColors.zinc900,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.border, width: 2.r),
-                      boxShadow: [
-                        BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h)),
-                      ],
+                      border: Border.all(color: AppColors.zinc800, width: 1.r),
                     ),
-                    child: Icon(LucideIcons.chevronRight, size: 18.r, color: AppColors.textDark),
+                    child: Icon(LucideIcons.chevronRight, size: 16.r, color: Colors.white),
                   ),
                 )
               else
@@ -1309,18 +1415,39 @@ class _GoalsProgressWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'SAVINGS GOALS',
-           style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: AppColors.textDark, letterSpacing: 1),
+          'Savings Goals',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDark,
+            letterSpacing: -0.3,
+          ),
         ).animate().fadeIn(delay: 400.ms),
-        Gap(20.h),
+        Gap(16.h),
         goalsAsync.when(
           data: (goals) {
             if (goals.isEmpty) {
-              return NeoCard(
+              return Container(
+                padding: EdgeInsets.all(28.r),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                ),
                 child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.r),
-                    child: Text('NO GOALS YET', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textLight, fontSize: 13.sp)),
+                  child: Column(
+                    children: [
+                      Icon(LucideIcons.target, size: 28.r, color: AppColors.zinc400),
+                      Gap(8.h),
+                      Text(
+                        'No goals created yet',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textLight,
+                          fontSize: 13.sp,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -1331,94 +1458,176 @@ class _GoalsProgressWidget extends ConsumerWidget {
               itemCount: goals.length,
               itemBuilder: (context, index) {
                 final goal = goals[index];
-                final progress = goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount).clamp(0.0, 1.0) : 0.0;
+                final progress = goal.targetAmount > 0
+                    ? (goal.savedAmount / goal.targetAmount).clamp(0.0, 1.0)
+                    : 0.0;
+                final goalColor = Color(
+                  int.parse(goal.themeColor.replaceAll('#', '0xFF')),
+                );
+
                 return Padding(
-                  padding: EdgeInsets.only(bottom: 16.h),
+                  padding: EdgeInsets.only(bottom: 12.h),
                   child: GestureDetector(
                     onLongPress: () => NeoDialog.show(
                       context: context,
-                      title: 'DELETE GOAL?',
+                      title: 'Delete Goal?',
                       message: 'Are you sure you want to remove "${goal.title}"?',
-                      confirmText: 'YES, DELETE',
-                      cancelText: 'NO, KEEP IT',
+                      confirmText: 'Delete',
+                      cancelText: 'Cancel',
                       isDestructive: true,
                       onConfirm: () {
                         ref.read(goalsProvider.notifier).removeGoal(goal.id);
                       },
                     ),
-                    child: NeoCard(
-                      backgroundColor: Color(
-                        int.parse(goal.themeColor.replaceAll('#', '0xFF')),
+                    child: Container(
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(color: AppColors.border, width: 1.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(goal.iconEmoji, style: TextStyle(fontSize: 24.sp)),
-                              Gap(12.w),
-                              Expanded(
-                                child: Text(
-                                  goal.title.toUpperCase(),
-                                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp),
-                                  overflow: TextOverflow.ellipsis,
+                              Container(
+                                width: 40.r,
+                                height: 40.r,
+                                decoration: BoxDecoration(
+                                  color: goalColor.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    goal.iconEmoji,
+                                    style: TextStyle(fontSize: 20.sp),
+                                  ),
                                 ),
                               ),
-                              Gap(8.w),
+                              Gap(12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      goal.title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15.sp,
+                                        color: AppColors.textDark,
+                                        letterSpacing: -0.2,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Gap(2.h),
+                                    Text(
+                                      '${NumberFormat.decimalPattern().format(goal.savedAmount)} / ${NumberFormat.decimalPattern().format(goal.targetAmount)} $currency',
+                                      style: TextStyle(
+                                        color: AppColors.textLight,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.textDark,
-                                  borderRadius: BorderRadius.circular(4.r),
+                                  color: AppColors.zinc100,
+                                  borderRadius: BorderRadius.circular(6.r),
+                                  border: Border.all(
+                                    color: AppColors.border,
+                                    width: 1.r,
+                                  ),
                                 ),
                                 child: Text(
                                   '${(progress * 100).toStringAsFixed(0)}%',
-                                  style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 14.sp),
+                                  style: TextStyle(
+                                    color: AppColors.textDark,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12.sp,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          Gap(12.h),
-                          Text(
-                            '${NumberFormat.decimalPattern().format(goal.savedAmount)} / ${NumberFormat.decimalPattern().format(goal.targetAmount)} $currency',
-                            style: TextStyle(color: AppColors.textDark, fontSize: 14.sp, fontWeight: FontWeight.bold),
-                          ),
-                          Gap(16.h),
+                          Gap(14.h),
                           Container(
-                            height: 16.h,
+                            height: 6.h,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(color: AppColors.border, width: 2.r),
+                              color: AppColors.zinc100,
+                              borderRadius: BorderRadius.circular(3.r),
                             ),
                             child: FractionallySizedBox(
                               alignment: Alignment.centerLeft,
                               widthFactor: progress,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: AppColors.secondary,
-                                  borderRadius: BorderRadius.circular(6.r),
-                                  border: Border(right: BorderSide(color: AppColors.border, width: 2.r)),
+                                  color: goalColor,
+                                  borderRadius: BorderRadius.circular(3.r),
                                 ),
                               ),
-                            ).animate().scaleX(begin: 0, duration: 600.ms, curve: Curves.easeOutBack),
+                            ).animate().scaleX(
+                                  begin: 0,
+                                  duration: 500.ms,
+                                  curve: Curves.easeOutCubic,
+                                ),
                           ),
-                          Gap(16.h),
+                          Gap(12.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              TextButton.icon(
-                                onPressed: () => _showManageFundsSheet(context, ref, goal, currency),
-                                icon: Icon(LucideIcons.wallet, size: 16.r, color: AppColors.textDark),
-                                label: Text('MANAGE FUNDS', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w900, fontSize: 12.sp)),
-                                style: TextButton.styleFrom(
-                                  backgroundColor: AppColors.secondary,
-                                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                                  shape: RoundedRectangleBorder(
+                              GestureDetector(
+                                onTap: () => _showManageFundsSheet(
+                                  context,
+                                  ref,
+                                  goal,
+                                  currency,
+                                ),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                    vertical: 6.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.zinc100,
                                     borderRadius: BorderRadius.circular(8.r),
-                                    side: BorderSide(color: AppColors.border, width: 2.r),
+                                    border: Border.all(
+                                      color: AppColors.border,
+                                      width: 1.r,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.wallet,
+                                        size: 13.r,
+                                        color: AppColors.textDark,
+                                      ),
+                                      Gap(6.w),
+                                      Text(
+                                        'Manage Funds',
+                                        style: TextStyle(
+                                          color: AppColors.textDark,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12.sp,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -1427,21 +1636,28 @@ class _GoalsProgressWidget extends ConsumerWidget {
                         ],
                       ),
                     ),
-                  ).animate()
-                   .slideY(begin: 0.2, delay: (200 + (100 * index)).ms, curve: Curves.elasticOut)
-                   .fadeIn(),
+                  ).animate().slideY(
+                        begin: 0.1,
+                        delay: (100 + (50 * index)).ms,
+                        curve: Curves.easeOutCubic,
+                      ).fadeIn(),
                 );
               },
             );
           },
-          loading: () => const SizedBox(),
+          loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, _) => const SizedBox(),
         ),
       ],
     );
   }
 
-  void _showManageFundsSheet(BuildContext context, WidgetRef ref, Goal goal, String currency) {
+  void _showManageFundsSheet(
+    BuildContext context,
+    WidgetRef ref,
+    Goal goal,
+    String currency,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1531,24 +1747,31 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
   Widget build(BuildContext context) {
     final accounts = ref.watch(accountsProvider).valueOrNull ?? [];
     final mediaQuery = MediaQuery.of(context);
-    final navBarClearance = mediaQuery.padding.bottom + 124.h;
+    final navBarClearance = mediaQuery.padding.bottom + 24.h;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: DraggableScrollableSheet(
-        initialChildSize: 0.75,
+        initialChildSize: 0.72,
         minChildSize: 0.3,
-        maxChildSize: 0.95,
+        maxChildSize: 0.92,
         expand: false,
         snap: true,
-        snapSizes: const [0.75, 0.95],
+        snapSizes: const [0.72, 0.92],
         builder: (context, scrollController) {
           return Container(
             decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-              border: Border.all(color: AppColors.border, width: 4.r),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+              border: Border.all(color: AppColors.border, width: 1.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 30,
+                  offset: const Offset(0, -4),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -1558,13 +1781,13 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
                   child: Container(
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
                     child: Container(
-                      width: 40.w,
-                      height: 6.h,
+                      width: 36.w,
+                      height: 4.h,
                       decoration: BoxDecoration(
-                        color: AppColors.border,
-                        borderRadius: BorderRadius.circular(4.r),
+                        color: AppColors.zinc300,
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
                   ),
@@ -1572,256 +1795,314 @@ class _ManageGoalFundsSheetState extends ConsumerState<_ManageGoalFundsSheet> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.only(
-                      left: 24.w,
-                      right: 24.w,
+                      left: 20.w,
+                      right: 20.w,
                       bottom: mediaQuery.viewInsets.bottom + navBarClearance,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.goal.title.toUpperCase(),
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5),
-                ),
-                Gap(8.h),
-                Text(
-                  '${widget.goal.iconEmoji} Manage Goal Funds',
-                  style: TextStyle(color: AppColors.textLight, fontWeight: FontWeight.w600),
-                ),
-                Gap(32.h),
-
-                // Deposit / Withdraw tabs
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _isDeposit = true),
-                        child: AnimatedContainer(
-                          duration: 200.ms,
-                          padding: EdgeInsets.symmetric(vertical: 16.h),
-                          decoration: BoxDecoration(
-                            color: _isDeposit ? AppColors.primary : AppColors.white,
-                            border: Border.all(color: AppColors.border, width: _isDeposit ? 3.r : 2.r),
-                            borderRadius: BorderRadius.circular(16.r),
-                            boxShadow: _isDeposit
-                                ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                                : [],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'DEPOSIT ➕',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: _isDeposit ? AppColors.white : AppColors.textDark,
-                              ),
-                            ),
+                          widget.goal.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20.sp,
+                            color: AppColors.textDark,
+                            letterSpacing: -0.4,
                           ),
                         ),
-                      ),
-                    ),
-                    Gap(16.w),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _isDeposit = false),
-                        child: AnimatedContainer(
-                          duration: 200.ms,
-                          padding: EdgeInsets.symmetric(vertical: 16.h),
-                          decoration: BoxDecoration(
-                            color: !_isDeposit ? AppColors.cardYellow : AppColors.white,
-                            border: Border.all(color: AppColors.border, width: !_isDeposit ? 3.r : 2.r),
-                            borderRadius: BorderRadius.circular(16.r),
-                            boxShadow: !_isDeposit
-                                ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                                : [],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'WITHDRAW ➖',
-                              style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.textDark),
-                            ),
+                        Gap(2.h),
+                        Text(
+                          '${widget.goal.iconEmoji} Manage Goal Funds',
+                          style: TextStyle(
+                            color: AppColors.textLight,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 13.sp,
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                Gap(32.h),
+                        Gap(20.h),
 
-                // Amount input
-                TextFormField(
-                  controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    hintText: '0',
-                    suffixText: widget.currency,
-                    suffixStyle: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900),
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                  ),
-                ),
-                Gap(24.h),
-
-                // Account picker
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _isDeposit ? 'WITHDRAW FROM:' : 'DEPOSIT BACK INTO:',
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
-                  ),
-                ),
-                Gap(12.h),
-                SizedBox(
-                  height: 90.h,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: accounts.length,
-                    itemBuilder: (context, index) {
-                      final acc = accounts[index];
-                      final isSelected = _accountId == acc.id;
-                      final accColorHex = acc.colorHex;
-                      final accColor = accColorHex != null
-                          ? Color(int.parse('FF${accColorHex.replaceAll("#", "")}', radix: 16))
-                          : AppColors.textDark;
-
-                      return GestureDetector(
-                        onTap: () => setState(() => _accountId = acc.id),
-                        child: AnimatedContainer(
-                          duration: 200.ms,
-                          width: 120.w,
-                          margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
-                          padding: EdgeInsets.all(12.r),
+                        // Segmented control (Deposit / Withdraw)
+                        Container(
+                          padding: EdgeInsets.all(4.r),
                           decoration: BoxDecoration(
-                            color: isSelected ? accColor : AppColors.white,
-                            border: Border.all(color: AppColors.border, width: 2.r),
-                            borderRadius: BorderRadius.circular(16.r),
-                            boxShadow: isSelected
-                                ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))]
-                                : [],
+                            color: AppColors.zinc100,
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Row(
                             children: [
-                              Text(acc.iconEmoji ?? acc.type.icon, style: TextStyle(fontSize: 20.sp)),
-                              Gap(4.h),
-                              Text(
-                                acc.name,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 11.sp,
-                                  color: isSelected ? AppColors.white : AppColors.textDark,
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => setState(() => _isDeposit = true),
+                                  child: AnimatedContainer(
+                                    duration: 150.ms,
+                                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                                    decoration: BoxDecoration(
+                                      color: _isDeposit
+                                          ? AppColors.surface
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      boxShadow: _isDeposit
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.06),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Deposit',
+                                        style: TextStyle(
+                                          fontWeight: _isDeposit
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                          color: _isDeposit
+                                              ? AppColors.textDark
+                                              : AppColors.textLight,
+                                          fontSize: 13.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => setState(() => _isDeposit = false),
+                                  child: AnimatedContainer(
+                                    duration: 150.ms,
+                                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                                    decoration: BoxDecoration(
+                                      color: !_isDeposit
+                                          ? AppColors.surface
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      boxShadow: !_isDeposit
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.06),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Withdraw',
+                                        style: TextStyle(
+                                          fontWeight: !_isDeposit
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                          color: !_isDeposit
+                                              ? AppColors.textDark
+                                              : AppColors.textLight,
+                                          fontSize: 13.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-                Gap(32.h),
+                        Gap(24.h),
 
-                // Confirm button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
-                      foregroundColor: AppColors.textDark,
-                      padding: EdgeInsets.symmetric(vertical: 20.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        side: BorderSide(color: AppColors.border, width: 3.r),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'CONFIRM TRANSFER',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
-                    ),
-                  ),
-                ),
-                // Danger Zone / Delete Goal
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(top: 40.h),
-                  padding: EdgeInsets.all(20.r),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(24.r),
-                    border: Border.all(
-                      color: AppColors.border.withValues(alpha: 0.3),
-                      width: 2.r,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(LucideIcons.alertTriangle, size: 14.r, color: AppColors.primary),
-                          Gap(8.w),
-                          Text(
-                            'DANGER ZONE',
+                        // Amount input
+                        Center(
+                          child: TextFormField(
+                            controller: _amountController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                             style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 10.sp,
-                              letterSpacing: 2,
+                              fontSize: 36.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
+                              color: AppColors.textDark,
+                            ),
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              hintText: '0',
+                              hintStyle: TextStyle(
+                                color: AppColors.zinc300,
+                                fontSize: 36.sp,
+                              ),
+                              suffixText: widget.currency,
+                              suffixStyle: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textLight,
+                              ),
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
                             ),
                           ),
-                        ],
-                      ),
-                      Gap(16.h),
-                      Text(
-                        'This goal and all its progress will be permanently removed. This action cannot be undone.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.textLight,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11.sp,
-                          height: 1.4,
                         ),
-                      ),
-                      Gap(24.h),
-                      NeoButton(
-                        text: 'DELETE GOAL',
-                        backgroundColor: AppColors.primary,
-                        textColor: AppColors.white,
-                        onPressed: () {
-                          if (widget.goal.savedAmount > 0) {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => _RefundGoalFundsSheet(
-                                goal: widget.goal,
-                                currency: widget.currency,
+                        Gap(20.h),
+
+                        // Account picker
+                        Text(
+                          _isDeposit ? 'From Account' : 'To Account',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13.sp,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        Gap(10.h),
+                        SizedBox(
+                          height: 52.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: accounts.length,
+                            itemBuilder: (context, index) {
+                              final acc = accounts[index];
+                              final isSelected = _accountId == acc.id;
+
+                              return GestureDetector(
+                                onTap: () => setState(() => _accountId = acc.id),
+                                child: AnimatedContainer(
+                                  duration: 150.ms,
+                                  width: 140.w,
+                                  margin: EdgeInsets.only(right: 10.w),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                    vertical: 8.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.zinc100,
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    border: isSelected
+                                        ? null
+                                        : Border.all(
+                                            color: AppColors.border,
+                                            width: 1.r,
+                                          ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        acc.iconEmoji ?? acc.type.icon,
+                                        style: TextStyle(fontSize: 16.sp),
+                                      ),
+                                      Gap(8.w),
+                                      Expanded(
+                                        child: Text(
+                                          acc.name,
+                                          style: TextStyle(
+                                            fontWeight: isSelected
+                                                ? FontWeight.w600
+                                                : FontWeight.w500,
+                                            fontSize: 12.sp,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : AppColors.textDark,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        Gap(28.h),
+                        NeoButton(
+                          text: _isDeposit ? 'Deposit Funds' : 'Withdraw Funds',
+                          onPressed: _submit,
+                          height: 48.h,
+                        ),
+
+                        // Danger Zone / Delete Goal
+                        Container(
+                          width: double.infinity,
+                          margin: EdgeInsets.only(top: 32.h),
+                          padding: EdgeInsets.all(16.r),
+                          decoration: BoxDecoration(
+                            color: AppColors.destructiveLight,
+                            borderRadius: BorderRadius.circular(14.r),
+                            border: Border.all(
+                              color: AppColors.destructive.withValues(alpha: 0.2),
+                              width: 1.r,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    LucideIcons.alertTriangle,
+                                    size: 16.r,
+                                    color: AppColors.destructive,
+                                  ),
+                                  Gap(8.w),
+                                  Text(
+                                    'Danger Zone',
+                                    style: TextStyle(
+                                      color: AppColors.destructive,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13.sp,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          } else {
-                            NeoDialog.show(
-                              context: context,
-                              title: 'DELETE GOAL?',
-                              message: 'Are you sure you want to remove "${widget.goal.title}"?',
-                              confirmText: 'YES, DELETE',
-                              cancelText: 'NO, KEEP IT',
-                              isDestructive: true,
-                              onConfirm: () {
-                                ref.read(goalsProvider.notifier).removeGoal(widget.goal.id);
-                                if (mounted) context.pop();
-                              },
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                              Gap(8.h),
+                              Text(
+                                'This goal and its savings history will be permanently deleted.',
+                                style: TextStyle(
+                                  color: AppColors.textLight,
+                                  fontSize: 12.sp,
+                                  height: 1.4,
+                                ),
+                              ),
+                              Gap(14.h),
+                              NeoButton(
+                                text: 'Delete Goal',
+                                isDestructive: true,
+                                height: 40.h,
+                                onPressed: () {
+                                  if (widget.goal.savedAmount > 0) {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) => _RefundGoalFundsSheet(
+                                        goal: widget.goal,
+                                        currency: widget.currency,
+                                      ),
+                                    );
+                                  } else {
+                                    NeoDialog.show(
+                                      context: context,
+                                      title: 'Delete Goal?',
+                                      message: 'Are you sure you want to remove "${widget.goal.title}"?',
+                                      confirmText: 'Delete',
+                                      cancelText: 'Cancel',
+                                      isDestructive: true,
+                                      onConfirm: () {
+                                        ref.read(goalsProvider.notifier).removeGoal(widget.goal.id);
+                                        if (mounted) context.pop();
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1889,7 +2170,7 @@ class _RefundGoalFundsSheetState extends ConsumerState<_RefundGoalFundsSheet> {
   Widget build(BuildContext context) {
     final accounts = ref.watch(accountsProvider).valueOrNull ?? [];
     final mediaQuery = MediaQuery.of(context);
-    final navBarClearance = mediaQuery.padding.bottom + 124.h;
+    final navBarClearance = mediaQuery.padding.bottom + 24.h;
     final maxSheetHeight = mediaQuery.size.height - mediaQuery.padding.top;
 
     return SafeArea(
@@ -1900,86 +2181,116 @@ class _RefundGoalFundsSheetState extends ConsumerState<_RefundGoalFundsSheet> {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-            border: Border.all(color: AppColors.border, width: 4.r),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            border: Border.all(color: AppColors.border, width: 1.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 30,
+                offset: const Offset(0, -4),
+              ),
+            ],
           ),
           padding: EdgeInsets.only(
-            top: 24.h,
-            left: 24.w,
-            right: 24.w,
+            top: 14.h,
+            left: 20.w,
+            right: 20.w,
             bottom: mediaQuery.viewInsets.bottom + navBarClearance,
           ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 40.w,
-                  height: 6.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(4.r),
+                Center(
+                  child: Container(
+                    width: 36.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.zinc300,
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                ),
+                Gap(16.h),
+                Text(
+                  'Refund Savings',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20.sp,
+                    color: AppColors.textDark,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+                Gap(4.h),
+                Text(
+                  'You have ${NumberFormat.decimalPattern().format(widget.goal.savedAmount)} ${widget.currency} saved. Select an account to deposit these funds back into.',
+                  style: TextStyle(
+                    color: AppColors.textLight,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 13.sp,
+                    height: 1.4,
                   ),
                 ),
                 Gap(24.h),
-                Text(
-                  'REFUND SAVINGS',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5),
-                ),
-                Gap(8.h),
-                Text(
-                  'You have ${NumberFormat.decimalPattern().format(widget.goal.savedAmount)} ${widget.currency} saved. Select an account to deposit these funds back into.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textLight, fontWeight: FontWeight.w600, fontSize: 13.sp),
-                ),
-                Gap(32.h),
 
                 // Account picker
                 if (accounts.isEmpty)
                   const Text('No accounts found.')
                 else
                   SizedBox(
-                    height: 90.h,
+                    height: 52.h,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: accounts.length,
                       itemBuilder: (context, index) {
                         final acc = accounts[index];
                         final isSelected = _accountId == acc.id;
-                        final accColorHex = acc.colorHex;
-                        final accColor = accColorHex != null
-                            ? Color(int.parse('FF${accColorHex.replaceAll("#", "")}', radix: 16))
-                            : AppColors.textDark;
 
                         return GestureDetector(
                           onTap: () => setState(() => _accountId = acc.id),
                           child: AnimatedContainer(
-                            duration: 200.ms,
-                            width: 120.w,
-                            margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
-                            padding: EdgeInsets.all(12.r),
-                            decoration: BoxDecoration(
-                              color: isSelected ? accColor : AppColors.white,
-                              border: Border.all(color: AppColors.border, width: 2.r),
-                              borderRadius: BorderRadius.circular(16.r),
-                              boxShadow: isSelected
-                                  ? [BoxShadow(color: AppColors.border, offset: Offset(2.w, 2.h))]
-                                  : [],
+                            duration: 150.ms,
+                            width: 140.w,
+                            margin: EdgeInsets.only(right: 10.w),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 8.h,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.zinc100,
+                              borderRadius: BorderRadius.circular(10.r),
+                              border: isSelected
+                                  ? null
+                                  : Border.all(
+                                      color: AppColors.border,
+                                      width: 1.r,
+                                    ),
+                            ),
+                            child: Row(
                               children: [
-                                Text(acc.iconEmoji ?? acc.type.icon, style: TextStyle(fontSize: 20.sp)),
-                                Gap(4.h),
                                 Text(
-                                  acc.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 11.sp,
-                                    color: isSelected ? AppColors.white : AppColors.textDark,
+                                  acc.iconEmoji ?? acc.type.icon,
+                                  style: TextStyle(fontSize: 16.sp),
+                                ),
+                                Gap(8.w),
+                                Expanded(
+                                  child: Text(
+                                    acc.name,
+                                    style: TextStyle(
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      fontSize: 12.sp,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textDark,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -1989,20 +2300,21 @@ class _RefundGoalFundsSheetState extends ConsumerState<_RefundGoalFundsSheet> {
                     ),
                   ),
                 
-                Gap(40.h),
+                Gap(28.h),
                 NeoButton(
-                  text: 'REFUND & DELETE',
-                  backgroundColor: AppColors.secondary,
+                  text: 'Refund & Delete Goal',
+                  height: 48.h,
                   onPressed: () => _submit(refund: true),
                 ),
-                Gap(16.h),
+                Gap(10.h),
                 NeoButton(
-                  text: 'DELETE WITHOUT REFUNDING',
-                  backgroundColor: AppColors.primary,
-                  textColor: AppColors.white,
+                  text: 'Delete Without Refunding',
+                  isSecondary: true,
+                  isDestructive: true,
+                  height: 44.h,
                   onPressed: () => _submit(refund: false),
                 ),
-                Gap(16.h),
+                Gap(12.h),
               ],
             ),
           ),

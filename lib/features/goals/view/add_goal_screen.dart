@@ -6,9 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/widgets/neo_date_picker.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:planzy/features/goals/data/models/goal.dart';
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
@@ -35,7 +33,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   // Step 1: Identity
   final _titleController = TextEditingController();
   String _selectedEmoji = '🚗';
-  String _selectedColor = '#FFD600';
+  String _selectedColor = '#09090b';
 
   // Step 2: Numbers & Existing Progress
   final _amountController = TextEditingController();
@@ -50,25 +48,10 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   GoalReminderInterval _selectedReminder = GoalReminderInterval.none;
 
   final List<String> _emojis = [
-    '🚗',
-    '🏖️',
-    '💻',
-    '📱',
-    '🏠',
-    '🎓',
-    '🏥',
-    '🎮',
-    '💍',
-    '💰',
+    '🚗', '🏖️', '💻', '📱', '🏠', '🎓', '🏥', '🎮', '💍', '💰', '✈️', '⚡'
   ];
   final List<String> _colors = [
-    '#FFD600',
-    '#FF90E8',
-    '#90E8FF',
-    '#B4F8C8',
-    '#FFB7B2',
-    '#FFFFFF',
-    '#FF8383',
+    '#09090b', '#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#4b5563'
   ];
 
   @override
@@ -82,9 +65,9 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
   void _nextStep() {
     if (_currentStep == 0) {
-      if (_titleController.text.isEmpty) {
+      if (_titleController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please name your goal first!')),
+          const SnackBar(content: Text('Please name your goal first')),
         );
         return;
       }
@@ -92,7 +75,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
       if (_amountController.text.isEmpty ||
           double.tryParse(_amountController.text) == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid target amount!')),
+          const SnackBar(content: Text('Please enter a valid target amount')),
         );
         return;
       }
@@ -100,19 +83,13 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
         if (_existingSavesController.text.isEmpty ||
             double.tryParse(_existingSavesController.text) == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please enter existing saved amount!'),
-            ),
+            const SnackBar(content: Text('Please enter existing saved amount')),
           );
           return;
         }
         if (_syncWithAccount && _linkedAccountId == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Select an account to sync the existing saves from!',
-              ),
-            ),
+            const SnackBar(content: Text('Select an account to sync the existing saves from')),
           );
           return;
         }
@@ -120,7 +97,10 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
     }
 
     if (_currentStep < 2) {
-      _pageController.nextPage(duration: 300.ms, curve: Curves.easeOutBack);
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+      );
       setState(() => _currentStep++);
     } else {
       _save();
@@ -129,7 +109,10 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
   void _prevStep() {
     if (_currentStep > 0) {
-      _pageController.previousPage(duration: 300.ms, curve: Curves.easeOutBack);
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+      );
       setState(() => _currentStep--);
     } else {
       context.pop();
@@ -147,7 +130,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
     final goal = Goal(
       id: const Uuid().v4(),
-      title: _titleController.text,
+      title: _titleController.text.trim(),
       targetAmount: targetAm,
       savedAmount: initialSaves,
       targetDate: _targetDate,
@@ -200,34 +183,38 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(
-          'STEP ${_currentStep + 1} OF 3',
+          'Step ${_currentStep + 1} of 3',
           style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w900,
-            color: AppColors.textLight,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20.r),
           onPressed: _prevStep,
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(4.h),
+          preferredSize: Size.fromHeight(3.h),
           child: Row(
             children: List.generate(
               3,
               (index) => Expanded(
-                child:
-                    Container(
-                          height: 4.h,
-                          color: index <= _currentStep
-                              ? AppColors.primary
-                              : AppColors.border,
-                        )
-                        .animate(target: index <= _currentStep ? 1 : 0)
-                        .tint(color: AppColors.primary),
+                child: Container(
+                  height: 3.h,
+                  margin: EdgeInsets.symmetric(horizontal: 2.w),
+                  decoration: BoxDecoration(
+                    color: index <= _currentStep
+                        ? AppColors.primary
+                        : AppColors.zinc200,
+                    borderRadius: BorderRadius.circular(1.5.r),
+                  ),
+                ),
               ),
             ),
           ),
@@ -248,16 +235,13 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(24.r),
-              child:
-                  NeoButton(
-                    text: _currentStep == 2 ? 'LAUNCH GOAL 🚀' : 'NEXT STEP',
-                    onPressed: _nextStep,
-                  ).animate().slideY(
-                    begin: 1,
-                    curve: Curves.easeOutBack,
-                    delay: 200.ms,
-                  ),
+              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
+              child: NeoButton(
+                text: _currentStep == 2 ? 'Create Goal' : 'Continue',
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
+                onPressed: _nextStep,
+              ),
             ),
           ],
         ),
@@ -267,283 +251,277 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
   Widget _buildStep1Identity() {
     return ListView(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(20.r),
       children: [
         Text(
-          "WHAT'S THE DREAM?",
+          "What are you saving for?",
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 32.sp,
-            letterSpacing: -1,
+            fontWeight: FontWeight.w700,
+            fontSize: 22.sp,
+            letterSpacing: -0.4,
+            color: AppColors.textDark,
           ),
         ),
-        Gap(32.h),
-        TextFormField(
-          controller: _titleController,
-          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
-          decoration: InputDecoration(
-            hintText: 'e.g., Summer Trip, MacBook..',
-            hintStyle: TextStyle(
-              color: AppColors.textLight.withValues(alpha: 0.5),
-            ),
-            filled: true,
-            fillColor: AppColors.white,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-              vertical: 20.h,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16.r),
-              borderSide: BorderSide(color: AppColors.border, width: 3.r),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16.r),
-              borderSide: BorderSide(color: AppColors.border, width: 3.r),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16.r),
-              borderSide: BorderSide(color: AppColors.primary, width: 3.r),
-            ),
-          ),
-        ).animate().slideX(begin: 0.1),
-        Gap(40.h),
+        Gap(4.h),
         Text(
-          'PICK AN ICON',
+          'Give your goal a memorable name and visual identity.',
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
+            fontSize: 13.sp,
+            color: AppColors.textLight,
+            fontWeight: FontWeight.w400,
           ),
         ),
-        Gap(16.h),
+        Gap(24.h),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
+          child: TextField(
+            controller: _titleController,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600, color: AppColors.textDark),
+            decoration: InputDecoration(
+              hintText: 'e.g., Summer Trip, MacBook Pro..',
+              hintStyle: TextStyle(
+                color: AppColors.textLight,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w400,
+              ),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        Gap(28.h),
+        Text(
+          'Select Icon',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
+          ),
+        ),
+        Gap(12.h),
+        Wrap(
+          spacing: 10.w,
+          runSpacing: 10.h,
+          children: _emojis.map((e) {
+            final isSelected = _selectedEmoji == e;
+            return GestureDetector(
+              onTap: () => setState(() => _selectedEmoji = e),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: 48.r,
+                height: 48.r,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.zinc200 : AppColors.zinc100,
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : Colors.transparent,
+                    width: isSelected ? 1.5.r : 1.r,
+                  ),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Center(
+                  child: Text(e, style: TextStyle(fontSize: 22.sp)),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        Gap(28.h),
+        Text(
+          'Accent Color',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
+          ),
+        ),
+        Gap(12.h),
         Wrap(
           spacing: 12.w,
           runSpacing: 12.h,
-          children: _emojis
-              .map(
-                (e) => GestureDetector(
-                  onTap: () => setState(() => _selectedEmoji = e),
-                  child: AnimatedContainer(
-                    duration: 200.ms,
-                    padding: EdgeInsets.all(16.r),
-                    decoration: BoxDecoration(
-                      color: _selectedEmoji == e
-                          ? AppColors.primary
-                          : AppColors.white,
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: _selectedEmoji == e ? 3.r : 2.r,
-                      ),
-                      borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: _selectedEmoji == e
-                          ? [
-                              BoxShadow(
-                                color: AppColors.border,
-                                offset: Offset(4.w, 4.h),
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: Text(e, style: TextStyle(fontSize: 32.sp)),
+          children: _colors.map((c) {
+            final isSelected = _selectedColor == c;
+            final color = Color(int.parse(c.replaceAll('#', '0xFF')));
+            return GestureDetector(
+              onTap: () => setState(() => _selectedColor = c),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: 36.r,
+                height: 36.r,
+                decoration: BoxDecoration(
+                  color: color,
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : Colors.transparent,
+                    width: isSelected ? 3.r : 0,
                   ),
+                  shape: BoxShape.circle,
                 ),
-              )
-              .toList(),
-        ).animate().slideX(begin: 0.2, delay: 100.ms),
-        Gap(40.h),
-        Text(
-          'CHOOSE A VIBE',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
-          ),
+              ),
+            );
+          }).toList(),
         ),
-        Gap(16.h),
-        Wrap(
-          spacing: 16.w,
-          runSpacing: 16.h,
-          children: _colors
-              .map(
-                (c) => GestureDetector(
-                  onTap: () => setState(() => _selectedColor = c),
-                  child: AnimatedContainer(
-                    duration: 200.ms,
-                    width: 56.r,
-                    height: 56.r,
-                    decoration: BoxDecoration(
-                      color: Color(int.parse(c.replaceAll('#', '0xFF'))),
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: _selectedColor == c ? 4.r : 2.r,
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: _selectedColor == c
-                          ? [
-                              BoxShadow(
-                                color: AppColors.border,
-                                offset: Offset(4.w, 4.h),
-                              ),
-                            ]
-                          : [],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ).animate().slideX(begin: 0.3, delay: 200.ms),
       ],
     );
   }
 
   Widget _buildStep2Numbers(String currency, List<FinancialAccount> accounts) {
     return ListView(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(20.r),
       children: [
         Text(
-          "THE BIG NUMBER",
+          "Target Amount",
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 32.sp,
-            letterSpacing: -1,
+            fontWeight: FontWeight.w700,
+            fontSize: 22.sp,
+            letterSpacing: -0.4,
+            color: AppColors.textDark,
           ),
         ),
-        Gap(8.h),
+        Gap(4.h),
         Text(
           'How much do you need to hit this goal?',
-          style: TextStyle(color: AppColors.textLight, fontSize: 16.sp),
+          style: TextStyle(color: AppColors.textLight, fontSize: 13.sp, fontWeight: FontWeight.w400),
         ),
-        Gap(40.h),
-        Center(
-          child: IntrinsicWidth(
-            child: TextFormField(
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontSize: 56.sp,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -2,
-              ),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: '0',
-                hintStyle: TextStyle(
-                  color: AppColors.textLight.withValues(alpha: 0.3),
-                ),
-                suffixText: currency,
-                suffixStyle: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w900,
+        Gap(24.h),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
+          child: Column(
+            children: [
+              TextField(
+                controller: _amountController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                style: TextStyle(
+                  fontSize: 40.sp,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -1,
                   color: AppColors.textDark,
                 ),
-                border: InputBorder.none,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  hintText: '0',
+                  hintStyle: TextStyle(
+                    color: AppColors.zinc300,
+                  ),
+                  suffixText: currency,
+                  suffixStyle: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textLight,
+                  ),
+                  border: InputBorder.none,
+                ),
               ),
-            ),
-          ),
-        ).animate().scale(curve: Curves.elasticOut, duration: 800.ms),
-
-        Gap(60.h),
-        Text(
-          'WHERE ARE YOU STARTING?',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
+            ],
           ),
         ),
-        Gap(16.h),
+
+        Gap(28.h),
+        Text(
+          'Where are you starting?',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
+          ),
+        ),
+        Gap(12.h),
         Row(
           children: [
-            _buildPathButton(false, 'FRESH START', 'Zero saved'),
-            Gap(16.w),
-            _buildPathButton(true, 'HEAD START', 'I have funds'),
+            _buildPathButton(false, 'Fresh Start', 'Start from zero'),
+            Gap(12.w),
+            _buildPathButton(true, 'Head Start', 'I have savings already'),
           ],
         ),
 
         if (_hasExistingSaves) ...[
-          Gap(40.h),
+          Gap(24.h),
           Text(
-            'HOW MUCH ALREADY SAVED?',
+            'Already Saved Amount',
             style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16.sp,
-              letterSpacing: 1,
+              fontWeight: FontWeight.w600,
+              fontSize: 14.sp,
+              color: AppColors.textDark,
+              letterSpacing: -0.2,
             ),
           ),
-          Gap(16.h),
-          TextFormField(
-            controller: _existingSavesController,
-            keyboardType: TextInputType.number,
-            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
-            decoration: InputDecoration(
-              hintText: '0.00',
-              suffixText: currency,
-              filled: true,
-              fillColor: AppColors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
-                borderSide: BorderSide(color: AppColors.border, width: 3.r),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
-                borderSide: BorderSide(color: AppColors.border, width: 3.r),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
-                borderSide: BorderSide(color: AppColors.primary, width: 3.r),
+          Gap(10.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(color: AppColors.border, width: 1.r),
+            ),
+            child: TextField(
+              controller: _existingSavesController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600, color: AppColors.textDark),
+              decoration: InputDecoration(
+                hintText: '0.00',
+                suffixText: currency,
+                border: InputBorder.none,
               ),
             ),
-          ).animate().slideY(begin: 0.1),
-          Gap(16.h),
+          ),
+          Gap(14.h),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Checkbox(
+              Switch.adaptive(
                 value: _syncWithAccount,
-                onChanged: (val) =>
-                    setState(() => _syncWithAccount = val ?? false),
-                activeColor: AppColors.primary,
+                onChanged: (val) => setState(() => _syncWithAccount = val),
+                activeTrackColor: AppColors.primary,
               ),
+              Gap(8.w),
               Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 12.h),
-                  child: Text(
-                    'Deduct this amount from an account and log as transaction?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13.sp,
-                      color: AppColors.textDark,
-                    ),
+                child: Text(
+                  'Deduct from an account to balance Planzy',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12.sp,
+                    color: AppColors.textDark,
                   ),
                 ),
               ),
             ],
-          ).animate().slideY(begin: 0.1),
+          ),
         ],
 
-        Gap(40.h),
+        Gap(28.h),
         Text(
           _hasExistingSaves && _syncWithAccount
-              ? 'SOURCE ACCOUNT TO SYNC WITH'
-              : 'LINK ACCOUNT (OPTIONAL)',
+              ? 'Source Account'
+              : 'Linked Account (Optional)',
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(8.h),
+        Gap(4.h),
         Text(
           _hasExistingSaves && _syncWithAccount
-              ? 'The amount you saved will be withdrawn from this account to balance Planzy.'
-              : 'Link an account to easily transfer future savings from.',
+              ? 'The starting amount will be withdrawn from this account.'
+              : 'Link an account to easily allocate future savings.',
           style: TextStyle(
             color: AppColors.textLight,
             fontSize: 12.sp,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w400,
           ),
         ),
-        Gap(16.h),
+        Gap(12.h),
         _buildAccountPicker(accounts),
       ],
     );
@@ -555,32 +533,34 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
       child: GestureDetector(
         onTap: () => setState(() => _hasExistingSaves = state),
         child: AnimatedContainer(
-          duration: 200.ms,
-          padding: EdgeInsets.all(16.r),
+          duration: const Duration(milliseconds: 150),
+          padding: EdgeInsets.all(14.r),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.secondary : AppColors.white,
+            color: isSelected ? AppColors.primary : AppColors.surface,
             border: Border.all(
-              color: AppColors.border,
-              width: isSelected ? 3.r : 2.r,
+              color: isSelected ? AppColors.primary : AppColors.border,
+              width: 1.r,
             ),
-            borderRadius: BorderRadius.circular(16.r),
-            boxShadow: isSelected
-                ? [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))]
-                : [],
+            borderRadius: BorderRadius.circular(14.r),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.sp,
+                  color: isSelected ? Colors.white : AppColors.textDark,
+                ),
               ),
-              Gap(4.h),
+              Gap(2.h),
               Text(
                 sub,
                 style: TextStyle(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                   fontSize: 11.sp,
-                  color: AppColors.textLight,
+                  color: isSelected ? AppColors.zinc400 : AppColors.textLight,
                 ),
               ),
             ],
@@ -591,10 +571,12 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   }
 
   Widget _buildAccountPicker(List<FinancialAccount> accounts) {
-    if (accounts.isEmpty) return const Text('No accounts created yet.');
+    if (accounts.isEmpty) {
+      return Text('No accounts created yet.', style: TextStyle(color: AppColors.textLight, fontSize: 13.sp));
+    }
 
     return SizedBox(
-      height: 100.h,
+      height: 72.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: accounts.length + 1,
@@ -604,28 +586,24 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
             return GestureDetector(
               onTap: () => setState(() => _linkedAccountId = null),
               child: AnimatedContainer(
-                duration: 200.ms,
-                width: 100.w,
-                margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
+                duration: const Duration(milliseconds: 150),
+                width: 90.w,
+                margin: EdgeInsets.only(right: 10.w),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.textDark : AppColors.white,
-                  border: Border.all(color: AppColors.border, width: 2.r),
-                  borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: AppColors.border,
-                            offset: Offset(2.w, 2.h),
-                          ),
-                        ]
-                      : [],
+                  color: isSelected ? AppColors.primary : AppColors.surface,
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : AppColors.border,
+                    width: 1.r,
+                  ),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Center(
                   child: Text(
-                    'NONE',
+                    'None',
                     style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      color: isSelected ? AppColors.white : AppColors.textLight,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.sp,
+                      color: isSelected ? Colors.white : AppColors.textLight,
                     ),
                   ),
                 ),
@@ -637,38 +615,32 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
           return GestureDetector(
             onTap: () => setState(() => _linkedAccountId = acc.id),
             child: AnimatedContainer(
-              duration: 200.ms,
-              width: 140.w,
-              margin: EdgeInsets.only(right: 12.w, bottom: 8.h),
-              padding: EdgeInsets.all(12.r),
+              duration: const Duration(milliseconds: 150),
+              width: 130.w,
+              margin: EdgeInsets.only(right: 10.w),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.cardYellow : AppColors.white,
-                border: Border.all(color: AppColors.border, width: 2.r),
-                borderRadius: BorderRadius.circular(16.r),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppColors.border,
-                          offset: Offset(4.w, 4.h),
-                        ),
-                      ]
-                    : [],
+                color: isSelected ? AppColors.primary : AppColors.surface,
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.border,
+                  width: 1.r,
+                ),
+                borderRadius: BorderRadius.circular(12.r),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
                 children: [
-                  Text(
-                    acc.iconEmoji ?? '🏦',
-                    style: TextStyle(fontSize: 24.sp),
-                  ),
-                  Gap(4.h),
-                  Text(
-                    acc.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12.sp,
+                  Text(acc.type.icon, style: TextStyle(fontSize: 18.sp)),
+                  Gap(8.w),
+                  Expanded(
+                    child: Text(
+                      acc.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12.sp,
+                        color: isSelected ? Colors.white : AppColors.textDark,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -676,35 +648,40 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
           );
         },
       ),
-    ).animate().slideX(begin: 0.1);
+    );
   }
 
   Widget _buildStep3Logistics() {
     return ListView(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(20.r),
       children: [
         Text(
-          "THE MASTER PLAN",
+          "Schedule & Priority",
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 32.sp,
-            letterSpacing: -1,
+            fontWeight: FontWeight.w700,
+            fontSize: 22.sp,
+            letterSpacing: -0.4,
+            color: AppColors.textDark,
           ),
         ),
-        Gap(40.h),
+        Gap(4.h),
+        Text(
+          'Set a deadline and how often you want to be reminded.',
+          style: TextStyle(color: AppColors.textLight, fontSize: 13.sp, fontWeight: FontWeight.w400),
+        ),
+        Gap(24.h),
 
         Text(
-          'TARGET DATE',
+          'Target Date',
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(16.h),
-        NeoCard(
-          backgroundColor: AppColors.white,
-          isInteractive: true,
+        Gap(10.h),
+        GestureDetector(
           onTap: () async {
             final date = await NeoDatePicker.show(
               context: context,
@@ -714,130 +691,127 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
             );
             if (date != null) setState(() => _targetDate = date);
           },
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          child: Row(
-            children: [
-              Icon(
-                LucideIcons.calendarClock,
-                size: 28.r,
-                color: AppColors.primary,
-              ),
-              Gap(16.w),
-              Expanded(
-                child: Text(
-                  DateFormat('MMMM d, yyyy').format(_targetDate),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18.sp,
+          child: Container(
+            padding: EdgeInsets.all(16.r),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(color: AppColors.border, width: 1.r),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: AppColors.zinc100,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Icon(
+                    LucideIcons.calendarClock,
+                    size: 20.r,
+                    color: AppColors.textDark,
                   ),
                 ),
-              ),
-              Icon(LucideIcons.chevronRight, color: AppColors.textLight),
-            ],
-          ),
-        ).animate().slideX(begin: -0.1),
-
-        Gap(32.h),
-        Text(
-          'PRIORITY LEVEL',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
+                Gap(14.w),
+                Expanded(
+                  child: Text(
+                    DateFormat('MMMM d, yyyy').format(_targetDate),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15.sp,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                ),
+                Icon(LucideIcons.chevronRight, color: AppColors.zinc400, size: 16.r),
+              ],
+            ),
           ),
         ),
-        Gap(16.h),
+
+        Gap(24.h),
+        Text(
+          'Priority Level',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
+          ),
+        ),
+        Gap(10.h),
         Row(
           children: [
-            _buildPriorityButton(GoalPriority.low, 'CHILL', AppColors.cardBlue),
-            Gap(12.w),
-            _buildPriorityButton(
-              GoalPriority.medium,
-              'NORMAL',
-              AppColors.cardYellow,
-            ),
-            Gap(12.w),
-            _buildPriorityButton(
-              GoalPriority.high,
-              'URGENT',
-              AppColors.primary,
-            ),
+            _buildPriorityButton(GoalPriority.low, 'Low'),
+            Gap(10.w),
+            _buildPriorityButton(GoalPriority.medium, 'Medium'),
+            Gap(10.w),
+            _buildPriorityButton(GoalPriority.high, 'High'),
           ],
-        ).animate().slideX(begin: -0.2, delay: 100.ms),
+        ),
 
-        Gap(32.h),
+        Gap(24.h),
         Text(
-          'REMIND ME TO SAVE',
+          'Reminders',
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 16.sp,
-            letterSpacing: 1,
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(16.h),
+        Gap(10.h),
         Column(
           children: [
             _buildReminderTile(
               GoalReminderInterval.none,
               'No Reminders',
-              'I got this myself',
+              'I will track it on my own',
               LucideIcons.bellOff,
             ),
-            Gap(12.h),
+            Gap(8.h),
             _buildReminderTile(
               GoalReminderInterval.weekly,
               'Weekly',
-              'Keep me on my toes',
+              'A gentle nudge every week',
               LucideIcons.calendar,
             ),
-            Gap(12.h),
+            Gap(8.h),
             _buildReminderTile(
               GoalReminderInterval.monthly,
               'Monthly',
-              'Salary day check-in',
+              'Check in on salary day',
               LucideIcons.calendarDays,
             ),
           ],
-        ).animate().slideX(begin: -0.3, delay: 200.ms),
+        ),
       ],
     );
   }
 
-  Widget _buildPriorityButton(
-    GoalPriority priority,
-    String label,
-    Color color,
-  ) {
+  Widget _buildPriorityButton(GoalPriority priority, String label) {
     final isSelected = _selectedPriority == priority;
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _selectedPriority = priority),
         child: AnimatedContainer(
-          duration: 200.ms,
-          padding: EdgeInsets.symmetric(vertical: 16.h),
+          duration: const Duration(milliseconds: 150),
+          padding: EdgeInsets.symmetric(vertical: 12.h),
           decoration: BoxDecoration(
-            color: isSelected ? color : AppColors.white,
+            color: isSelected ? AppColors.primary : AppColors.surface,
             border: Border.all(
-              color: AppColors.border,
-              width: isSelected ? 3.r : 2.r,
+              color: isSelected ? AppColors.primary : AppColors.border,
+              width: 1.r,
             ),
-            borderRadius: BorderRadius.circular(16.r),
-            boxShadow: isSelected
-                ? [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))]
-                : [],
+            borderRadius: BorderRadius.circular(12.r),
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 14.sp,
-                color:
-                    isSelected &&
-                        color != AppColors.cardYellow &&
-                        color != AppColors.cardBlue
-                    ? AppColors.white
-                    : AppColors.textDark,
+                fontWeight: FontWeight.w600,
+                fontSize: 13.sp,
+                color: isSelected ? Colors.white : AppColors.textDark,
               ),
             ),
           ),
@@ -856,23 +830,20 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedReminder = interval),
       child: AnimatedContainer(
-        duration: 200.ms,
-        padding: EdgeInsets.all(20.r),
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.all(14.r),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondary : AppColors.white,
+          color: isSelected ? AppColors.zinc100 : AppColors.surface,
           border: Border.all(
-            color: AppColors.border,
-            width: isSelected ? 3.r : 2.r,
+            color: isSelected ? AppColors.primary : AppColors.border,
+            width: 1.r,
           ),
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: isSelected
-              ? [BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h))]
-              : [],
+          borderRadius: BorderRadius.circular(14.r),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 24.r, color: AppColors.textDark),
-            Gap(16.w),
+            Icon(icon, size: 20.r, color: isSelected ? AppColors.primary : AppColors.textLight),
+            Gap(14.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -880,23 +851,24 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
+                      color: AppColors.textDark,
                     ),
                   ),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.sp,
-                      color: AppColors.textDark.withValues(alpha: 0.6),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 11.sp,
+                      color: AppColors.textLight,
                     ),
                   ),
                 ],
               ),
             ),
             if (isSelected)
-              Icon(LucideIcons.checkCircle2, color: AppColors.textDark),
+              Icon(LucideIcons.check, size: 18.r, color: AppColors.primary),
           ],
         ),
       ),

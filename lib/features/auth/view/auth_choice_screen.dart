@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
 
@@ -15,95 +15,114 @@ class AuthChoiceScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(32.r),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Big Branding
+              const Spacer(),
+
+              // Logo badge pill
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: AppColors.zinc100,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(LucideIcons.sparkles, size: 14.r, color: AppColors.textDark),
+                    Gap(6.w),
+                    Text(
+                      'Planzy Finance',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Gap(20.h),
+
               Text(
-                'YOUR FINANCIAL',
+                'Take Control of\nYour Financial Future.',
                 style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
+                  fontSize: 34.sp,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -1,
+                  height: 1.15,
+                  color: AppColors.textDark,
+                ),
+              ),
+
+              Gap(12.h),
+
+              Text(
+                'Track subscriptions, grow savings goals, and manage your wealth with precision in one executive space.',
+                style: TextStyle(
+                  fontSize: 14.sp,
                   color: AppColors.textLight,
+                  fontWeight: FontWeight.w400,
+                  height: 1.4,
                 ),
-              ).animate().fadeIn().slideY(begin: 0.3),
-              Text(
-                'FUTURE STARTS',
-                style: TextStyle(
-                  fontSize: 48.sp,
-                  fontWeight: FontWeight.w900,
-                  height: 1.0,
-                ),
-              ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.3),
-              Text(
-                'HERE',
-                style: TextStyle(
-                  fontSize: 48.sp,
-                  fontWeight: FontWeight.w900,
-                  height: 1.0,
-                  color: AppColors.primary,
-                ),
-              ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.3),
+              ),
 
-              Gap(80.h),
+              const Spacer(),
 
-              // Choice 1: Sign Up
-              Column(
-                children: [
-                  Text(
-                    'NEW TO PLANZY?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14.sp,
-                      letterSpacing: 1,
-                      color: AppColors.textLight,
+              // Actions
+              NeoButton(
+                onPressed: () => context.push('/signup'),
+                text: 'Create Account',
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
+              ),
+
+              Gap(12.h),
+
+              GestureDetector(
+                onTap: () => context.push('/login'),
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.zinc100,
+                    borderRadius: BorderRadius.circular(14.r),
+                    border: Border.all(color: AppColors.border, width: 1.r),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                      ),
                     ),
                   ),
-                  Gap(16.h),
-                  NeoButton(
-                    onPressed: () => context.push('/signup'),
-                    text: 'START NEW JOURNEY',
-                    backgroundColor: AppColors.secondary,
-                  ),
-                ],
-              ).animate().scale(delay: 600.ms, curve: Curves.elasticOut),
-
-              Gap(40.h),
-
-              // Choice 2: Login
-              Column(
-                children: [
-                  Text(
-                    'ALREADY A MEMBER?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14.sp,
-                      letterSpacing: 1,
-                      color: AppColors.textLight,
-                    ),
-                  ),
-                  Gap(16.h),
-                  NeoButton(
-                    onPressed: () => context.push('/login'),
-                    text: 'WELCOME ME BACK',
-                  ),
-                ],
-              ).animate().scale(delay: 800.ms, curve: Curves.elasticOut),
-
-              Gap(60.h),
-
-              Text(
-                'BY JOINING, YOU AGREE TO MASTER YOUR MONEY.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textLight,
-                  letterSpacing: 1,
                 ),
-              ).animate().fadeIn(delay: 1200.ms),
+              ),
+
+              Gap(24.h),
+
+              Center(
+                child: Text(
+                  'By continuing, you agree to our Terms of Service & Privacy Policy.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: AppColors.textLight,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+
+              Gap(12.h),
             ],
           ),
         ),

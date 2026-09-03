@@ -7,13 +7,10 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
-
 import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -51,496 +48,278 @@ class ProfileScreen extends ConsumerWidget {
             );
 
             return ListView(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               children: [
                 // Top bar with settings icon
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'PROFILE',
-                      style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
+                      'Profile',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.4,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () => context.push('/settings'),
                       child: Container(
-                        padding: EdgeInsets.all(12.r),
+                        padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
-                          color: AppColors.cardYellow,
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: AppColors.border, width: 3.r),
-                          boxShadow: [
-                            BoxShadow(color: AppColors.border, offset: Offset(4.w, 4.h)),
-                          ],
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(color: AppColors.border, width: 1.r),
                         ),
-                        child: Icon(LucideIcons.settings, color: AppColors.textDark, size: 22.r),
+                        child: Icon(LucideIcons.settings, color: AppColors.textDark, size: 18.r),
                       ),
-                    ).animate().slideX(begin: 1, curve: Curves.easeOutBack),
+                    ),
                   ],
                 ),
-                Gap(32.h),
+                Gap(20.h),
 
-                // Profile Card — big hero section
+                // Profile Card — Obsidian Bento Section
                 SizedBox(
                   width: double.infinity,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      NeoCard(
-                            backgroundColor: AppColors.primary,
-                            padding: EdgeInsets.all(28.r),
-                            child: Column(
-                              children: [
-                                // Avatar
-                                Container(
-                                  width: 100.r,
-                                  height: 100.r,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.secondary,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.border,
-                                      width: 4.r,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.border,
-                                        offset: Offset(4.w, 4.h),
-                                      ),
-                                    ],
-                                    image:
-                                        (profileImagePath != null &&
-                                            File(profileImagePath).existsSync())
-                                        ? DecorationImage(
-                                            image: FileImage(
-                                              File(profileImagePath),
-                                            ),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : null,
-                                  ),
-                                  child:
-                                      (profileImagePath == null ||
-                                          !File(profileImagePath).existsSync())
-                                      ? Center(
-                                          child: Text(
-                                            userName.isNotEmpty
-                                                ? userName[0].toUpperCase()
-                                                : 'P',
-                                            style: TextStyle(
-                                              fontSize: 40.sp,
-                                              fontWeight: FontWeight.w900,
-                                              color: AppColors.textDark,
-                                            ),
-                                          ),
-                                        )
-                                      : null,
-                                ).animate().scale(curve: Curves.easeOutBack),
-                                Gap(20.h),
-
-                                // Name
-                                Text(
-                                  userName.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 28.sp,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.white,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ).animate().fadeIn(delay: 100.ms),
-
-                                if (userBio.isNotEmpty) ...[
-                                  Gap(8.h),
-                                  Text(
-                                    userBio,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.white.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ).animate().fadeIn(delay: 150.ms),
-                                ],
-
-                                if (userEmail.isNotEmpty) ...[
-                                  Gap(8.h),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w,
-                                      vertical: 6.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.white.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20.r),
-                                    ),
-                                    child: Text(
-                                      userEmail,
-                                      style: TextStyle(
-                                        fontSize: 13.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.white.withValues(
-                                          alpha: 0.8,
-                                        ),
-                                      ),
-                                    ),
-                                  ).animate().fadeIn(delay: 200.ms),
-                                ],
-                              ],
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
+                        decoration: BoxDecoration(
+                          color: AppColors.zinc950,
+                          borderRadius: BorderRadius.circular(20.r),
+                          border: Border.all(color: AppColors.zinc800, width: 1.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 20,
+                              offset: const Offset(0, 6),
                             ),
-                          )
-                          .animate()
-                          .slideY(begin: 0.15, curve: Curves.easeOutBack)
-                          .fadeIn(),
-
-                      // Edit button - top left corner
-                      Positioned(
-                        top: 12.h,
-                        left: 12.w,
-                        child:
-                            GestureDetector(
-                                  onTap: () => context.push('/edit-profile'),
-                                  child: Container(
-                                    padding: EdgeInsets.all(10.r),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondary,
-                                      borderRadius: BorderRadius.circular(10.r),
-                                      border: Border.all(
-                                        color: AppColors.border,
-                                        width: 3.r,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.border,
-                                          offset: Offset(3.w, 3.h),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            // Avatar
+                            Container(
+                              width: 76.r,
+                              height: 76.r,
+                              decoration: BoxDecoration(
+                                color: AppColors.zinc800,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  width: 2.r,
+                                ),
+                                image: (profileImagePath != null &&
+                                        File(profileImagePath).existsSync())
+                                    ? DecorationImage(
+                                        image: FileImage(
+                                          File(profileImagePath),
                                         ),
-                                      ],
-                                    ),
-                                    child: Icon(
-                                      LucideIcons.pencil,
-                                      color: AppColors.textDark,
-                                      size: 18.r,
-                                    ),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: (profileImagePath == null ||
+                                      !File(profileImagePath).existsSync())
+                                  ? Center(
+                                      child: Text(
+                                        userName.isNotEmpty
+                                            ? userName[0].toUpperCase()
+                                            : 'P',
+                                        style: TextStyle(
+                                          fontSize: 28.sp,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                            Gap(14.h),
+
+                            // Name
+                            Text(
+                              userName,
+                              style: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                letterSpacing: -0.3,
+                              ),
+                            ),
+
+                            if (userBio.isNotEmpty) ...[
+                              Gap(4.h),
+                              Text(
+                                userBio,
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.zinc400,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+
+                            if (userEmail.isNotEmpty) ...[
+                              Gap(10.h),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.zinc800,
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Text(
+                                  userEmail,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.zinc300,
                                   ),
-                                )
-                                .animate()
-                                .slideX(
-                                  begin: -1,
-                                  curve: Curves.easeOutBack,
-                                  delay: const Duration(milliseconds: 150),
-                                )
-                                .fadeIn(),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+
+                      // Edit button - top right corner
+                      Positioned(
+                        top: 14.h,
+                        right: 14.w,
+                        child: GestureDetector(
+                          onTap: () => context.push('/edit-profile'),
+                          child: Container(
+                            padding: EdgeInsets.all(8.r),
+                            decoration: BoxDecoration(
+                              color: AppColors.zinc800,
+                              borderRadius: BorderRadius.circular(8.r),
+                              border: Border.all(
+                                color: AppColors.zinc700,
+                                width: 1.r,
+                              ),
+                            ),
+                            child: Icon(
+                              LucideIcons.pencil,
+                              color: Colors.white,
+                              size: 14.r,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-                Gap(32.h),
+                Gap(20.h),
 
                 // MY VAULT - Quick Action
                 _QuickActionTile(
-                      icon: LucideIcons.wallet,
-                      title: 'MY VAULT',
-                      subtitle: 'Manage all your accounts & cards',
-                      color: AppColors.cardYellow,
-                      onTap: () => context.push('/accounts'),
-                      delay: 300,
-                    )
-                    .animate()
-                    .slideY(
-                      begin: 0.15,
-                      curve: Curves.easeOutBack,
-                      delay: const Duration(milliseconds: 300),
-                    )
-                    .fadeIn(),
+                  icon: LucideIcons.wallet,
+                  title: 'Accounts & Cards',
+                  subtitle: 'Manage all your accounts & cards',
+                  onTap: () => context.push('/accounts'),
+                ),
 
-                Gap(32.h),
+                Gap(24.h),
+
+                // Stats Section
+                Text(
+                  'Overview',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                Gap(12.h),
 
                 // Stats Grid
                 Row(
                   children: [
-                    const Expanded(child: SizedBox()),
-                    Gap(16.w),
                     Expanded(
                       child: _StatCard(
-                        label: 'SAVED',
+                        label: 'Total Saved',
                         value: '${NumberFormat.compact().format(totalSaved)} $currency',
                         icon: LucideIcons.piggyBank,
-                        color: AppColors.cardBlue,
-                        delay: 100,
                       ),
                     ),
-                  ],
-                ),
-                Gap(16.h),
-                Row(
-                  children: [
+                    Gap(12.w),
                     Expanded(
                       child: _StatCard(
-                        label: 'GOALS',
+                        label: 'Active Goals',
                         value: '$goalsCount',
                         icon: LucideIcons.target,
-                        color: AppColors.secondary,
-                        delay: 200,
-                      ),
-                    ),
-                    Gap(16.w),
-                    Expanded(
-                      child: _StatCard(
-                        label: 'CURRENCY',
-                        value: currency,
-                        icon: LucideIcons.coins,
-                        color: AppColors.white,
-                        delay: 300,
                       ),
                     ),
                   ],
                 ),
 
-                Gap(40.h),
+                Gap(24.h),
 
                 // Quick Actions
                 Text(
-                  'QUICK ACTIONS',
-                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
-                ).animate().fadeIn(delay: 400.ms),
-                Gap(16.h),
+                  'Quick Actions',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                Gap(12.h),
 
                 _QuickActionTile(
                   icon: LucideIcons.receipt,
-                  title: 'TRANSACTION HISTORY',
+                  title: 'Transaction History',
                   subtitle: 'View all your transactions',
-                  color: AppColors.cardBlue,
                   onTap: () => context.push('/transaction-history'),
-                  delay: 500,
                 ),
 
-                Gap(32.h),
+                Gap(24.h),
 
                 // ABOUT section
                 Text(
-                  'ABOUT',
+                  'About',
                   style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                    color: AppColors.textDark,
                   ),
-                ).animate().fadeIn(delay: 700.ms),
-                Gap(16.h),
-
-                NeoCard(
-                      backgroundColor: AppColors.white,
-                      padding: EdgeInsets.zero,
-                      isInteractive: true,
-                      onTap: () {},
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 16.h,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12.r),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(10.r),
-                                border: Border.all(
-                                  color: AppColors.border,
-                                  width: 2.r,
-                                ),
-                              ),
-                              child: Icon(
-                                LucideIcons.sparkles,
-                                color: AppColors.textDark,
-                                size: 20.r,
-                              ),
-                            ),
-                            Gap(16.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'PLANZY',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16.sp,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  Gap(2.h),
-                                  Text(
-                                    'VERSION 1.0.0',
-                                    style: TextStyle(
-                                      color: AppColors.textLight,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                    .animate()
-                    .slideX(
-                      begin: 0.15,
-                      curve: Curves.easeOutBack,
-                      delay: const Duration(milliseconds: 750),
-                    )
-                    .fadeIn(),
-
+                ),
                 Gap(12.h),
 
-                NeoCard(
-                      backgroundColor: AppColors.white,
-                      padding: EdgeInsets.zero,
-                      isInteractive: true,
-                      onTap: () {},
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 16.h,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12.r),
-                              decoration: BoxDecoration(
-                                color: AppColors.cardYellow,
-                                borderRadius: BorderRadius.circular(10.r),
-                                border: Border.all(
-                                  color: AppColors.border,
-                                  width: 2.r,
-                                ),
-                              ),
-                              child: Icon(
-                                LucideIcons.helpCircle,
-                                color: AppColors.textDark,
-                                size: 20.r,
-                              ),
-                            ),
-                            Gap(16.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'HELP & SUPPORT',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16.sp,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  Gap(2.h),
-                                  Text(
-                                    'Get help or contact us',
-                                    style: TextStyle(
-                                      color: AppColors.textLight,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              LucideIcons.chevronRight,
-                              color: AppColors.textLight,
-                              size: 20.r,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                    .animate()
-                    .slideX(
-                      begin: 0.15,
-                      curve: Curves.easeOutBack,
-                      delay: const Duration(milliseconds: 800),
-                    )
-                    .fadeIn(),
+                _QuickActionTile(
+                  icon: LucideIcons.sparkles,
+                  title: 'Planzy',
+                  subtitle: 'Version 1.0.0',
+                  onTap: () {},
+                ),
+                Gap(10.h),
+                _QuickActionTile(
+                  icon: LucideIcons.helpCircle,
+                  title: 'Help & Support',
+                  subtitle: 'Get help or contact us',
+                  onTap: () {},
+                ),
+                Gap(10.h),
+                _QuickActionTile(
+                  icon: LucideIcons.shield,
+                  title: 'Privacy Policy',
+                  subtitle: 'Read our privacy policy',
+                  onTap: () {},
+                ),
 
-                Gap(12.h),
-
-                NeoCard(
-                      backgroundColor: AppColors.white,
-                      padding: EdgeInsets.zero,
-                      isInteractive: true,
-                      onTap: () {},
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 16.h,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12.r),
-                              decoration: BoxDecoration(
-                                color: AppColors.cardBlue,
-                                borderRadius: BorderRadius.circular(10.r),
-                                border: Border.all(
-                                  color: AppColors.border,
-                                  width: 2.r,
-                                ),
-                              ),
-                              child: Icon(
-                                LucideIcons.shield,
-                                color: AppColors.textDark,
-                                size: 20.r,
-                              ),
-                            ),
-                            Gap(16.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'PRIVACY POLICY',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16.sp,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  Gap(2.h),
-                                  Text(
-                                    'Read our privacy policy',
-                                    style: TextStyle(
-                                      color: AppColors.textLight,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              LucideIcons.chevronRight,
-                              color: AppColors.textLight,
-                              size: 20.r,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                    .animate()
-                    .slideX(
-                      begin: 0.15,
-                      curve: Curves.easeOutBack,
-                      delay: const Duration(milliseconds: 850),
-                    )
-                    .fadeIn(),
-
-                Gap(100.h),
+                Gap(80.h),
               ],
             );
           },
@@ -556,43 +335,64 @@ class _StatCard extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
-  final Color color;
-  final int delay;
 
   const _StatCard({
     required this.label,
     required this.value,
     required this.icon,
-    required this.color,
-    required this.delay,
   });
 
   @override
   Widget build(BuildContext context) {
-    return NeoCard(
-      backgroundColor: color,
-      padding: EdgeInsets.all(20.r),
+    return Container(
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.border, width: 1.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppColors.zinc100,
               borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: AppColors.border, width: 2.r),
             ),
-            child: Icon(icon, color: AppColors.textDark, size: 18.r),
+            child: Icon(icon, color: AppColors.textDark, size: 16.r),
           ),
           Gap(12.h),
-          Text(label, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: AppColors.textDark, letterSpacing: 1)),
-          Gap(4.h),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textLight,
+            ),
+          ),
+          Gap(2.h),
           FittedBox(
-            child: Text(value, style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900, letterSpacing: -1)),
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textDark,
+                letterSpacing: -0.3,
+              ),
+            ),
           ),
         ],
       ),
-    ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack, delay: Duration(milliseconds: delay)).fadeIn();
+    );
   }
 }
 
@@ -600,54 +400,73 @@ class _QuickActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Color color;
   final VoidCallback onTap;
-  final int delay;
 
   const _QuickActionTile({
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.color,
     required this.onTap,
-    required this.delay,
   });
 
   @override
   Widget build(BuildContext context) {
-    return NeoCard(
-      backgroundColor: AppColors.white,
-      padding: EdgeInsets.zero,
-      isInteractive: true,
+    return GestureDetector(
       onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(color: AppColors.border, width: 1.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(12.r),
+              padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
-                color: color,
+                color: AppColors.zinc100,
                 borderRadius: BorderRadius.circular(10.r),
-                border: Border.all(color: AppColors.border, width: 2.r),
               ),
-              child: Icon(icon, color: AppColors.textDark, size: 20.r),
+              child: Icon(icon, color: AppColors.textDark, size: 18.r),
             ),
-            Gap(16.w),
+            Gap(14.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, letterSpacing: -0.5)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
+                      letterSpacing: -0.2,
+                      color: AppColors.textDark,
+                    ),
+                  ),
                   Gap(2.h),
-                  Text(subtitle, style: TextStyle(color: AppColors.textLight, fontSize: 12.sp, fontWeight: FontWeight.w600)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppColors.textLight,
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Icon(LucideIcons.chevronRight, color: AppColors.textLight, size: 20.r),
+            Icon(LucideIcons.chevronRight, color: AppColors.zinc400, size: 16.r),
           ],
         ),
       ),
-    ).animate().slideX(begin: 0.15, curve: Curves.easeOutBack, delay: Duration(milliseconds: delay)).fadeIn();
+    );
   }
 }

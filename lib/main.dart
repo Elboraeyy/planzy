@@ -1,3 +1,4 @@
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,9 +33,20 @@ class MyApp extends ConsumerWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp.router(
+        return ShadApp.router(
           title: 'Planzy',
-          theme: AppTheme.lightTheme,
+          themeMode: ThemeMode.light,
+          theme: ShadThemeData(
+            brightness: Brightness.light,
+            colorScheme: const ShadZincColorScheme.light(),
+          ),
+          darkTheme: ShadThemeData(
+            brightness: Brightness.dark,
+            colorScheme: const ShadZincColorScheme.dark(),
+          ),
+          materialThemeBuilder: (context, theme) {
+            return AppTheme.lightTheme;
+          },
           routerConfig: router,
           debugShowCheckedModeBanner: false,
         );

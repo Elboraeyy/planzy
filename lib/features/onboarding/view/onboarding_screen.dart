@@ -22,30 +22,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   final List<OnboardingData> _pages = [
     OnboardingData(
-      title: 'CONTROL THE CHAOS',
-      description: 'Manage all your accounts and expenses securely from a single view.',
-      icon: LucideIcons.zap,
-      color: AppColors.cardYellow,
-    ),
-    OnboardingData(
-      title: 'SMASH YOUR GOALS',
-      description: 'Save for what matters most with physical progress tracking.',
-      icon: LucideIcons.target,
-      color: AppColors.secondary,
-    ),
-    OnboardingData(
-      title: 'MASTER YOUR MONEY',
-      description: 'Real-time budget tracking that keeps you ahead of the game.',
+      title: 'Control Your Wealth',
+      description: 'Manage accounts, cards, and daily expenses securely from a unified executive dashboard.',
       icon: LucideIcons.wallet,
-      color: AppColors.cardBlue,
+    ),
+    OnboardingData(
+      title: 'Reach Your Goals',
+      description: 'Set ambitious savings targets with live visual tracking and automated allocations.',
+      icon: LucideIcons.target,
+    ),
+    OnboardingData(
+      title: 'Master Your Subscriptions',
+      description: 'Stay ahead of recurring renewals, avoid surprise charges, and optimize monthly cash flow.',
+      icon: LucideIcons.repeat,
     ),
   ];
 
   void _onNext() {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
-        duration: 400.ms,
-        curve: Curves.easeOutBack,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
       );
     } else {
       _finishOnboarding();
@@ -74,51 +71,54 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final page = _pages[index];
                   return Padding(
-                    padding: EdgeInsets.all(32.r),
+                    padding: EdgeInsets.symmetric(horizontal: 28.w),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Large Neo-Brutalist Icon
+                        // Obsidian Hero Icon Tile
                         Container(
-                          width: 160.r,
-                          height: 160.r,
+                          width: 110.r,
+                          height: 110.r,
                           decoration: BoxDecoration(
-                            color: page.color,
-                            borderRadius: BorderRadius.circular(32.r),
-                            border: Border.all(color: AppColors.border, width: 4.r),
+                            color: AppColors.zinc950,
+                            borderRadius: BorderRadius.circular(28.r),
+                            border: Border.all(color: AppColors.zinc800, width: 1.r),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.border,
-                                offset: Offset(10.w, 10.h),
+                                color: Colors.black.withValues(alpha: 0.12),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
                               ),
                             ],
                           ),
-                          child: Icon(page.icon, size: 80.r, color: AppColors.textDark),
-                        ).animate(key: ValueKey(index)).scale(curve: Curves.elasticOut, duration: 800.ms),
+                          child: Icon(page.icon, size: 44.r, color: Colors.white),
+                        ).animate(key: ValueKey(index)).scale(curve: Curves.easeOutBack, duration: 400.ms),
                         
-                        Gap(60.h),
+                        Gap(48.h),
                         
                         Text(
                           page.title,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -1,
+                            fontSize: 26.sp,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.5,
+                            color: AppColors.textDark,
                           ),
-                        ).animate(key: ValueKey('title_$index')).fadeIn().slideY(begin: 0.3),
+                        ).animate(key: ValueKey('title_$index')).fadeIn().slideY(begin: 0.2),
                         
-                        Gap(24.h),
+                        Gap(12.h),
                         
                         Text(
                           page.description,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400,
                             color: AppColors.textLight,
+                            height: 1.4,
                           ),
-                        ).animate(key: ValueKey('desc_$index')).fadeIn(delay: 200.ms),
+                        ).animate(key: ValueKey('desc_$index')).fadeIn(delay: 100.ms),
                       ],
                     ),
                   );
@@ -128,7 +128,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             
             // Bottom Controls
             Padding(
-              padding: EdgeInsets.all(32.r),
+              padding: EdgeInsets.fromLTRB(24.w, 12.h, 24.w, 24.h),
               child: Column(
                 children: [
                   // Indicators
@@ -137,25 +137,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     children: List.generate(
                       _pages.length,
                       (index) => AnimatedContainer(
-                        duration: 300.ms,
-                        margin: EdgeInsets.symmetric(horizontal: 4.w),
-                        width: _currentPage == index ? 32.w : 12.w,
-                        height: 12.h,
+                        duration: const Duration(milliseconds: 200),
+                        margin: EdgeInsets.symmetric(horizontal: 3.w),
+                        width: _currentPage == index ? 24.w : 6.w,
+                        height: 4.h,
                         decoration: BoxDecoration(
-                          color: _currentPage == index ? AppColors.primary : AppColors.border.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(6.r),
-                          border: Border.all(color: AppColors.border, width: 2.r),
+                          color: _currentPage == index ? AppColors.primary : AppColors.zinc200,
+                          borderRadius: BorderRadius.circular(2.r),
                         ),
                       ),
                     ),
                   ),
                   
-                  Gap(40.h),
+                  Gap(28.h),
                   
                   // Action Button
                   NeoButton(
                     onPressed: _onNext,
-                    text: _currentPage == _pages.length - 1 ? 'GET STARTED' : 'CONTINUE',
+                    text: _currentPage == _pages.length - 1 ? 'Get Started' : 'Continue',
+                    backgroundColor: AppColors.primary,
+                    textColor: Colors.white,
                   ),
                 ],
               ),
@@ -171,13 +172,10 @@ class OnboardingData {
   final String title;
   final String description;
   final IconData icon;
-  final Color color;
 
   OnboardingData({
     required this.title,
     required this.description,
     required this.icon,
-    required this.color,
   });
 }
-

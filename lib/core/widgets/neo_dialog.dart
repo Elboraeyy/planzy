@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:planzy/core/theme/app_colors.dart';
-import 'package:planzy/core/widgets/neo_button.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 
 class NeoDialog {
   static void show({
@@ -27,78 +25,103 @@ class NeoDialog {
             color: Colors.transparent,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: NeoCard(
-                backgroundColor: AppColors.background,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border, width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title.toUpperCase(),
+                      title,
                       style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textDark,
-                        letterSpacing: -0.5,
+                        letterSpacing: -0.3,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const Gap(16),
+                    const Gap(8),
                     if (customContent != null)
                       customContent
                     else
                       Text(
                         message,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textDark,
-                          height: 1.4,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textLight,
+                          height: 1.5,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    const Gap(32),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    const Gap(24),
+                    Row(
                       children: [
-                        NeoButton(
-                          text: confirmText,
-                          backgroundColor: isDestructive ? Colors.red : AppColors.secondary,
-                          textColor: isDestructive ? AppColors.white : AppColors.textDark,
-                          onPressed: () {
-                            Navigator.pop(context);
-                            onConfirm();
-                          },
-                        ),
                         if (cancelText != null) ...[
-                          const Gap(16),
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.border, width: 3),
-                              ),
-                              child: Text(
-                                cancelText.toUpperCase(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 16,
-                                  color: AppColors.textDark,
-                                  letterSpacing: 1,
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: AppColors.zinc100,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: AppColors.border, width: 1),
+                                ),
+                                child: Text(
+                                  cancelText,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: AppColors.textDark,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ]
+                          const Gap(12),
+                        ],
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              onConfirm();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isDestructive ? AppColors.destructive : AppColors.primary,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                confirmText,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
-              ).animate().scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack).fadeIn(),
+              ).animate().scale(begin: const Offset(0.95, 0.95), curve: Curves.easeOutCubic, duration: 150.ms).fadeIn(),
             ),
           ),
         );

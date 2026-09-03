@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/services/storage_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,40 +24,40 @@ class ReceiptPicker extends ConsumerWidget {
   Future<void> _showSourceDialog(BuildContext context, WidgetRef ref) async {
     await showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        side: BorderSide(color: AppColors.border, width: 3),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 40,
+                width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.textLight,
+                  color: AppColors.zinc300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Gap(20),
+              const Gap(16),
               const Text(
-                'ATTACH RECEIPT',
+                'Attach Receipt',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
+                  letterSpacing: -0.3,
                 ),
               ),
-              const Gap(24),
+              const Gap(20),
               Row(
                 children: [
                   Expanded(
                     child: _SourceButton(
-                      icon: Icons.camera_alt,
+                      icon: LucideIcons.camera,
                       label: 'Camera',
                       onTap: () async {
                         Navigator.pop(context);
@@ -68,10 +69,10 @@ class ReceiptPicker extends ConsumerWidget {
                       },
                     ),
                   ),
-                  const Gap(16),
+                  const Gap(12),
                   Expanded(
                     child: _SourceButton(
-                      icon: Icons.photo_library,
+                      icon: LucideIcons.image,
                       label: 'Gallery',
                       onTap: () async {
                         Navigator.pop(context);
@@ -85,7 +86,7 @@ class ReceiptPicker extends ConsumerWidget {
                   ),
                 ],
               ),
-              const Gap(16),
+              const Gap(12),
             ],
           ),
         ),
@@ -101,41 +102,42 @@ class ReceiptPicker extends ConsumerWidget {
       return GestureDetector(
         onTap: () => _showSourceDialog(context, ref),
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border, width: 3),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border, width: 2),
+                  color: AppColors.zinc100,
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
-                  Icons.receipt_long,
-                  size: 40,
-                  color: AppColors.textLight,
+                  LucideIcons.camera,
+                  size: 22,
+                  color: AppColors.zinc500,
                 ),
               ),
-              const Gap(12),
+              const Gap(10),
               const Text(
-                'ATTACH RECEIPT',
+                'Attach Receipt',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                  color: AppColors.textLight,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
+                  color: AppColors.textDark,
                 ),
               ),
+              const Gap(2),
               const Text(
-                'Optional',
+                'Optional image or proof',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   color: AppColors.textLight,
                 ),
               ),
@@ -150,18 +152,12 @@ class ReceiptPicker extends ConsumerWidget {
         GestureDetector(
           onTap: () => _showSourceDialog(context, ref),
           child: Container(
-            height: 150,
+            height: 140,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border, width: 3),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.border,
-                  offset: Offset(4, 4),
-                ),
-              ],
+              border: Border.all(color: AppColors.border, width: 1),
             ),
             clipBehavior: Clip.antiAlias,
             child: localImage != null
@@ -173,9 +169,9 @@ class ReceiptPicker extends ConsumerWidget {
                     ? Image.network(
                         remoteUrl!,
                         fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.broken_image,
-                          size: 50,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          LucideIcons.image,
+                          size: 40,
                           color: AppColors.textLight,
                         ),
                       )
@@ -189,16 +185,15 @@ class ReceiptPicker extends ConsumerWidget {
             child: GestureDetector(
               onTap: onImageRemoved,
               child: Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border, width: 2),
+                  color: Colors.black.withValues(alpha: 0.6),
+                  shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.close,
-                  size: 20,
-                  color: AppColors.white,
+                  LucideIcons.x,
+                  size: 16,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -224,32 +219,27 @@ class _SourceButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: AppColors.secondary,
+          color: AppColors.zinc100,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border, width: 3),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.border,
-              offset: Offset(4, 4),
-            ),
-          ],
+          border: Border.all(color: AppColors.border, width: 1),
         ),
         child: Column(
           children: [
             Icon(
               icon,
-              size: 32,
+              size: 24,
               color: AppColors.textDark,
             ),
-            const Gap(8),
+            const Gap(6),
             Text(
-              label.toUpperCase(),
+              label,
               style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+                color: AppColors.textDark,
               ),
             ),
           ],

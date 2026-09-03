@@ -1,16 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:planzy/core/theme/app_colors.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
-
-import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
-import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:planzy/core/theme/app_colors.dart';
+import 'package:planzy/features/goals/presentation/providers/goals_provider.dart';
+import 'package:planzy/core/providers/settings_provider.dart';
 import 'dart:math';
 
 class InsightsScreen extends ConsumerWidget {
@@ -20,19 +18,43 @@ class InsightsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('INSIGHTS / STATS', style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w900)),
+        title: Text(
+          'Insights',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.4,
+            color: AppColors.textDark,
+          ),
+        ),
       ),
       body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
         children: [
           const _SummaryCardsGrid(),
-          Gap(40.h),
-          Text('FINANCIAL BREAKDOWN', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
-          Gap(16.h),
+          Gap(24.h),
+          Text(
+            'Financial Breakdown',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
+              color: AppColors.textDark,
+            ),
+          ),
+          Gap(12.h),
           const _BreakdownChart(),
-          Gap(40.h),
-          Text('YOUR CASH FLOW', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w900, letterSpacing: 1)),
-          Gap(16.h),
+          Gap(24.h),
+          Text(
+            'Your Cash Flow',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
+              color: AppColors.textDark,
+            ),
+          ),
+          Gap(12.h),
           const _CashFlowBarChart(),
           Gap(80.h),
         ],
@@ -54,40 +76,122 @@ class _SummaryCardsGrid extends ConsumerWidget {
       error: (error, stack) => '',
     );
 
-    return Row(
-      children: [
-        const Expanded(child: SizedBox()),
-        Gap(16.w),
-        Expanded(
-          child: goalsAsync.when(
-            data: (list) {
-              final totalSaved = list.fold<double>(0, (sum, i) => sum + i.savedAmount);
-              return NeoCard(
-                backgroundColor: AppColors.cardBlue,
-                padding: EdgeInsets.all(20.r),
+    return goalsAsync.when(
+      data: (list) {
+        final totalSaved = list.fold<double>(0, (sum, i) => sum + i.savedAmount);
+        final totalTarget = list.fold<double>(0, (sum, i) => sum + i.targetAmount);
+        final remaining = max(0.0, totalTarget - totalSaved);
+
+        return Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(16.r),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(color: AppColors.white, border: Border.all(color: AppColors.border, width: 2.r), borderRadius: BorderRadius.circular(8.r)),
-                      child: Icon(LucideIcons.piggyBank, color: AppColors.textDark, size: 24.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.successLight,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Icon(LucideIcons.piggyBank, color: AppColors.success, size: 20.r),
                     ),
-                    Gap(16.h),
-                    Text('TOTAL SAVED', style: TextStyle(color: AppColors.textDark, fontSize: 11.sp, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    Gap(4.h),
+                    Gap(12.h),
+                    Text(
+                      'Total Saved',
+                      style: TextStyle(
+                        color: AppColors.textLight,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Gap(2.h),
                     FittedBox(
-                      child: Text('${NumberFormat.compact().format(totalSaved)} $currency', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -1)),
+                      child: Text(
+                        '${NumberFormat.compact().format(totalSaved)} $currency',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20.sp,
+                          color: AppColors.textDark,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ).animate().slideX(begin: 0.2, curve: Curves.easeOutBack, delay: 100.ms);
-            },
-            loading: () => const SizedBox(),
-            error: (e, _) => const SizedBox(),
-          ),
-        ),
-      ],
+              ),
+            ),
+            Gap(12.w),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(16.r),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.zinc100,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Icon(LucideIcons.target, color: AppColors.zinc600, size: 20.r),
+                    ),
+                    Gap(12.h),
+                    Text(
+                      'Goals Remaining',
+                      style: TextStyle(
+                        color: AppColors.textLight,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Gap(2.h),
+                    FittedBox(
+                      child: Text(
+                        '${NumberFormat.compact().format(remaining)} $currency',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20.sp,
+                          color: AppColors.textDark,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ).animate().fadeIn();
+      },
+      loading: () => const SizedBox(),
+      error: (e, _) => const SizedBox(),
     );
   }
 }
@@ -99,56 +203,84 @@ class _BreakdownChart extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goalsAsync = ref.watch(goalsProvider);
 
-    return NeoCard(
-      backgroundColor: AppColors.white,
-      padding: EdgeInsets.all(24.r),
+    return Container(
+      padding: EdgeInsets.all(20.r),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.border, width: 1.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
       child: goalsAsync.when(
-          data: (goals) {
-            final totalSaved = goals.fold<double>(0, (sum, i) => sum + i.savedAmount);
-            final remainingInGoals = goals.fold<double>(0, (sum, i) => sum + (max(0, i.targetAmount - i.savedAmount)));
+        data: (goals) {
+          final totalSaved = goals.fold<double>(0, (sum, i) => sum + i.savedAmount);
+          final remainingInGoals = goals.fold<double>(0, (sum, i) => sum + (max(0, i.targetAmount - i.savedAmount)));
 
-            if (totalSaved == 0 && remainingInGoals == 0) {
-              return SizedBox(
-                height: 200.h, 
-                child: Center(child: Text("NOT ENOUGH DATA", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)))
-              );
-            }
-
+          if (totalSaved == 0 && remainingInGoals == 0) {
             return SizedBox(
-              height: 240.h,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  PieChart(
-                    PieChartData(
-                      sectionsSpace: 4.r,
-                      centerSpaceRadius: 60.r,
-                      sections: [
-
-                        if (totalSaved > 0)
-                          PieChartSectionData(color: AppColors.secondary, value: totalSaved, title: '', radius: 35.r),
-                        if (remainingInGoals > 0)
-                          PieChartSectionData(color: AppColors.cardYellow, value: remainingInGoals, title: '', radius: 25.r),
-                      ],
-                    ),
-                  ).animate().scale(duration: 800.ms, curve: Curves.elasticOut),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-
-                      _LegendItem(color: AppColors.secondary, label: 'SAVED'),
-                      Gap(4.h),
-                      _LegendItem(color: AppColors.cardYellow, label: 'GOALS LEFT'),
-                    ],
-                  ).animate().fadeIn(delay: 400.ms),
-                ],
+              height: 160.h,
+              child: Center(
+                child: Text(
+                  "Not enough data",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14.sp,
+                    color: AppColors.textLight,
+                  ),
+                ),
               ),
             );
-          },
-          loading: () => SizedBox(height: 200.h, child: const Center(child: CircularProgressIndicator())),
-          error: (error, stack) => SizedBox(height: 200.h),
-        ),
-    ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack, delay: 200.ms);
+          }
+
+          return SizedBox(
+            height: 200.h,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PieChart(
+                  PieChartData(
+                    sectionsSpace: 3.r,
+                    centerSpaceRadius: 55.r,
+                    sections: [
+                      if (totalSaved > 0)
+                        PieChartSectionData(
+                          color: AppColors.primary,
+                          value: totalSaved,
+                          title: '',
+                          radius: 28.r,
+                        ),
+                      if (remainingInGoals > 0)
+                        PieChartSectionData(
+                          color: AppColors.zinc200,
+                          value: remainingInGoals,
+                          title: '',
+                          radius: 22.r,
+                        ),
+                    ],
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const _LegendItem(color: AppColors.primary, label: 'Saved'),
+                    Gap(4.h),
+                    const _LegendItem(color: AppColors.zinc300, label: 'Goals Left'),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+        loading: () => SizedBox(height: 160.h, child: const Center(child: CircularProgressIndicator())),
+        error: (error, stack) => SizedBox(height: 160.h),
+      ),
+    );
   }
 }
 
@@ -164,12 +296,19 @@ class _LegendItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 10.r,
-          height: 10.r,
-          decoration: BoxDecoration(color: color, border: Border.all(color: AppColors.border, width: 2.r), shape: BoxShape.circle),
+          width: 8.r,
+          height: 8.r,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         Gap(6.w),
-        Text(label, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textDark,
+          ),
+        ),
       ],
     );
   }
@@ -180,11 +319,22 @@ class _CashFlowBarChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return NeoCard(
-      backgroundColor: AppColors.primary,
-      padding: EdgeInsets.only(top: 32.h, bottom: 16.h, left: 16.w, right: 24.w),
+    return Container(
+      padding: EdgeInsets.fromLTRB(12.w, 20.h, 16.w, 16.h),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.border, width: 1.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
       child: SizedBox(
-        height: 220.h,
+        height: 200.h,
         child: BarChart(
           BarChartData(
             alignment: BarChartAlignment.spaceAround,
@@ -194,13 +344,20 @@ class _CashFlowBarChart extends ConsumerWidget {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30.h,
+                  reservedSize: 26.h,
                   getTitlesWidget: (value, meta) {
-                    const titles = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'];
+                    const titles = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
                     if (value.toInt() >= 0 && value.toInt() < titles.length) {
                       return Padding(
                         padding: EdgeInsets.only(top: 8.h),
-                        child: Text(titles[value.toInt()], style: TextStyle(color: AppColors.white, fontWeight: FontWeight.w900, fontSize: 10.sp)),
+                        child: Text(
+                          titles[value.toInt()],
+                          style: TextStyle(
+                            color: AppColors.textLight,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11.sp,
+                          ),
+                        ),
                       );
                     }
                     return const SizedBox();
@@ -215,11 +372,11 @@ class _CashFlowBarChart extends ConsumerWidget {
               show: true,
               drawVerticalLine: false,
               horizontalInterval: 20,
-                  getDrawingHorizontalLine: (val) => FlLine(
-                    color: AppColors.white.withValues(alpha: 0.2),
-                    strokeWidth: 1.r,
-                    dashArray: [4, 4],
-                  ),
+              getDrawingHorizontalLine: (val) => FlLine(
+                color: AppColors.border,
+                strokeWidth: 1.r,
+                dashArray: [4, 4],
+              ),
             ),
             barGroups: [
               _makeGroupData(0, 45),
@@ -230,7 +387,7 @@ class _CashFlowBarChart extends ConsumerWidget {
               _makeGroupData(5, 90),
             ],
           ),
-        ).animate().slideY(begin: 0.5, curve: Curves.easeOutBack, delay: 300.ms),
+        ),
       ),
     );
   }
@@ -241,10 +398,9 @@ class _CashFlowBarChart extends ConsumerWidget {
       barRods: [
         BarChartRodData(
           toY: y,
-          color: AppColors.cardYellow,
-          width: 16.w,
-          borderSide: BorderSide(color: AppColors.textDark, width: 2.r),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(4.r)),
+          color: x == 5 ? AppColors.primary : AppColors.zinc300,
+          width: 18.w,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(6.r)),
         ),
       ],
     );

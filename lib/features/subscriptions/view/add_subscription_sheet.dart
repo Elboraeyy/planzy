@@ -5,15 +5,12 @@ import 'package:gap/gap.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
 import 'package:planzy/core/widgets/neo_button.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/widgets/neo_date_picker.dart';
-import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/features/subscriptions/data/models/subscription.dart';
 import 'package:planzy/features/subscriptions/presentation/providers/subscriptions_provider.dart';
 import 'package:planzy/features/subscriptions/services/subscription_notification_service.dart';
 import 'package:planzy/features/accounts/data/models/financial_account.dart';
 import 'package:planzy/features/accounts/presentation/providers/accounts_provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
@@ -99,12 +96,15 @@ class _AddSubscriptionSheetState extends ConsumerState<AddSubscriptionSheet> {
         cycle: _selectedCycle,
         category: _selectedCategory,
         nextRenewalDate: _nextRenewalDate,
-        isActive: widget.existing?.isActive ?? true,
         reminderDaysBefore: _reminderDaysBefore,
         autoDeduct: _autoDeduct,
-        linkedAccountId: _autoDeduct ? _linkedAccountId : null,
-        notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+        linkedAccountId: _linkedAccountId,
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         iconEmoji: _selectedEmoji,
+        colorHex: '#09090b',
+        isActive: widget.existing?.isActive ?? true,
         createdAt: widget.existing?.createdAt ?? DateTime.now(),
       );
 
@@ -114,97 +114,110 @@ class _AddSubscriptionSheetState extends ConsumerState<AddSubscriptionSheet> {
         await ref.read(subscriptionsProvider.notifier).add(sub);
       }
 
-      // Schedule notification
-      await SubscriptionNotificationService.scheduleRenewalReminder(sub);
+      // Schedule notification if reminder > 0
+      if (sub.reminderDaysBefore > 0 && sub.isActive) {
+        await SubscriptionNotificationService.scheduleRenewalReminder(sub);
+      }
 
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      setState(() => _saving = false);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppColors.destructive,
+          ),
+        );
       }
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
   void _goToStep(int step) {
+    if (step < 0 || step > 2) return;
+    if (step > 0 && _nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a name first')),
+      );
+      return;
+    }
+    if (step > 1 &&
+        (_amountController.text.isEmpty ||
+            double.tryParse(_amountController.text) == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
+      return;
+    }
     setState(() => _currentStep = step);
   }
 
   @override
   Widget build(BuildContext context) {
-    final settingsAsync = ref.watch(settingsProvider);
-    final userCurrency = settingsAsync.when(
-      data: (s) => s.currency,
-      loading: () => 'EGP',
-      error: (error, stack) => 'EGP',
-    );
-    if (_currency == 'EGP' && widget.existing == null) {
-      _currency = userCurrency;
-    }
-
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.88,
-      ),
       decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 4.r),
-          left: BorderSide(color: AppColors.border, width: 4.r),
-          right: BorderSide(color: AppColors.border, width: 4.r),
-        ),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        border: Border.all(color: AppColors.border, width: 1.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 30,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Drag handle
-          Padding(
-            padding: EdgeInsets.only(top: 16.h),
+          Gap(12.h),
+          Center(
             child: Container(
-              width: 40.w,
-              height: 6.h,
+              width: 36.w,
+              height: 4.h,
               decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(3.r),
+                color: AppColors.zinc300,
+                borderRadius: BorderRadius.circular(2.r),
               ),
             ),
           ),
 
           // Header
           Padding(
-            padding: EdgeInsets.all(24.r),
+            padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 16.h),
             child: Row(
               children: [
                 Text(
-                  _isEditing ? 'EDIT SUB' : 'NEW SUB',
+                  _isEditing ? 'Edit Subscription' : 'New Subscription',
                   style: TextStyle(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.5,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                    color: AppColors.textDark,
                   ),
                 ),
                 const Spacer(),
                 // Step indicators
                 Row(
                   children: List.generate(3, (i) {
-                    return Container(
-                      width: i == _currentStep ? 24.w : 8.w,
-                      height: 8.h,
-                      margin: EdgeInsets.only(left: 6.w),
+                    final isCurrent = i == _currentStep;
+                    final isPast = i < _currentStep;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: isCurrent ? 24.w : 8.w,
+                      height: 4.h,
+                      margin: EdgeInsets.only(left: 4.w),
                       decoration: BoxDecoration(
-                        color: i == _currentStep
+                        color: isCurrent
                             ? AppColors.primary
-                            : i < _currentStep
-                            ? AppColors.secondary
-                            : AppColors.textLight.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(4.r),
+                            : isPast
+                                ? AppColors.zinc700
+                                : AppColors.zinc200,
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
                     );
                   }),
@@ -222,25 +235,9 @@ class _AddSubscriptionSheetState extends ConsumerState<AddSubscriptionSheet> {
                 bottom: bottomInset + 24.h,
               ),
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: SlideTransition(
-                      position:
-                          Tween<Offset>(
-                            begin: const Offset(0.05, 0),
-                            end: Offset.zero,
-                          ).animate(
-                            CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.easeOutBack,
-                            ),
-                          ),
-                      child: child,
-                    ),
-                  );
-                },
+                duration: const Duration(milliseconds: 200),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
                 child: _currentStep == 0
                     ? _StepOne(
                         key: const ValueKey('step0'),
@@ -320,52 +317,55 @@ class _StepOne extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section title
         Text(
-          'WHAT IS IT?',
+          'What is it?',
           style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppColors.textLight,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(16.h),
+        Gap(10.h),
 
         // Name field
-        NeoCard(
-          backgroundColor: AppColors.white,
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
           child: TextField(
             controller: nameController,
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18.sp),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp, color: AppColors.textDark),
             decoration: InputDecoration(
               hintText: 'e.g. Netflix, Spotify, Gym...',
               hintStyle: TextStyle(
                 color: AppColors.textLight,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w400,
                 fontSize: 14.sp,
               ),
               border: InputBorder.none,
-              prefixIcon: Icon(LucideIcons.tag, color: AppColors.textLight, size: 20.r),
+              prefixIcon: Icon(LucideIcons.tag, color: AppColors.zinc400, size: 18.r),
             ),
           ),
         ),
-        Gap(24.h),
+        Gap(20.h),
 
         // Category picker
         Text(
-          'CATEGORY',
+          'Category',
           style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppColors.textLight,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(12.h),
+        Gap(10.h),
         SizedBox(
-          height: 48.h,
+          height: 40.h,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: SubscriptionCategory.values.map((cat) {
@@ -375,43 +375,29 @@ class _StepOne extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => onCategoryChanged(cat),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 150),
                     padding: EdgeInsets.symmetric(
                       horizontal: 14.w,
-                      vertical: 10.h,
+                      vertical: 8.h,
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.cardYellow
-                          : AppColors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.border
-                            : AppColors.textLight.withValues(alpha: 0.2),
-                        width: isSelected ? 3.r : 2.r,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: AppColors.border,
-                                offset: Offset(3.w, 3.h),
-                              ),
-                            ]
-                          : null,
+                          ? AppColors.primary
+                          : AppColors.zinc100,
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Row(
                       children: [
-                        Text(cat.emoji, style: TextStyle(fontSize: 16.sp)),
+                        Text(cat.emoji, style: TextStyle(fontSize: 15.sp)),
                         Gap(6.w),
                         Text(
-                          cat.displayName.toUpperCase(),
+                          cat.displayName,
                           style: TextStyle(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 12.sp,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                             color: isSelected
-                                ? AppColors.textDark
-                                : AppColors.textLight,
+                                ? Colors.white
+                                : AppColors.textDark,
                           ),
                         ),
                       ],
@@ -423,19 +409,19 @@ class _StepOne extends StatelessWidget {
           ),
         ),
 
-        Gap(24.h),
+        Gap(20.h),
 
         // Emoji icon picker
         Text(
-          'ICON',
+          'Icon',
           style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppColors.textLight,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(12.h),
+        Gap(10.h),
         Wrap(
           spacing: 8.w,
           runSpacing: 8.h,
@@ -467,48 +453,35 @@ class _StepOne extends StatelessWidget {
                   onTap: () => onEmojiChanged(emoji),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
-                    width: 48.r,
-                    height: 48.r,
+                    width: 44.r,
+                    height: 44.r,
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.secondary : AppColors.white,
-                      borderRadius: BorderRadius.circular(12.r),
+                      color: isSelected ? AppColors.zinc200 : AppColors.zinc100,
+                      borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(
-                        color: isSelected
-                            ? AppColors.border
-                            : AppColors.textLight.withValues(alpha: 0.15),
-                        width: isSelected ? 3.r : 2.r,
+                        color: isSelected ? AppColors.primary : Colors.transparent,
+                        width: isSelected ? 1.5.r : 1.r,
                       ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: AppColors.border,
-                                offset: Offset(2.w, 2.h),
-                              ),
-                            ]
-                          : null,
                     ),
                     child: Center(
-                      child: Text(emoji, style: TextStyle(fontSize: 22.sp)),
+                      child: Text(emoji, style: TextStyle(fontSize: 20.sp)),
                     ),
                   ),
                 );
               }).toList(),
         ),
 
-        Gap(32.h),
+        Gap(28.h),
 
         // Next button
         NeoButton(
-          text: 'NEXT →',
-          backgroundColor: AppColors.secondary,
+          text: 'Next',
+          backgroundColor: AppColors.primary,
+          textColor: Colors.white,
           onPressed: onNext,
-        ).animate().slideY(
-          begin: 0.3,
-          curve: Curves.easeOutBack,
-          delay: 100.ms,
         ),
 
-        Gap(16.h),
+        Gap(12.h),
       ],
     );
   }
@@ -541,20 +514,24 @@ class _StepTwo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'HOW MUCH?',
+          'How much?',
           style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppColors.textLight,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(16.h),
+        Gap(10.h),
 
         // Amount input — big and centered
-        NeoCard(
-          backgroundColor: AppColors.white,
-          padding: EdgeInsets.all(24.r),
+        Container(
+          padding: EdgeInsets.all(20.r),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
           child: Column(
             children: [
               TextField(
@@ -564,22 +541,22 @@ class _StepTwo extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 40.sp,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 36.sp,
                   letterSpacing: -1,
+                  color: AppColors.textDark,
                 ),
                 decoration: InputDecoration(
                   hintText: '0.00',
                   hintStyle: TextStyle(
-                    color: AppColors.textLight.withValues(alpha: 0.3),
-                    fontWeight: FontWeight.w900,
-                    fontSize: 40.sp,
+                    color: AppColors.zinc300,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 36.sp,
                   ),
                   border: InputBorder.none,
                 ),
               ),
               Gap(8.h),
-              // Currency
               _CurrencyDropdown(
                 currency: currency,
                 onChanged: onCurrencyChanged,
@@ -588,21 +565,21 @@ class _StepTwo extends StatelessWidget {
           ),
         ),
 
-        Gap(24.h),
+        Gap(20.h),
 
         // Cycle selector
         Text(
-          'BILLING CYCLE',
+          'Billing Cycle',
           style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppColors.textLight,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(12.h),
+        Gap(10.h),
         SizedBox(
-          height: 52.h,
+          height: 44.h,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: SubscriptionCycle.values.map((cycle) {
@@ -612,41 +589,27 @@ class _StepTwo extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => onCycleChanged(cycle),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 150),
                     padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 12.h,
+                      horizontal: 14.w,
+                      vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary : AppColors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.border
-                            : AppColors.textLight.withValues(alpha: 0.2),
-                        width: isSelected ? 3.r : 2.r,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: AppColors.border,
-                                offset: Offset(3.w, 3.h),
-                              ),
-                            ]
-                          : null,
+                      color: isSelected ? AppColors.primary : AppColors.zinc100,
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Row(
                       children: [
-                        Text(cycle.emoji, style: TextStyle(fontSize: 16.sp)),
+                        Text(cycle.emoji, style: TextStyle(fontSize: 15.sp)),
                         Gap(6.w),
                         Text(
-                          cycle.displayName.toUpperCase(),
+                          cycle.displayName,
                           style: TextStyle(
                             fontSize: 12.sp,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                             color: isSelected
-                                ? AppColors.white
-                                : AppColors.textLight,
+                                ? Colors.white
+                                : AppColors.textDark,
                           ),
                         ),
                       ],
@@ -658,7 +621,7 @@ class _StepTwo extends StatelessWidget {
           ),
         ),
 
-        Gap(32.h),
+        Gap(28.h),
 
         // Navigation buttons
         Row(
@@ -667,18 +630,18 @@ class _StepTwo extends StatelessWidget {
               child: GestureDetector(
                 onTap: onBack,
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 18.h),
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.zinc100,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.border, width: 3.r),
                   ),
                   child: Center(
                     child: Text(
-                      '← BACK',
+                      'Back',
                       style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15.sp,
+                        color: AppColors.textDark,
                       ),
                     ),
                   ),
@@ -689,15 +652,16 @@ class _StepTwo extends StatelessWidget {
             Expanded(
               flex: 2,
               child: NeoButton(
-                text: 'NEXT →',
-                backgroundColor: AppColors.secondary,
+                text: 'Next',
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
                 onPressed: onNext,
               ),
             ),
           ],
         ),
 
-        Gap(16.h),
+        Gap(12.h),
       ],
     );
   }
@@ -745,15 +709,15 @@ class _StepThree extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'WHEN & REMINDERS',
+          'Schedule & Reminders',
           style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppColors.textLight,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+            letterSpacing: -0.2,
           ),
         ),
-        Gap(16.h),
+        Gap(10.h),
 
         // Next renewal date
         GestureDetector(
@@ -766,44 +730,47 @@ class _StepThree extends ConsumerWidget {
             );
             if (date != null) onDateChanged(date);
           },
-          child: NeoCard(
-            backgroundColor: AppColors.white,
-            padding: EdgeInsets.all(16.r),
+          child: Container(
+            padding: EdgeInsets.all(14.r),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(color: AppColors.border, width: 1.r),
+            ),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(10.r),
+                  padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
-                    color: AppColors.cardYellow,
-                    borderRadius: BorderRadius.circular(10.r),
-                    border: Border.all(color: AppColors.border, width: 2.r),
+                    color: AppColors.zinc100,
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Icon(
                     LucideIcons.calendar,
                     color: AppColors.textDark,
-                    size: 20.r,
+                    size: 18.r,
                   ),
                 ),
-                Gap(14.w),
+                Gap(12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'NEXT RENEWAL',
+                        'Next Renewal',
                         style: TextStyle(
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w900,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.textLight,
-                          letterSpacing: 1,
                         ),
                       ),
-                      Gap(4.h),
+                      Gap(2.h),
                       Text(
                         DateFormat('dd MMMM yyyy').format(nextRenewalDate),
                         style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14.sp,
+                          color: AppColors.textDark,
                         ),
                       ),
                     ],
@@ -811,57 +778,60 @@ class _StepThree extends ConsumerWidget {
                 ),
                 Icon(
                   LucideIcons.chevronRight,
-                  color: AppColors.textLight,
-                  size: 20.r,
+                  color: AppColors.zinc400,
+                  size: 16.r,
                 ),
               ],
             ),
           ),
         ),
-        Gap(16.h),
+        Gap(12.h),
 
         // Reminder slider
-        NeoCard(
-          backgroundColor: AppColors.white,
-          padding: EdgeInsets.all(16.r),
+        Container(
+          padding: EdgeInsets.all(14.r),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(10.r),
+                    padding: EdgeInsets.all(8.r),
                     decoration: BoxDecoration(
-                      color: AppColors.cardBlue,
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(color: AppColors.border, width: 2.r),
+                      color: AppColors.zinc100,
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(
                       LucideIcons.bell,
                       color: AppColors.textDark,
-                      size: 20.r,
+                      size: 18.r,
                     ),
                   ),
-                  Gap(14.w),
+                  Gap(12.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'REMIND ME',
+                          'Reminder',
                           style: TextStyle(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w500,
                             color: AppColors.textLight,
-                            letterSpacing: 1,
                           ),
                         ),
                         Gap(2.h),
                         Text(
                           '$reminderDaysBefore ${reminderDaysBefore == 1 ? 'day' : 'days'} before',
                           style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.sp,
+                            color: AppColors.textDark,
                           ),
                         ),
                       ],
@@ -869,18 +839,16 @@ class _StepThree extends ConsumerWidget {
                   ),
                 ],
               ),
-              Gap(12.h),
+              Gap(8.h),
               SliderTheme(
                 data: SliderThemeData(
                   activeTrackColor: AppColors.primary,
-                  inactiveTrackColor: AppColors.textLight.withValues(
-                    alpha: 0.15,
-                  ),
+                  inactiveTrackColor: AppColors.zinc200,
                   thumbColor: AppColors.primary,
                   overlayColor: AppColors.primary.withValues(alpha: 0.1),
-                  trackHeight: 6.r,
+                  trackHeight: 4.r,
                   thumbShape: RoundSliderThumbShape(
-                    enabledThumbRadius: 10.r,
+                    enabledThumbRadius: 8.r,
                   ),
                 ),
                 child: Slider(
@@ -894,78 +862,79 @@ class _StepThree extends ConsumerWidget {
             ],
           ),
         ),
-        Gap(16.h),
+        Gap(12.h),
 
         // Auto-deduct toggle
-        NeoCard(
-          backgroundColor: AppColors.white,
-          padding: EdgeInsets.all(16.r),
+        Container(
+          padding: EdgeInsets.all(14.r),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
           child: Column(
             children: [
               Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(10.r),
+                    padding: EdgeInsets.all(8.r),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary,
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(color: AppColors.border, width: 2.r),
+                      color: AppColors.zinc100,
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(
                       LucideIcons.zap,
                       color: AppColors.textDark,
-                      size: 20.r,
+                      size: 18.r,
                     ),
                   ),
-                  Gap(14.w),
+                  Gap(12.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'AUTO-DEDUCT',
+                          'Auto-deduct',
                           style: TextStyle(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textLight,
-                            letterSpacing: 1,
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark,
                           ),
                         ),
                         Gap(2.h),
                         Text(
                           'Deduct from account on renewal',
                           style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 11.sp,
                             color: AppColors.textLight,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Switch(
+                  Switch.adaptive(
                     value: autoDeduct,
                     onChanged: onAutoDeductChanged,
-                    activeThumbColor: AppColors.secondary,
-                    activeTrackColor: AppColors.textDark,
+                    activeTrackColor: AppColors.primary,
                   ),
                 ],
               ),
 
               // Account picker (shows when auto-deduct is on)
               if (autoDeduct && accounts.isNotEmpty) ...[
-                Gap(12.h),
+                Gap(10.h),
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 12.w,
-                    vertical: 4.h,
+                    vertical: 2.h,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.background,
+                    color: AppColors.zinc50,
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border.all(
-                      color: AppColors.textLight.withValues(alpha: 0.2),
-                      width: 2.r,
+                      color: AppColors.border,
+                      width: 1.r,
                     ),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -975,9 +944,9 @@ class _StepThree extends ConsumerWidget {
                       hint: Text(
                         'Select account',
                         style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.textLight,
-                          fontSize: 14.sp,
+                          fontSize: 13.sp,
                         ),
                       ),
                       items: accounts.map((acc) {
@@ -987,15 +956,16 @@ class _StepThree extends ConsumerWidget {
                             children: [
                               Text(
                                 acc.type.icon,
-                                style: TextStyle(fontSize: 18.sp),
+                                style: TextStyle(fontSize: 16.sp),
                               ),
                               Gap(8.w),
                               Expanded(
                                 child: Text(
                                   acc.name,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13.sp,
+                                    color: AppColors.textDark,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -1013,35 +983,39 @@ class _StepThree extends ConsumerWidget {
           ),
         ),
 
-        Gap(16.h),
+        Gap(12.h),
 
         // Notes
-        NeoCard(
-          backgroundColor: AppColors.white,
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+          ),
           child: TextField(
             controller: notesController,
-            maxLines: 3,
+            maxLines: 2,
             minLines: 1,
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp, color: AppColors.textDark),
             decoration: InputDecoration(
               hintText: 'Notes (optional)...',
               hintStyle: TextStyle(
-                color: AppColors.textLight.withValues(alpha: 0.5),
-                fontWeight: FontWeight.w600,
-                fontSize: 14.sp,
+                color: AppColors.textLight,
+                fontWeight: FontWeight.w400,
+                fontSize: 13.sp,
               ),
               border: InputBorder.none,
               prefixIcon: Icon(
                 LucideIcons.stickyNote,
-                color: AppColors.textLight,
-                size: 18.r,
+                color: AppColors.zinc400,
+                size: 16.r,
               ),
             ),
           ),
         ),
 
-        Gap(32.h),
+        Gap(28.h),
 
         // Navigation buttons
         Row(
@@ -1050,18 +1024,18 @@ class _StepThree extends ConsumerWidget {
               child: GestureDetector(
                 onTap: onBack,
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 18.h),
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.zinc100,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.border, width: 3.r),
                   ),
                   child: Center(
                     child: Text(
-                      '← BACK',
+                      'Back',
                       style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15.sp,
+                        color: AppColors.textDark,
                       ),
                     ),
                   ),
@@ -1072,31 +1046,34 @@ class _StepThree extends ConsumerWidget {
             Expanded(
               flex: 2,
               child: saving
-                  ? NeoCard(
-                      backgroundColor: AppColors.primary,
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      child: Center(
+                  ? Container(
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: const Center(
                         child: SizedBox(
-                          width: 24.r,
-                          height: 24.r,
+                          width: 20,
+                          height: 20,
                           child: CircularProgressIndicator(
-                            color: AppColors.white,
-                            strokeWidth: 3.r,
+                            color: Colors.white,
+                            strokeWidth: 2,
                           ),
                         ),
                       ),
                     )
                   : NeoButton(
-                      text: isEditing ? '💾 UPDATE' : '🎉 SAVE',
+                      text: isEditing ? 'Update' : 'Save',
                       backgroundColor: AppColors.primary,
-                      textColor: AppColors.white,
+                      textColor: Colors.white,
                       onPressed: onSave,
                     ),
             ),
           ],
         ),
 
-        Gap(16.h),
+        Gap(12.h),
       ],
     );
   }
@@ -1132,14 +1109,10 @@ class _CurrencyDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
       decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: AppColors.textLight.withValues(alpha: 0.2),
-          width: 2.r,
-        ),
+        color: AppColors.zinc100,
+        borderRadius: BorderRadius.circular(8.r),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -1150,8 +1123,9 @@ class _CurrencyDropdown extends StatelessWidget {
               child: Text(
                 c,
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.sp,
+                  color: AppColors.textDark,
                 ),
               ),
             );

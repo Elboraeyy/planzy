@@ -25,9 +25,17 @@ class SubscriptionsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('SUBSCRIPTIONS', style: TextStyle(fontSize: 18.sp)),
+        title: Text(
+          'Subscriptions',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.4,
+            color: AppColors.textDark,
+          ),
+        ),
         leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 24.r),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20.r),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -36,25 +44,18 @@ class SubscriptionsScreen extends ConsumerWidget {
             child: GestureDetector(
               onTap: () => _showAddSheet(context, ref),
               child: Container(
-                padding: EdgeInsets.all(10.r),
+                padding: EdgeInsets.all(8.r),
                 decoration: BoxDecoration(
-                  color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.border, width: 3.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.border,
-                      offset: Offset(3.w, 3.h),
-                    ),
-                  ],
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
                   LucideIcons.plus,
-                  color: AppColors.textDark,
-                  size: 20.r,
+                  color: Colors.white,
+                  size: 18.r,
                 ),
               ),
-            ).animate().scale(delay: 200.ms, curve: Curves.easeOutBack),
+            ),
           ),
         ],
       ),
@@ -67,7 +68,7 @@ class SubscriptionsScreen extends ConsumerWidget {
           }
 
           return ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
             children: [
               // Summary banner
               _SummaryBanner(
@@ -75,32 +76,39 @@ class SubscriptionsScreen extends ConsumerWidget {
                 totalCount: subscriptions.length,
                 monthlyCost: monthlyCost,
               ),
-              Gap(24.h),
+              Gap(20.h),
 
               // Section label
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'ALL SUBSCRIPTIONS',
+                    'All Subscriptions',
                     style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                      color: AppColors.textLight,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                      color: AppColors.textDark,
                     ),
                   ),
-                  Text(
-                    '${subscriptions.length}',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.textLight,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.zinc100,
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Text(
+                      '${subscriptions.length}',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textLight,
+                      ),
                     ),
                   ),
                 ],
-              ).animate().fadeIn(delay: 300.ms),
-              Gap(16.h),
+              ).animate().fadeIn(delay: 200.ms),
+              Gap(12.h),
 
               // Subscription cards
               ...subscriptions.asMap().entries.map((entry) {
@@ -216,25 +224,36 @@ class _SummaryBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NeoCard(
-      backgroundColor: AppColors.primary,
-      padding: EdgeInsets.all(24.r),
+    return Container(
+      padding: EdgeInsets.all(20.r),
+      decoration: BoxDecoration(
+        color: AppColors.zinc950,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: AppColors.zinc800, width: 1.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           // Progress ring
           SizedBox(
-            width: 64.r,
-            height: 64.r,
+            width: 56.r,
+            height: 56.r,
             child: Stack(
               children: [
                 SizedBox(
-                  width: 64.r,
-                  height: 64.r,
+                  width: 56.r,
+                  height: 56.r,
                   child: CircularProgressIndicator(
                     value: totalCount > 0 ? activeCount / totalCount : 0,
-                    strokeWidth: 6.r,
-                    backgroundColor: AppColors.white.withValues(alpha: 0.15),
-                    valueColor: const AlwaysStoppedAnimation(AppColors.secondary),
+                    strokeWidth: 5.r,
+                    backgroundColor: AppColors.zinc800,
+                    valueColor: const AlwaysStoppedAnimation(AppColors.success),
                     strokeCap: StrokeCap.round,
                   ),
                 ),
@@ -242,16 +261,16 @@ class _SummaryBanner extends StatelessWidget {
                   child: Text(
                     '$activeCount',
                     style: TextStyle(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.white,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          Gap(20.w),
+          Gap(18.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,31 +278,31 @@ class _SummaryBanner extends StatelessWidget {
                 Text(
                   'MONTHLY TOTAL',
                   style: TextStyle(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.white.withValues(alpha: 0.6),
-                    letterSpacing: 1.5,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.zinc400,
+                    letterSpacing: 1.2,
                   ),
                 ),
-                Gap(6.h),
+                Gap(4.h),
                 FittedBox(
                   child: Text(
                     NumberFormat.compact().format(monthlyCost),
                     style: TextStyle(
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.white,
-                      letterSpacing: -1,
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
                     ),
                   ),
                 ),
-                Gap(4.h),
+                Gap(2.h),
                 Text(
                   '$activeCount active · ${totalCount - activeCount} paused',
                   style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.white.withValues(alpha: 0.5),
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.zinc400,
                   ),
                 ),
               ],
@@ -291,10 +310,7 @@ class _SummaryBanner extends StatelessWidget {
           ),
         ],
       ),
-    )
-        .animate()
-        .slideY(begin: 0.15, curve: Curves.easeOutBack)
-        .fadeIn();
+    );
   }
 }
 

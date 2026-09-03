@@ -1,10 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 
 class ScaffoldWithNav extends StatelessWidget {
   const ScaffoldWithNav({
@@ -30,13 +30,13 @@ class ScaffoldWithNav extends StatelessWidget {
           Positioned(
             left: 20.w,
             right: 20.w,
-            bottom: 30.h,
-            child: _NeoNavBar(
+            bottom: 24.h,
+            child: _ModernDockNavBar(
               currentIndex: navigationShell.currentIndex,
               onTap: _goBranch,
               onAddTap: () => _showAddMenu(context),
             ),
-          ).animate().slideY(begin: 1, curve: Curves.easeOutBack, duration: 800.ms),
+          ).animate().slideY(begin: 1, curve: Curves.easeOutCubic, duration: 400.ms),
         ],
       ),
     );
@@ -47,66 +47,99 @@ class ScaffoldWithNav extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       elevation: 0,
+      isScrollControlled: true,
       builder: (context) {
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-            border: Border(top: BorderSide(color: AppColors.border, width: 4.r)),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            border: Border.all(color: AppColors.border, width: 1.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 30,
+                offset: const Offset(0, -4),
+              ),
+            ],
           ),
-          padding: EdgeInsets.all(24.r),
+          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 36.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40.w,
-                height: 6.h,
-                decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(3.r),
+              Center(
+                child: Container(
+                  width: 36.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.zinc300,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
                 ),
               ),
-              Gap(32.h),
-              Text(
-                "WHAT'S NEW?",
-                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, letterSpacing: 1),
-              ),
-              Gap(24.h),
-              NeoCard(
-                backgroundColor: AppColors.secondary,
-                onTap: () {
-                  context.pop();
-                  context.push('/add-goal');
-                },
-                padding: EdgeInsets.symmetric(vertical: 20.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              Gap(20.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(LucideIcons.target, size: 28.r, color: AppColors.textDark),
-                    Gap(12.w),
-                    Text('NEW GOAL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
+                    Text(
+                      'Quick Actions',
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    Gap(2.h),
+                    Text(
+                      'Select an action to continue',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: AppColors.textLight,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                   ],
                 ),
-              ).animate().slideY(begin: 0.2, curve: Curves.easeOutBack),
-              Gap(16.h),
-              // New Transaction button
-              NeoCard(
-                backgroundColor: AppColors.cardBlue,
+              ),
+              Gap(20.h),
+              _QuickActionItem(
+                title: 'New Transaction',
+                subtitle: 'Record an expense or income',
+                icon: LucideIcons.receipt,
+                iconColor: AppColors.primary,
+                iconBg: AppColors.zinc100,
                 onTap: () {
                   context.pop();
                   context.push('/add-transaction');
                 },
-                padding: EdgeInsets.symmetric(vertical: 20.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(LucideIcons.wallet, size: 28.r, color: AppColors.textDark),
-                    Gap(12.w),
-                    Text('EXPENSE / INCOME', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
-                  ],
-                ),
-              ).animate().slideY(begin: 0.3, delay: 100.ms, curve: Curves.easeOutBack),
-              Gap(24.h),
+              ),
+              Gap(10.h),
+              _QuickActionItem(
+                title: 'New Savings Goal',
+                subtitle: 'Set a target for your future',
+                icon: LucideIcons.target,
+                iconColor: AppColors.success,
+                iconBg: AppColors.successLight,
+                onTap: () {
+                  context.pop();
+                  context.push('/add-goal');
+                },
+              ),
+              Gap(10.h),
+              _QuickActionItem(
+                title: 'Transfer Funds',
+                subtitle: 'Move money between accounts',
+                icon: LucideIcons.arrowLeftRight,
+                iconColor: AppColors.accentBlue,
+                iconBg: AppColors.accentBlueLight,
+                onTap: () {
+                  context.pop();
+                  context.push('/transfer');
+                },
+              ),
             ],
           ),
         );
@@ -115,12 +148,86 @@ class ScaffoldWithNav extends StatelessWidget {
   }
 }
 
-class _NeoNavBar extends StatelessWidget {
+class _QuickActionItem extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final VoidCallback onTap;
+
+  const _QuickActionItem({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: AppColors.border, width: 1.r),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42.r,
+              height: 42.r,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(icon, color: iconColor, size: 20.r),
+            ),
+            Gap(14.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textDark,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  Gap(2.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColors.textLight,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(LucideIcons.chevronRight, size: 16.r, color: AppColors.zinc400),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ModernDockNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
   final VoidCallback onAddTap;
 
-  const _NeoNavBar({
+  const _ModernDockNavBar({
     required this.currentIndex,
     required this.onTap,
     required this.onAddTap,
@@ -128,50 +235,56 @@ class _NeoNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80.h,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: AppColors.border, width: 3.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.border,
-            offset: Offset(0, 6.h),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24.r),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          height: 64.h,
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.88),
+            borderRadius: BorderRadius.circular(24.r),
+            border: Border.all(color: AppColors.border, width: 1.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 24,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _NavBarItem(
-            icon: LucideIcons.home,
-            label: 'HOME',
-            isSelected: currentIndex == 0,
-            onTap: () => onTap(0),
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _NavBarItem(
+                icon: LucideIcons.home,
+                label: 'Home',
+                isSelected: currentIndex == 0,
+                onTap: () => onTap(0),
+              ),
+              _NavBarItem(
+                icon: LucideIcons.wrench,
+                label: 'Tools',
+                isSelected: currentIndex == 1,
+                onTap: () => onTap(1),
+              ),
+              _CentralAddButton(onTap: onAddTap),
+              _NavBarItem(
+                icon: LucideIcons.pieChart,
+                label: 'Insights',
+                isSelected: currentIndex == 3,
+                onTap: () => onTap(3),
+              ),
+              _NavBarItem(
+                icon: LucideIcons.user,
+                label: 'Profile',
+                isSelected: currentIndex == 4,
+                onTap: () => onTap(4),
+              ),
+            ],
           ),
-          _NavBarItem(
-            icon: LucideIcons.wrench,
-            label: 'TOOLS',
-            isSelected: currentIndex == 1,
-            onTap: () => onTap(1),
-          ),
-          // Central Add Button
-          _CentralAddButton(onTap: onAddTap),
-          _NavBarItem(
-            icon: LucideIcons.pieChart,
-            label: 'INSIGHTS',
-            isSelected: currentIndex == 3,
-            onTap: () => onTap(3),
-          ),
-          _NavBarItem(
-            icon: LucideIcons.user,
-            label: 'ME',
-            isSelected: currentIndex == 4,
-            onTap: () => onTap(4),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -195,26 +308,35 @@ class _NavBarItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? AppColors.primary : AppColors.textLight,
-            size: isSelected ? 28.r : 24.r,
-          ).animate(target: isSelected ? 1 : 0).scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), curve: Curves.easeOutBack),
-          Gap(4.h),
-          if (isSelected)
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.zinc100 : Colors.transparent,
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? AppColors.textDark : AppColors.zinc400,
+              size: 20.r,
+            ),
+            Gap(2.h),
             Text(
               label,
               style: TextStyle(
                 fontSize: 10.sp,
-                fontWeight: FontWeight.w900,
-                color: AppColors.primary,
-                letterSpacing: -0.5,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? AppColors.textDark : AppColors.zinc400,
+                letterSpacing: -0.2,
               ),
-            ).animate().fadeIn().slideY(begin: 0.5),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -241,22 +363,23 @@ class _CentralAddButtonState extends State<_CentralAddButton> {
       },
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
-        duration: 100.ms,
-        transform: Matrix4.translationValues(0, _isPressed ? 0 : -24.h, 0),
-        padding: EdgeInsets.all(16.r),
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.diagonal3Values(_isPressed ? 0.92 : 1.0, _isPressed ? 0.92 : 1.0, 1.0),
+        transformAlignment: Alignment.center,
+        padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
           color: AppColors.primary,
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.border, width: 3.r),
           boxShadow: [
-            if (!_isPressed)
-              BoxShadow(
-                color: AppColors.border,
-                offset: Offset(0, 6.h),
-              ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
-        child: Icon(LucideIcons.plus, color: AppColors.white, size: 32.r),
+        child: Icon(LucideIcons.plus, color: Colors.white, size: 22.r),
       ),
     );
   }

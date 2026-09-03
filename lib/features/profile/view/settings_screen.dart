@@ -5,11 +5,9 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:planzy/core/theme/app_colors.dart';
-import 'package:planzy/core/widgets/neo_card.dart';
 import 'package:planzy/core/widgets/neo_dialog.dart';
 import 'package:planzy/core/providers/settings_provider.dart';
 import 'package:planzy/core/providers/auth_provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -23,7 +21,7 @@ class SettingsScreen extends ConsumerWidget {
       body: SafeArea(
         child: settingsAsync.when(
           data: (settings) => ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
             children: [
               // Header
               Row(
@@ -31,38 +29,60 @@ class SettingsScreen extends ConsumerWidget {
                   GestureDetector(
                     onTap: () => context.pop(),
                     child: Container(
-                      padding: EdgeInsets.all(12.r),
+                      padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: AppColors.border, width: 3.r),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: Border.all(color: AppColors.border, width: 1.r),
                       ),
-                      child: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 20.r),
+                      child: Icon(LucideIcons.arrowLeft, color: AppColors.textDark, size: 18.r),
                     ),
                   ),
-                  Gap(16.w),
+                  Gap(14.w),
                   Text(
-                    'SETTINGS',
-                    style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w900, letterSpacing: -1),
+                    'Settings',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.4,
+                      color: AppColors.textDark,
+                    ),
                   ),
                 ],
-              ).animate().fadeIn(),
-              Gap(40.h),
+              ),
+              Gap(24.h),
 
               // ACCOUNT section
-              Text('ACCOUNT', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2)),
-              Gap(16.h),
-              NeoCard(
-                backgroundColor: AppColors.white,
-                padding: EdgeInsets.zero,
+              Text(
+                'Account',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
+                  color: AppColors.textDark,
+                ),
+              ),
+              Gap(10.h),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
                 child: Column(
                   children: [
                     _SettingsTile(
                       icon: LucideIcons.banknote,
-                      title: 'MONTHLY INCOME',
+                      title: 'Monthly Income',
                       subtitle:
                           '${NumberFormat.decimalPattern().format(settings.monthlyIncome)} ${settings.currency}',
-                      iconColor: AppColors.cardYellow,
                       onTap: () => _editIncomeDialog(
                         context,
                         ref,
@@ -73,79 +93,110 @@ class SettingsScreen extends ConsumerWidget {
                     _divider(),
                     _SettingsTile(
                       icon: LucideIcons.coins,
-                      title: 'CURRENCY',
+                      title: 'Currency',
                       subtitle: settings.currency,
-                      iconColor: AppColors.cardBlue,
                       onTap: () => _changeCurrencyDialog(context, ref, settings.currency),
                     ),
                   ],
                 ),
-              ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack, delay: 100.ms).fadeIn(),
+              ),
 
-              Gap(32.h),
+              Gap(24.h),
 
               // PREFERENCES section
-              Text('PREFERENCES', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2)),
-              Gap(16.h),
-              NeoCard(
-                backgroundColor: AppColors.white,
-                padding: EdgeInsets.zero,
+              Text(
+                'Preferences',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
+                  color: AppColors.textDark,
+                ),
+              ),
+              Gap(10.h),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
                 child: Column(
                   children: [
                     _SettingsTile(
                       icon: LucideIcons.bell,
-                      title: 'NOTIFICATIONS',
-                      subtitle: settings.notificationsEnabled ? 'ENABLED' : 'DISABLED',
-                      iconColor: AppColors.secondary,
-                      trailing: Switch(
+                      title: 'Notifications',
+                      subtitle: settings.notificationsEnabled ? 'Enabled' : 'Disabled',
+                      trailing: Switch.adaptive(
                         value: settings.notificationsEnabled,
                         onChanged: (val) => ref.read(settingsProvider.notifier).toggleNotifications(val),
-                        activeThumbColor: AppColors.primary,
-                        activeTrackColor: AppColors.primary.withValues(alpha: 0.3),
+                        activeTrackColor: AppColors.primary,
                       ),
                     ),
                     _divider(),
                     _SettingsTile(
                       icon: LucideIcons.globe,
-                      title: 'LANGUAGE',
-                      subtitle: 'ENGLISH',
-                      iconColor: AppColors.cardBlue,
+                      title: 'Language',
+                      subtitle: 'English',
                       onTap: () {},
                     ),
                     _divider(),
                     _SettingsTile(
                       icon: LucideIcons.moon,
-                      title: 'THEME',
-                      subtitle: 'LIGHT',
-                      iconColor: AppColors.cardYellow,
+                      title: 'Theme',
+                      subtitle: 'Light',
                       onTap: () {},
                     ),
                   ],
                 ),
-              ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack, delay: 200.ms).fadeIn(),
+              ),
 
-              Gap(40.h),
+              Gap(24.h),
 
               // DANGER ZONE
-              Text('DANGER ZONE', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: Colors.red, letterSpacing: 2)),
-              Gap(16.h),
-              NeoCard(
-                backgroundColor: Colors.red.withValues(alpha: 0.05),
-                padding: EdgeInsets.zero,
+              Text(
+                'Danger Zone',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
+                  color: AppColors.destructive,
+                ),
+              ),
+              Gap(10.h),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
                 child: Column(
                   children: [
                     _SettingsTile(
                       icon: LucideIcons.trash2,
-                      title: 'DELETE ALL DATA',
+                      title: 'Delete All Data',
                       subtitle: 'Erase everything locally',
-                      iconColor: Colors.red,
-                      titleColor: Colors.red,
+                      titleColor: AppColors.destructive,
+                      iconColor: AppColors.destructive,
                       onTap: () => NeoDialog.show(
                         context: context,
-                        title: 'WIPE ALL DATA?',
+                        title: 'Wipe all data?',
                         message: 'This action cannot be undone. All your local data (settings, goals) will be permanently deleted.',
-                        confirmText: 'YES, DELETE EVERYTHING',
-                        cancelText: 'NO, KEEP MY DATA',
+                        confirmText: 'Yes, Delete Everything',
+                        cancelText: 'Cancel',
                         isDestructive: true,
                         onConfirm: () {
                           ref.read(settingsProvider.notifier).clearAllData();
@@ -155,16 +206,16 @@ class SettingsScreen extends ConsumerWidget {
                     _divider(),
                     _SettingsTile(
                       icon: LucideIcons.logOut,
-                      title: 'SIGN OUT',
+                      title: 'Sign Out',
                       subtitle: 'Log out of your account',
-                      iconColor: Colors.red,
-                      titleColor: Colors.red,
+                      titleColor: AppColors.destructive,
+                      iconColor: AppColors.destructive,
                       onTap: () => NeoDialog.show(
                         context: context,
-                        title: 'SIGN OUT?',
+                        title: 'Sign out?',
                         message: 'Are you sure you want to sign out? You can always sign back in.',
-                        confirmText: 'YES, SIGN OUT',
-                        cancelText: 'CANCEL',
+                        confirmText: 'Yes, Sign Out',
+                        cancelText: 'Cancel',
                         isDestructive: true,
                         onConfirm: () async {
                           await ref.read(authNotifierProvider.notifier).signOut();
@@ -173,28 +224,37 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ).animate().slideY(begin: 0.15, curve: Curves.easeOutBack, delay: 400.ms).fadeIn(),
+              ),
 
-              Gap(40.h),
+              Gap(32.h),
 
               // Branding footer
               Center(
                 child: Column(
                   children: [
                     Text(
-                      'MADE WITH ❤️',
-                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w900, color: AppColors.textLight, letterSpacing: 2),
+                      'Planzy',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                        letterSpacing: -0.2,
+                      ),
                     ),
-                    Gap(4.h),
+                    Gap(2.h),
                     Text(
-                      'PLANZY • 2026',
-                      style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w600, color: AppColors.textLight),
+                      'Version 1.0.0',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textLight,
+                      ),
                     ),
                   ],
                 ),
-              ).animate().fadeIn(delay: 500.ms),
+              ),
 
-              Gap(60.h),
+              Gap(40.h),
             ],
           ),
           loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
@@ -205,7 +265,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _divider() {
-    return Container(height: 2.h, color: AppColors.border.withValues(alpha: 0.08));
+    return Container(height: 1.h, color: AppColors.border);
   }
 
   void _editIncomeDialog(BuildContext context, WidgetRef ref, double currentIncome, String currency) {
@@ -242,29 +302,48 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (ctx, _, _) {
         return Center(
           child: Material(
             color: Colors.transparent,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: NeoCard(
-                backgroundColor: AppColors.background,
-                padding: EdgeInsets.all(24.r),
+              child: Container(
+                padding: EdgeInsets.all(20.r),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(color: AppColors.border, width: 1.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('CHOOSE CURRENCY', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900)),
-                    Gap(24.h),
+                    Text(
+                      'Choose Currency',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    Gap(16.h),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
-                        crossAxisSpacing: 12.w,
-                        mainAxisSpacing: 12.h,
-                        childAspectRatio: 1.4,
+                        crossAxisSpacing: 10.w,
+                        mainAxisSpacing: 10.h,
+                        childAspectRatio: 1.5,
                       ),
                       itemCount: currencies.length,
                       itemBuilder: (context, index) {
@@ -277,20 +356,16 @@ class SettingsScreen extends ConsumerWidget {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isSelected ? AppColors.secondary : AppColors.white,
-                              borderRadius: BorderRadius.circular(12.r),
-                              border: Border.all(color: AppColors.border, width: isSelected ? 3.r : 2.r),
-                              boxShadow: isSelected
-                                  ? [BoxShadow(color: AppColors.border, offset: Offset(3.w, 3.h))]
-                                  : null,
+                              color: isSelected ? AppColors.primary : AppColors.zinc100,
+                              borderRadius: BorderRadius.circular(10.r),
                             ),
                             child: Center(
                               child: Text(
                                 curr,
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 16.sp,
-                                  color: isSelected ? AppColors.textDark : AppColors.textLight,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14.sp,
+                                  color: isSelected ? Colors.white : AppColors.textDark,
                                 ),
                               ),
                             ),
@@ -300,7 +375,7 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ).animate().scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack).fadeIn(),
+              ),
             ),
           ),
         );
@@ -313,7 +388,7 @@ class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Color iconColor;
+  final Color? iconColor;
   final Color? titleColor;
   final VoidCallback? onTap;
   final Widget? trailing;
@@ -322,7 +397,7 @@ class _SettingsTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.iconColor,
+    this.iconColor,
     this.titleColor,
     this.onTap,
     this.trailing,
@@ -330,6 +405,8 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDestructive = titleColor == AppColors.destructive;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -338,26 +415,46 @@ class _SettingsTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(10.r),
+              padding: EdgeInsets.all(9.r),
               decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10.r),
-                border: Border.all(color: AppColors.border.withValues(alpha: 0.1), width: 2.r),
+                color: isDestructive
+                    ? AppColors.destructiveLight
+                    : AppColors.zinc100,
+                borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Icon(icon, color: iconColor, size: 20.r),
+              child: Icon(
+                icon,
+                color: isDestructive ? AppColors.destructive : AppColors.textDark,
+                size: 18.r,
+              ),
             ),
-            Gap(16.w),
+            Gap(14.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: titleColor ?? AppColors.textDark)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
+                      color: titleColor ?? AppColors.textDark,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
                   Gap(2.h),
-                  Text(subtitle, style: TextStyle(color: AppColors.textLight, fontSize: 11.sp, fontWeight: FontWeight.w600)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppColors.textLight,
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ],
               ),
             ),
-            trailing ?? Icon(LucideIcons.chevronRight, color: AppColors.textLight, size: 18.r),
+            trailing ?? Icon(LucideIcons.chevronRight, color: AppColors.zinc400, size: 16.r),
           ],
         ),
       ),

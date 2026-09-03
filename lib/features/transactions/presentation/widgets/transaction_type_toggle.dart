@@ -18,28 +18,25 @@ class TransactionTypeToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 3),
+        color: AppColors.zinc100,
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
           Expanded(
             child: _ToggleButton(
-              label: 'EXPENSE',
+              label: 'Expense',
               icon: '💸',
               isSelected: selectedType == TransactionType.expense,
-              selectedColor: AppColors.primary,
               onTap: () => onTypeChanged(TransactionType.expense),
             ),
           ),
           const Gap(4),
           Expanded(
             child: _ToggleButton(
-              label: 'INCOME',
+              label: 'Income',
               icon: '💰',
               isSelected: selectedType == TransactionType.income,
-              selectedColor: AppColors.secondary,
               onTap: () => onTypeChanged(TransactionType.income),
             ),
           ),
@@ -53,14 +50,12 @@ class _ToggleButton extends StatelessWidget {
   final String label;
   final String icon;
   final bool isSelected;
-  final Color selectedColor;
   final VoidCallback onTap;
 
   const _ToggleButton({
     required this.label,
     required this.icon,
     required this.isSelected,
-    required this.selectedColor,
     required this.onTap,
   });
 
@@ -69,20 +64,18 @@ class _ToggleButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutBack,
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? selectedColor : Colors.transparent,
+          color: isSelected ? AppColors.surface : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          border: isSelected
-              ? Border.all(color: AppColors.border, width: 2)
-              : null,
           boxShadow: isSelected
-              ? const [
+              ? [
                   BoxShadow(
-                    color: AppColors.border,
-                    offset: Offset(2, 2),
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
                   ),
                 ]
               : null,
@@ -92,16 +85,16 @@ class _ToggleButton extends StatelessWidget {
           children: [
             Text(
               icon,
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 16),
             ),
             const Gap(8),
             Text(
               label,
               style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 color: isSelected ? AppColors.textDark : AppColors.textLight,
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
-                letterSpacing: 1,
+                letterSpacing: -0.2,
               ),
             ),
           ],
